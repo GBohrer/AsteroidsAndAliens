@@ -5,8 +5,8 @@ int main()
 {
     Color darkGreen = Color{30, 160, 133, 255};
 
-    const int screenWidth = 800;
-    const int screenHeight = 600;
+    const int screenWidth = 1280;
+    const int screenHeight = 920;
 
     Spaceship player = Spaceship();
 
