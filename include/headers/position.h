@@ -1,9 +1,10 @@
 #pragma once
 
-class Ball
+class Position
 {
 public:
-    Ball();
+    Position();
+    Position(int x, int y, int speed);
 
     int GetX();
     void SetX(int x);
@@ -15,17 +16,9 @@ public:
     int GetSpeedY();
     void SetSpeedY(int speedY);
 
-    int GetRadius();
-    void SetRadius(int radius);
-
-    void DiagonalMove();
-    void Draw();
-
-
 private:
     int x;
     int y;
     int speedX;
     int speedY;
-    int radius;
 };

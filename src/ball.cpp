@@ -1,48 +1,14 @@
-#include "ball.h"
+#include "../include/headers/ball.h"
 #include <raylib.h>
 
-Ball::Ball()
-{
-    x = 100;
-    y = 100;
-    speedX = 5;
-    speedY = 5;
-    radius = 15;
+Ball::Ball() {}
+
+Ball::Ball(int radius){
+    pos = Position(200, 40, 1);
+    this->radius = radius;
 }
 
 // GETTERS & SETTERS
-int Ball::GetX(){
-    return x;
-}
-
-int Ball::GetY(){
-    return y;
-}
-
-void Ball::SetX(int x){
-    this->x = x;
-}
-
-void Ball::SetY(int y){
-    this->y = y;
-}
-
-int Ball::GetSpeedX(){
-    return speedX;
-}
-
-int Ball::GetSpeedY(){
-    return speedY;
-}
-
-void Ball::SetSpeedX(int speedX){
-    this->speedX = speedX;
-}
-
-void Ball::SetSpeedY(int speedY){
-    this->speedY = speedY;
-}
-
 int Ball::GetRadius(){
     return radius;
 }
@@ -51,24 +17,30 @@ void Ball::SetRadius(int radius){
     this->radius = radius;
 }
 
+Position Ball::GetPosition(){
+    return this->pos;
+}
+
+void Ball::SetPosition(Position pos){
+    this->pos = pos;
+}
+
+
 // METHODS
 void Ball::Draw()
 {
-    DrawCircle(x, y, radius, BLACK);
+    DrawCircle(this->GetPosition().GetX(), this->GetPosition().GetY(), GetRadius(), BLACK);
 }
 
 void Ball::DiagonalMove()
-{
-    //x += speedX;
-    //y += speedY;
-    SetX(GetX() + GetSpeedX());
-    SetY(GetY() + GetSpeedY());
+{  
+    if (pos.GetX() + GetRadius() >= GetScreenWidth() || pos.GetX() - GetRadius() <= 0)
+        pos.SetSpeedX(pos.GetSpeedX() * -1);
 
-    if (GetX() + GetRadius() >= GetScreenWidth() || GetX() - GetRadius() <= 0)
-        //speedX *= -1;
-        SetSpeedX(GetSpeedX() * -1);
+    if (pos.GetY() + GetRadius() >= GetScreenHeight() || pos.GetY() - GetRadius() <= 0)
+        pos.SetSpeedY(pos.GetSpeedY() * -1);
 
-    if (GetY() + GetRadius() >= GetScreenHeight() || GetY() - GetRadius() <= 0)
-        //speedY *= -1;
-        SetSpeedY(GetSpeedY() * -1);
+    pos.SetX(pos.GetX() + pos.GetSpeedX());
+    pos.SetY(pos.GetY() + pos.GetSpeedY());
+
 }
