@@ -1,11 +1,12 @@
-DAY 1
+DAY 1 - 27/05/2024
     Compilador + Raylib
 
-DAY 2
+DAY 2 - 29/05/2024
     Classe Position (Getters e Setters)
     Classe Player (Getters e Setters)
     Mudança de Ball para utilizar Position
     Utilização do DrawText para imprimir na tela variaveis (posição da bola, por exemplo)
+    Movimentar objeto com o cursor do Mouse
 
-DAY 3
+DAY 3 - 31/05/2024
     
