@@ -1,28 +1,21 @@
 #pragma once
-#include <raylib.h>
+#include "../master_header.h"
 
-class Alien
-{
+#include "player.h"
+#include "character.h"
+
+class Alien : public Character {
+
 public:
     Alien();
-    Alien(float posX, float posY, int radius, float speed);
 
     int GetRadius();
     void SetRadius(int radius);
-    float GetSpeed();
-    void SetSpeed(float speed);
-    
-    Vector2 GetPosition();
-    void SetPosition(float x, float y);
-    Camera2D GetCamera();
-    void SetCamera(Vector2 offset, Vector2 lookat, float rotation, float zoom);
 
     void Draw();
+    void SetAlienToPlayer(Player player);
 
 
 private:
-    Vector2 pos;
-    Camera2D camera; 
     int radius;
-    float speed;
 };

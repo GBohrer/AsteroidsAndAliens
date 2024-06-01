@@ -4,8 +4,8 @@
 Player::Player() {}
 
 Player::Player(std::string name){
-    this->pos = (Vector2) {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
-    this->camera = (Camera2D) { 0 };
+    SetPosition(GetScreenWidth()/2.0f, GetScreenHeight()/2.0f);
+    SetCamera(GetPosition(), GetMousePosition(), 0, 1);
     this->name = name;
     this->score = 0;
     this->isBuffed = false;
@@ -36,35 +36,14 @@ void Player::SetIsBuffed(bool value){
     this->isBuffed = value;
 }
 
-Vector2 Player::GetPosition() {
-    return pos;
-}
-
-void Player::SetPosition(float x, float y){
-    this->pos.x  = x;
-    this->pos.y = y;
-}
-
-Camera2D Player::GetCamera() {
-    return camera;
-}
-
-void Player::SetCamera(Vector2 offset, Vector2 target, float rotation, float zoom){
-    this->camera.offset = offset;
-    this->camera.target = target;
-    this->camera.rotation = rotation;
-    this->camera.zoom = zoom;
-}
-
 
 //METHODS
 
 void Player::MouseMove(){
-    this->pos.x = GetMousePosition().x;
-    this->pos.y = GetMousePosition().y;
+    this->SetPosition(GetMousePosition().x, GetMousePosition().y);
 }
 
 void Player::Draw(){
-    DrawRectangle(this->pos.x, this->pos.y, 10, 10, YELLOW);
+    DrawRectangle(GetPosition().x, GetPosition().y, 10, 10, YELLOW);
 }
 

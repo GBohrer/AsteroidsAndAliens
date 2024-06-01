@@ -9,4 +9,13 @@ DAY 2 - 29/05/2024
     Movimentar objeto com o cursor do Mouse
 
 DAY 3 - 31/05/2024
-    
+    Exclusão da Classe Position
+    Mudança do nome Ball para Alien (ideia do jogo)
+    Mudança de atributos de Alien e Player: agora possuem um Vector2 pos (posicao) e Camera2D
+    Explorando funções da window e monitor
+    Herança: Entity -> Character -> Alien/Player
+        Entity são os GameObjects que possuem posição no game (logo irão interarir)
+        Character são Entity que se movem (logo possuem camera e velocidade)
+    Teste básico do spawn aleatório de aliens
+
+DAY 4 - 
