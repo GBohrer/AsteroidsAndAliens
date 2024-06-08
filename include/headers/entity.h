@@ -9,7 +9,7 @@ public:
     Entity(Vector2 pos, float life, Image sprite);
 
     Vector2 GetPosition();
-    void SetPosition(int x, int y);
+    void SetPosition(float x, float y);
     float GetLife();
     void SetLife(float life);
     Image GetImage();
