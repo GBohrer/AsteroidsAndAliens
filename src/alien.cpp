@@ -26,8 +26,8 @@ void Alien::Draw()
 void Alien::SetAlienToPlayer(Player player){
     
     float Alien_spawn_angle = GetRandomValue(0, 360);
-    SetPosition(player.GetPosition().x + 1000 * cos(Alien_spawn_angle),
-                player.GetPosition().y + 1000 * sin(Alien_spawn_angle));
+    SetPosition(player.GetPosition().x + 500 * cos(Alien_spawn_angle),
+                player.GetPosition().y + 500 * sin(Alien_spawn_angle));
 }
 
 void Alien::Move(Player player, float delta) {

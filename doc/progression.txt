@@ -24,3 +24,8 @@ DAY 4 - 07/06/2024
     Instanciando vários aliens dinamicamente
     Movimentação dos aliens v0.1
     Classe Character possui um atributo Vector2 direction
+    Fix da posição dos aliens ao se aproximar do Player
+
+DAY 5 - 08/06/2024
+    Classe Game: guardando vetor de aliensInGame e delta_t de animacao
+    

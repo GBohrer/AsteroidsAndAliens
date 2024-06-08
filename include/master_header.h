@@ -14,6 +14,7 @@
 #include "headers/player.h"
 #include "headers/entity.h"
 #include "headers/character.h"
+#include "headers/game.h"
 
 
 #endif

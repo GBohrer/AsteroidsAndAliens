@@ -4,16 +4,17 @@
 // COMMON-VARIABLES
 Color color_space_background = Color{10, 10, 40, 255};
 
-float animation_t_prev = 0;
-float animation_t_now = 0;
-float delta_t = 0;
+//float animation_t_prev = 0;
+//float animation_t_now = 0;
+//float delta_t = 0;
 
-const int total_aliens = 10;
-std::vector<Alien> aliens_in_game;
-
+//const int total_aliens = 10;
+//std::vector<Alien> aliens_in_game;
 
 int main()
 {
+
+    Game game = Game();
 
     const int screenWidth = GetMonitorWidth(GetCurrentMonitor());
     const int screenHeight = GetMonitorHeight(GetCurrentMonitor());
@@ -27,36 +28,26 @@ int main()
     bool show_text = true;
 
     Player p1 = Player("Gabriel");
-
-    // Instanciando primeiros aliens
-    for(int i = 0; i < total_aliens; i++){
-        aliens_in_game.push_back(Alien(20, 200));
-        aliens_in_game[i].SetAlienToPlayer(p1);
-    }
+    game.SetInitialAliens(p1);
 
     while (!WindowShouldClose())
     {
     /// UPDATES
-        if (IsKeyPressed(KEY_P))
-            ToggleFullscreen();
+        if (IsKeyPressed(KEY_P)) ToggleFullscreen();
 
-        if (IsKeyPressed(KEY_I))
-            printf("%f", aliens_in_game.front().GetPosition().x);
+        if (IsKeyPressed(KEY_T)) show_text = !show_text;
 
-        if (IsKeyPressed(KEY_T)){ show_text = !show_text;}
+        game.UpdateAnimationTime();
 
-        // Calculo do tempo de animacao
-        animation_t_now = (float)GetTime();
-        delta_t = animation_t_now - animation_t_prev;
-        animation_t_prev = animation_t_now;
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) p1.Move();
 
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
-            p1.Move();
-        };
-
-        for (Alien& a : aliens_in_game){
-            a.Move(p1, delta_t);
-        };
+        int index = 0;
+        for (Alien& a : game.GetCurrentAliens()){
+            a.Move(p1, game.GetDeltaT());
+            game.UpdateAliensInGame(a, index);
+            index++;
+        }
+        index = 0;
 
     /// RENDERS
         BeginDrawing();
@@ -64,7 +55,7 @@ int main()
     
         p1.Draw();
 
-        for (Alien& a : aliens_in_game){ a.Draw(); }
+        for (Alien& a : game.GetCurrentAliens()){ a.Draw(); }
 
         if (show_text){
             str_pos = std::to_string((int)p1.GetPosition().x);
@@ -74,19 +65,12 @@ int main()
             cstr = str_pos.c_str();
             DrawText(cstr,200,260,60, WHITE);
 
-            str_pos = std::to_string((float)aliens_in_game.front().GetDirection().x);
-            cstr = str_pos.c_str();
-            DrawText(cstr,360,200,60, WHITE);
-            str_pos = std::to_string((float)aliens_in_game.front().GetDirection().y);
-            cstr = str_pos.c_str();
-            DrawText(cstr,360,260,60, WHITE);
-
-            for (int i = 0; i < aliens_in_game.size(); i++){
+            for (int i = 0; i < game.GetAliensInGame(); i++){
                 str_pos = std::to_string(i);
                 cstr = str_pos.c_str();
-                DrawText(cstr,aliens_in_game[i].GetPosition().x, aliens_in_game[i].GetPosition().y -15 ,60, WHITE);
+                DrawText(cstr,game.GetCurrentAliens()[i].GetPosition().x,
+                              game.GetCurrentAliens()[i].GetPosition().y -50 ,30, WHITE);
             }
-
         }
         
         EndDrawing();
