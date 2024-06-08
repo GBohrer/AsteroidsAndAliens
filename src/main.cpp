@@ -2,7 +2,14 @@
 #include "../include/master_header.h"
 
 // COMMON-VARIABLES
-Color Background_Color = Color{200, 200, 245, 255};
+Color color_space_background = Color{10, 10, 40, 255};
+
+float animation_t_prev = 0;
+float animation_t_now = 0;
+float delta_t = 0;
+
+const int total_aliens = 10;
+std::vector<Alien> aliens_in_game;
 
 
 int main()
@@ -20,8 +27,12 @@ int main()
     bool show_text = true;
 
     Player p1 = Player("Gabriel");
-    Alien alien = Alien();
-    alien.SetAlienToPlayer(p1);
+
+    // Instanciando primeiros aliens
+    for(int i = 0; i < total_aliens; i++){
+        aliens_in_game.push_back(Alien(20, 0.5));
+        aliens_in_game[i].SetAlienToPlayer(p1);
+    }
 
     while (!WindowShouldClose())
     {
@@ -31,20 +42,37 @@ int main()
 
         if (IsKeyPressed(KEY_T)){ show_text = !show_text;}
 
+        // Calculo do tempo de animacao
+        animation_t_now = GetTime();
+        delta_t = animation_t_now - animation_t_prev;
+        animation_t_prev = animation_t_now;
+
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)){ p1.Move(); }
+
+        for (Alien& a : aliens_in_game){ a.Move(p1, delta_t); }
+
     /// RENDERS
         BeginDrawing();
-        ClearBackground(Background_Color);
+        ClearBackground(color_space_background);
     
         p1.Draw();
-        alien.Draw();
+
+        for (Alien& a : aliens_in_game){ a.Draw(); }
 
         if (show_text){
-            str_pos = std::to_string(GetMonitorWidth(GetCurrentMonitor()));
+            str_pos = std::to_string((int)p1.GetPosition().x);
             cstr = str_pos.c_str();
-            DrawText(cstr,200,200,60,BLACK );
-            str_pos = std::to_string(GetMonitorHeight(GetCurrentMonitor()));
+            DrawText(cstr,200,200,60, WHITE);
+            str_pos = std::to_string((int)p1.GetPosition().y);
             cstr = str_pos.c_str();
-            DrawText(cstr,200,260,60,BLACK );
+            DrawText(cstr,200,260,60, WHITE);
+
+            str_pos = std::to_string((int)aliens_in_game.front().GetPosition().x);
+            cstr = str_pos.c_str();
+            DrawText(cstr,360,200,60, WHITE);
+            str_pos = std::to_string((int)aliens_in_game.front().GetPosition().y);
+            cstr = str_pos.c_str();
+            DrawText(cstr,360,260,60, WHITE);
         }
         
         EndDrawing();

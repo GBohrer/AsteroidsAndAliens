@@ -17,7 +17,7 @@ public:
     void SetIsBuffed(bool value);
 
     void Draw();
-    void MouseMove();
+    void Move();
 
 private:
     std::string name;

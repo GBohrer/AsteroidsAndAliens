@@ -17,5 +17,10 @@ DAY 3 - 31/05/2024
         Entity são os GameObjects que possuem posição no game (logo irão interarir)
         Character são Entity que se movem (logo possuem camera e velocidade)
     Teste básico do spawn aleatório de aliens
-
-DAY 4 - 
+    Primeiros testes de movimentação de aliens
+    
+DAY 4 - 07/06/2024
+    Experimentos de movimentação suave
+    Instanciando vários aliens dinamicamente
+    Movimentação dos aliens v0.1
+    Classe Character possui um atributo Vector2 direction

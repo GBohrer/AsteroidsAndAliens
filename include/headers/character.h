@@ -8,15 +8,13 @@ class Character : public Entity {
 public:
     Character();
 
-    Camera2D GetCamera();
-    void SetCamera(Vector2 offset, Vector2 target, float rotation, float zoom);
     float GetSpeed();
     void SetSpeed(float speed);
-
+    Vector2 GetDirection();
+    void SetDirection(Vector2 direction);
 
 private:
-    Camera2D camera;
     float speed;
-
+    Vector2 direction;
 
 };

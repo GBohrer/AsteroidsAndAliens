@@ -5,10 +5,11 @@ Player::Player() {}
 
 Player::Player(std::string name){
     SetPosition(GetScreenWidth()/2.0f, GetScreenHeight()/2.0f);
-    SetCamera(GetPosition(), GetMousePosition(), 0, 1);
     this->name = name;
     this->score = 0;
     this->isBuffed = false;
+    SetSpeed(0.06);
+    SetDirection({0,0});
 }
 
 // GETTERS & SETTERS
@@ -39,11 +40,15 @@ void Player::SetIsBuffed(bool value){
 
 //METHODS
 
-void Player::MouseMove(){
-    this->SetPosition(GetMousePosition().x, GetMousePosition().y);
+void Player::Move(){
+
+    SetDirection(Vector2Subtract(GetMousePosition(), this->GetPosition()));
+
+    SetPosition(this->GetPosition().x + this->GetDirection().x * this->GetSpeed(),
+                this->GetPosition().y + this->GetDirection().y * this->GetSpeed());
 }
 
 void Player::Draw(){
-    DrawRectangle(GetPosition().x, GetPosition().y, 10, 10, YELLOW);
+    DrawCircle(GetPosition().x, GetPosition().y, 20, YELLOW);
 }
 
