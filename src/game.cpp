@@ -25,6 +25,15 @@ void Game::UpdateAliensInGame(Alien alien, int position){
     this->aliensInGame[position] = alien;
 }
 
+void Game::MoveAliensInGame(Player p1){
+    int index = 0;
+    for (Alien& a : GetCurrentAliens()){
+        a.Move(p1, GetDeltaT());
+        UpdateAliensInGame(a, index);
+        index++;
+    }
+}
+
 void Game::UpdateAnimationTime() {
     animation_t_now = (float)GetTime();
     delta_t = animation_t_now - animation_t_prev;

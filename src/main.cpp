@@ -4,12 +4,6 @@
 // COMMON-VARIABLES
 Color color_space_background = Color{10, 10, 40, 255};
 
-//float animation_t_prev = 0;
-//float animation_t_now = 0;
-//float delta_t = 0;
-
-//const int total_aliens = 10;
-//std::vector<Alien> aliens_in_game;
 
 int main()
 {
@@ -37,17 +31,10 @@ int main()
 
         if (IsKeyPressed(KEY_T)) show_text = !show_text;
 
-        game.UpdateAnimationTime();
-
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) p1.Move();
 
-        int index = 0;
-        for (Alien& a : game.GetCurrentAliens()){
-            a.Move(p1, game.GetDeltaT());
-            game.UpdateAliensInGame(a, index);
-            index++;
-        }
-        index = 0;
+        game.UpdateAnimationTime();
+        game.MoveAliensInGame(p1);
 
     /// RENDERS
         BeginDrawing();

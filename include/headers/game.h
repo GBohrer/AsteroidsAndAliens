@@ -13,6 +13,7 @@ class Game {
         int GetAliensInGame();
         void SetInitialAliens(Player p1);
         void UpdateAliensInGame(Alien alien, int position);
+        void MoveAliensInGame(Player p1);
         void UpdateAnimationTime();
         float GetDeltaT();
 
