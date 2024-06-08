@@ -13,7 +13,7 @@ Vector2 Entity::GetPosition() {
     return pos;
 }
 
-void Entity::SetPosition(int x, int y) {
+void Entity::SetPosition(float x, float y) {
     this->pos.x = x;
     this->pos.y = y;
 }

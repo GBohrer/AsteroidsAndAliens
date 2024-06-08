@@ -4,7 +4,7 @@
 Player::Player() {}
 
 Player::Player(std::string name){
-    SetPosition(GetScreenWidth()/2.0f, GetScreenHeight()/2.0f);
+    SetPosition((float)GetScreenWidth()/2.0f, (float)GetScreenHeight()/2.0f);
     this->name = name;
     this->score = 0;
     this->isBuffed = false;

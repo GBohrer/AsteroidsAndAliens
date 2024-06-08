@@ -30,7 +30,7 @@ int main()
 
     // Instanciando primeiros aliens
     for(int i = 0; i < total_aliens; i++){
-        aliens_in_game.push_back(Alien(20, 0.5));
+        aliens_in_game.push_back(Alien(20, 200));
         aliens_in_game[i].SetAlienToPlayer(p1);
     }
 
@@ -40,16 +40,23 @@ int main()
         if (IsKeyPressed(KEY_P))
             ToggleFullscreen();
 
+        if (IsKeyPressed(KEY_I))
+            printf("%f", aliens_in_game.front().GetPosition().x);
+
         if (IsKeyPressed(KEY_T)){ show_text = !show_text;}
 
         // Calculo do tempo de animacao
-        animation_t_now = GetTime();
+        animation_t_now = (float)GetTime();
         delta_t = animation_t_now - animation_t_prev;
         animation_t_prev = animation_t_now;
 
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)){ p1.Move(); }
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
+            p1.Move();
+        };
 
-        for (Alien& a : aliens_in_game){ a.Move(p1, delta_t); }
+        for (Alien& a : aliens_in_game){
+            a.Move(p1, delta_t);
+        };
 
     /// RENDERS
         BeginDrawing();
@@ -67,12 +74,19 @@ int main()
             cstr = str_pos.c_str();
             DrawText(cstr,200,260,60, WHITE);
 
-            str_pos = std::to_string((int)aliens_in_game.front().GetPosition().x);
+            str_pos = std::to_string((float)aliens_in_game.front().GetDirection().x);
             cstr = str_pos.c_str();
             DrawText(cstr,360,200,60, WHITE);
-            str_pos = std::to_string((int)aliens_in_game.front().GetPosition().y);
+            str_pos = std::to_string((float)aliens_in_game.front().GetDirection().y);
             cstr = str_pos.c_str();
             DrawText(cstr,360,260,60, WHITE);
+
+            for (int i = 0; i < aliens_in_game.size(); i++){
+                str_pos = std::to_string(i);
+                cstr = str_pos.c_str();
+                DrawText(cstr,aliens_in_game[i].GetPosition().x, aliens_in_game[i].GetPosition().y -15 ,60, WHITE);
+            }
+
         }
         
         EndDrawing();
