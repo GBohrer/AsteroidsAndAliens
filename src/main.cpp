@@ -31,16 +31,42 @@ int main()
         if (IsKeyPressed(KEY_T)) show_text = !show_text;
 
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) p1.Move();
+        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) game.SpawnBullets(p1);
 
         game.UpdateAnimationTime();
 
         int index1 = 0;
         for (Alien& a : game.GetCurrentAliens()) {
-            bool collisionDetected = false;
+            bool collision = false;
+
+            if (CheckCollisionCircleRec(a.GetPosition(), a.GetRadius(), {p1.GetPosition().x,
+                                                                         p1.GetPosition().y,
+                                                                         p1.GetHitBox().x,
+                                                                         p1.GetHitBox().y})){
+                p1.SetPosition((float)GetScreenWidth()/2.0f, (float)GetScreenHeight()/2.0f);
+            }
+
+            if(game.GetBulletsInGame() > 0) {
+
+                int index2 = 0;
+                for (Character& bullet : game.GetCurrentBullets()){
+                    if (CheckCollisionCircleRec(a.GetPosition(), (float)a.GetRadius(), {bullet.GetPosition().x,
+                                                                                        bullet.GetPosition().y,
+                                                                                        2,
+                                                                                        10,})){
+                        collision = true;
+                        bullet.SetDirection(Vector2Invert(bullet.GetDirection()));
+                    }
+                    bullet.Move();
+                    game.UpdateBulletsInGame(bullet, index2);
+                    index2++;
+                }
+            }
+
             int index2 = 0;
             for (Alien& aa : game.GetCurrentAliens()) {
                 if (&a != &aa && CheckCollisionCircles(a.GetPosition(), (float)a.GetRadius(), aa.GetPosition(), (float)aa.GetRadius())) {
-                    collisionDetected = true;
+                    collision = true;
                     
                     Vector2 new_direction = Vector2Add(a.GetDirection(), aa.GetDirection());
 
@@ -53,7 +79,7 @@ int main()
                 }
                 index2++;
             }
-            if (!collisionDetected) {
+            if (!collision) {
                 a.Move(p1, game.GetDeltaT(), a.GetDirection());
                 game.UpdateAlienInGame(a, index1);
             }
@@ -67,6 +93,7 @@ int main()
         p1.DrawHitBox();
 
         for (Alien& a : game.GetCurrentAliens()){ a.DrawHitBox(); }
+        for (Character& b : game.GetCurrentBullets()){ b.DrawHitBox(); }
 
         if (show_text){
             str_pos = std::to_string((int)p1.GetPosition().x);

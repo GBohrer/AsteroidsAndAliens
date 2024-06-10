@@ -4,6 +4,7 @@
 Game::Game() {
     animation_t_now = animation_t_prev = delta_t = 0;
     totalAliens = 5;
+    totalBullets = 10;
 }
 
 std::vector<Alien> Game::GetCurrentAliens() {
@@ -23,6 +24,27 @@ void Game::SetInitialAliens(Player p1) {
 
 void Game::UpdateAlienInGame(Alien alien, int position){
     this->aliensInGame[position] = alien;
+}
+
+std::vector<Character> Game::GetCurrentBullets() {
+    return bulletsInGame;
+}
+
+int Game::GetBulletsInGame() {
+    if (bulletsInGame.empty()) {return 0; }
+    else { return (int)bulletsInGame.size(); }
+}
+
+void Game::UpdateBulletsInGame(Character bullet, int position) {
+    this->bulletsInGame[position] = bullet;
+}
+
+void Game::SpawnBullets(Player p1) {
+    while (GetBulletsInGame() < totalBullets){
+        Character b = Character();
+        b.CreateBullet(p1.GetPosition(), 200.0f, 20.0f);
+        this->bulletsInGame.push_back(b);
+    }
 }
 
 void Game::UpdateAnimationTime() {
