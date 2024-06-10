@@ -13,9 +13,9 @@ public:
     int GetRadius();
     void SetRadius(int radius);
 
-    void Draw();
-    void SetAlienToPlayer(Player player);
-    void Move(Player player, float delta);
+    void DrawHitBox();
+    void SetAlienToPlayer(Player player, int Player_distance);
+    void Move(Player player, float delta, Vector2 direction);
 
 
 private:

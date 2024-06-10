@@ -4,6 +4,7 @@
 Player::Player() {}
 
 Player::Player(std::string name){
+    SetHitBox(20,20);
     SetPosition((float)GetScreenWidth()/2.0f, (float)GetScreenHeight()/2.0f);
     this->name = name;
     this->score = 0;
@@ -13,6 +14,15 @@ Player::Player(std::string name){
 }
 
 // GETTERS & SETTERS
+Vector2 Player::GetHitBox() {
+    return hitbox;
+}
+
+void Player::SetHitBox(float width, float height) {
+    this->hitbox.x = width;
+    this->hitbox.y = height;
+}
+
 std::string Player::GetName(){
     return name;
 }
@@ -48,7 +58,7 @@ void Player::Move(){
                 this->GetPosition().y + this->GetDirection().y * this->GetSpeed());
 }
 
-void Player::Draw(){
-    DrawCircle(GetPosition().x, GetPosition().y, 20, YELLOW);
+void Player::DrawHitBox(){
+    DrawRectangleLines(GetPosition().x, GetPosition().y, GetHitBox().x, GetHitBox().y, YELLOW);
 }
 

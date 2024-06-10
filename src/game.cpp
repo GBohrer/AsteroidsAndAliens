@@ -16,22 +16,13 @@ int Game::GetAliensInGame() {
 
 void Game::SetInitialAliens(Player p1) {
     for(int i = 0; i < totalAliens ; i++){
-        this->aliensInGame.push_back(Alien(20, 200));
-        this->aliensInGame[i].SetAlienToPlayer(p1);
+        this->aliensInGame.push_back(Alien(30, 1.0f));
+        this->aliensInGame[i].SetAlienToPlayer(p1, 500);
     }
 }
 
-void Game::UpdateAliensInGame(Alien alien, int position){
+void Game::UpdateAlienInGame(Alien alien, int position){
     this->aliensInGame[position] = alien;
-}
-
-void Game::MoveAliensInGame(Player p1){
-    int index = 0;
-    for (Alien& a : GetCurrentAliens()){
-        a.Move(p1, GetDeltaT());
-        UpdateAliensInGame(a, index);
-        index++;
-    }
 }
 
 void Game::UpdateAnimationTime() {

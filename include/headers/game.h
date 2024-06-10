@@ -1,9 +1,6 @@
 #pragma once
 #include "../master_header.h"
 
-#include "alien.h"
-#include "player.h"
-
 class Game {
 
     public:
@@ -12,10 +9,11 @@ class Game {
         std::vector<Alien> GetCurrentAliens();
         int GetAliensInGame();
         void SetInitialAliens(Player p1);
-        void UpdateAliensInGame(Alien alien, int position);
-        void MoveAliensInGame(Player p1);
+        void UpdateAlienInGame(Alien alien, int position);
         void UpdateAnimationTime();
         float GetDeltaT();
+
+        bool CheckCollision (Entity obj1, Entity obj2);
 
     protected:
         int totalAliens;

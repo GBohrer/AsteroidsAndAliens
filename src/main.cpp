@@ -28,21 +28,45 @@ int main()
     {
     /// UPDATES
         if (IsKeyPressed(KEY_P)) ToggleFullscreen();
-
         if (IsKeyPressed(KEY_T)) show_text = !show_text;
 
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) p1.Move();
 
         game.UpdateAnimationTime();
-        game.MoveAliensInGame(p1);
+
+        int index1 = 0;
+        for (Alien& a : game.GetCurrentAliens()) {
+            bool collisionDetected = false;
+            int index2 = 0;
+            for (Alien& aa : game.GetCurrentAliens()) {
+                if (&a != &aa && CheckCollisionCircles(a.GetPosition(), (float)a.GetRadius(), aa.GetPosition(), (float)aa.GetRadius())) {
+                    collisionDetected = true;
+                    
+                    Vector2 new_direction = Vector2Add(a.GetDirection(), aa.GetDirection());
+
+                    a.Move(p1, game.GetDeltaT(), new_direction);
+                    game.UpdateAlienInGame(a, index1);
+
+                    aa.Move(p1, game.GetDeltaT(), new_direction);
+                    game.UpdateAlienInGame(aa, index2);
+                    break;
+                }
+                index2++;
+            }
+            if (!collisionDetected) {
+                a.Move(p1, game.GetDeltaT(), a.GetDirection());
+                game.UpdateAlienInGame(a, index1);
+            }
+            index1++;
+        }
 
     /// RENDERS
         BeginDrawing();
         ClearBackground(color_space_background);
     
-        p1.Draw();
+        p1.DrawHitBox();
 
-        for (Alien& a : game.GetCurrentAliens()){ a.Draw(); }
+        for (Alien& a : game.GetCurrentAliens()){ a.DrawHitBox(); }
 
         if (show_text){
             str_pos = std::to_string((int)p1.GetPosition().x);

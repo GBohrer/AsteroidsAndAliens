@@ -18,25 +18,25 @@ void Alien::SetRadius(int radius){
 
 
 // METHODS
-void Alien::Draw()
+void Alien::DrawHitBox()
 {
-    DrawCircle(this->GetPosition().x, this->GetPosition().y, GetRadius(), LIGHTGRAY);
+    DrawCircleLines(this->GetPosition().x, this->GetPosition().y, GetRadius(), LIGHTGRAY);
 }
 
-void Alien::SetAlienToPlayer(Player player){
+void Alien::SetAlienToPlayer(Player player, int Player_distance){
     
     float Alien_spawn_angle = GetRandomValue(0, 360);
-    SetPosition(player.GetPosition().x + 500 * cos(Alien_spawn_angle),
-                player.GetPosition().y + 500 * sin(Alien_spawn_angle));
+    SetPosition((float)player.GetPosition().x + (Player_distance) * cos(Alien_spawn_angle),
+                (float)player.GetPosition().y + Player_distance * sin(Alien_spawn_angle));
+
+    SetDirection(Vector2Normalize(Vector2Subtract(player.GetPosition(),this->GetPosition())));
 }
 
-void Alien::Move(Player player, float delta) {
-    
-    //SetDirection(Vector2Subtract(player.GetPosition(), this->GetPosition()));
-    Vector2 normal_direction = Vector2Normalize(Vector2Subtract(player.GetPosition(),GetPosition()));
-    SetDirection(normal_direction);
+void Alien::Move(Player player, float delta, Vector2 direction) {
 
-    float alien_desloc = this->GetSpeed() * delta;
-    SetPosition(this->GetPosition().x + normal_direction.x * alien_desloc,
-                this->GetPosition().y + normal_direction.y * alien_desloc);
+    float alien_desloc = GetSpeed();
+    SetPosition(this->GetPosition().x + direction.x * alien_desloc,
+                this->GetPosition().y + direction.y * alien_desloc);
+
+    SetDirection(Vector2Normalize(Vector2Subtract(player.GetPosition(),this->GetPosition())));
 }

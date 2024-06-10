@@ -28,4 +28,9 @@ DAY 4 - 07/06/2024
 
 DAY 5 - 08/06/2024
     Classe Game: guardando vetor de aliensInGame e delta_t de animacao
+    Classe Hitbox
+
+DAY 6 - 10/06/2024
+    Exclusão da Classe Hitbox: parâmetros de hitbox como atributos diretamente da Classe
+    Logica 1 da colisão esfera-esfera (colisão entre aliens)
     
