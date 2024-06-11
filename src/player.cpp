@@ -4,8 +4,8 @@
 Player::Player() {}
 
 Player::Player(std::string name){
-    SetHitBox(20,20);
     SetPosition((float)GetScreenWidth()/2.0f, (float)GetScreenHeight()/2.0f);
+    SetHitBox();
     this->name = name;
     this->score = 0;
     this->isBuffed = false;
@@ -18,11 +18,11 @@ Rectangle Player::GetHitBox() {
     return hitbox;
 }
 
-void Player::SetHitBox(float width, float height) {
+void Player::SetHitBox() {
     this->hitbox.x = GetPosition().x;
     this->hitbox.y = GetPosition().y;
-    this->hitbox.width = width;
-    this->hitbox.height - height;
+    this->hitbox.width = 20.0f;
+    this->hitbox.height = 20.0f;
 }
 
 std::string Player::GetName(){
@@ -58,9 +58,10 @@ void Player::Move(){
 
     SetPosition(this->GetPosition().x + this->GetDirection().x * this->GetSpeed(),
                 this->GetPosition().y + this->GetDirection().y * this->GetSpeed());
+    SetHitBox();
 }
 
 void Player::DrawHitBox(){
-    DrawRectangleLines(GetPosition().x, GetPosition().y, GetHitBox().x, GetHitBox().y, YELLOW);
+    DrawRectangleLinesEx(GetHitBox(), 2.0f, YELLOW);
 }
 

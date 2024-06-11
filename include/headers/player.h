@@ -9,8 +9,6 @@ public:
     Player(); 
     Player(std::string name);
     
-    Rectangle GetHitBox();
-    void SetHitBox(float width, float height);
     std::string GetName();
     void SetName(std::string name);
     int GetScore();
@@ -18,7 +16,10 @@ public:
     bool GetIsBuffed();
     void SetIsBuffed(bool value);
 
+    Rectangle GetHitBox();
+    void SetHitBox();
     void DrawHitBox();
+
     void Move();
 
 private:

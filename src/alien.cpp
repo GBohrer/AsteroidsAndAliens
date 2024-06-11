@@ -18,11 +18,6 @@ void Alien::SetRadius(int radius){
 
 
 // METHODS
-void Alien::DrawHitBox()
-{
-    DrawCircleLines(this->GetPosition().x, this->GetPosition().y, GetRadius(), LIGHTGRAY);
-}
-
 void Alien::SetAlienToPlayer(Player player, int Player_distance){
     
     float Alien_spawn_angle = GetRandomValue(0, 360);
@@ -35,8 +30,13 @@ void Alien::SetAlienToPlayer(Player player, int Player_distance){
 void Alien::Move(Player player, float delta, Vector2 direction) {
 
     float alien_desloc = GetSpeed();
-    SetPosition(this->GetPosition().x + direction.x * alien_desloc,
-                this->GetPosition().y + direction.y * alien_desloc);
+    SetPosition((float)this->GetPosition().x + direction.x * alien_desloc,
+                (float)this->GetPosition().y + direction.y * alien_desloc);
 
     SetDirection(Vector2Normalize(Vector2Subtract(player.GetPosition(),this->GetPosition())));
+}
+
+void Alien::DrawHitBox()
+{
+    DrawCircleLines(this->GetPosition().x, this->GetPosition().y, GetRadius(), LIGHTGRAY);
 }

@@ -35,4 +35,7 @@ DAY 6 - 10/06/2024
     Logica 1 da colisão esfera-esfera (colisão entre aliens)
     Implementacao 1 da Bullet
 
-DAY 7 - 
+DAY 7 - 11/06/2024
+    Mudanca para Classe Bullet
+    Vetor aliensInGame recebendo novos aliens ao player colidir com um alien
+    

@@ -10,13 +10,19 @@ class Game {
 
         std::vector<Alien> GetCurrentAliens();
         int GetAliensInGame();
-        void SetInitialAliens(Player p1);
+        void SpawnAliens();
         void UpdateAlienInGame(Alien alien, int position);
+        void DeleteAlienInGame(int position);
 
         std::vector<Bullet> GetCurrentBullets();
         int GetBulletsInGame();
+        void SpawnBullets();
         void UpdateBulletInGame(Bullet bullet, int position);
-        void SpawnBullets(Player p1);
+        void DeleteBulletInGame(int position);
+
+        Player GetPlayer();
+        void SetPlayer(Player p);
+        void PlayerMove();
 
         void UpdateAnimationTime();
         float GetDeltaT();
@@ -28,8 +34,11 @@ class Game {
     private:
         std::vector<Alien> aliensInGame;
         std::vector<Bullet> bulletsInGame;
+        Player player;
+        
         float animation_t_prev;
         float animation_t_now;
         float delta_t;
+        float timeSinceLastShot;
 };
 

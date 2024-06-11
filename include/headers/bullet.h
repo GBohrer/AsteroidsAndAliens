@@ -8,15 +8,22 @@ class Bullet : public Character {
 
     public:
         Bullet();
-        Bullet(Vector2 pos, float speed, float life);
+        Bullet(Vector2 pos, float speed, float rate, float damage);
 
         Rectangle GetHitBox();
-        void SetHitBox(float width, float height);
-
+        void SetHitBox();
         void DrawHitBox();
-        void Move();
+        float GetFireRate();
+        void SetFireRate(float value);
+        float GetDamage();
+        void SetDamage(float value);
+
+        void Move(float delta);
+        bool IsOutOfBounds(Vector2 pos);
 
     private:
         Rectangle hitbox;
+        float fireRate;
+        float damage;
 
 };
