@@ -9,7 +9,7 @@ public:
     Player(); 
     Player(std::string name);
     
-    Vector2 GetHitBox();
+    Rectangle GetHitBox();
     void SetHitBox(float width, float height);
     std::string GetName();
     void SetName(std::string name);
@@ -22,7 +22,7 @@ public:
     void Move();
 
 private:
-    Vector2 hitbox;
+    Rectangle hitbox;
     std::string name;
     int score;
     bool isBuffed;

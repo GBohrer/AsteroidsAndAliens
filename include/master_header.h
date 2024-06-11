@@ -16,6 +16,7 @@
 #include "headers/entity.h"
 #include "headers/character.h"
 #include "headers/game.h"
+#include "headers/bullet.h"
 
 
 #endif

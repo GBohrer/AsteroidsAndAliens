@@ -33,4 +33,6 @@ DAY 5 - 08/06/2024
 DAY 6 - 10/06/2024
     Exclusão da Classe Hitbox: parâmetros de hitbox como atributos diretamente da Classe
     Logica 1 da colisão esfera-esfera (colisão entre aliens)
-    
+    Implementacao 1 da Bullet
+
+DAY 7 - 

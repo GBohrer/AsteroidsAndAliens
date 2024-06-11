@@ -26,7 +26,7 @@ void Game::UpdateAlienInGame(Alien alien, int position){
     this->aliensInGame[position] = alien;
 }
 
-std::vector<Character> Game::GetCurrentBullets() {
+std::vector<Bullet> Game::GetCurrentBullets() {
     return bulletsInGame;
 }
 
@@ -35,15 +35,13 @@ int Game::GetBulletsInGame() {
     else { return (int)bulletsInGame.size(); }
 }
 
-void Game::UpdateBulletsInGame(Character bullet, int position) {
+void Game::UpdateBulletInGame(Bullet bullet, int position) {
     this->bulletsInGame[position] = bullet;
 }
 
 void Game::SpawnBullets(Player p1) {
     while (GetBulletsInGame() < totalBullets){
-        Character b = Character();
-        b.CreateBullet(p1.GetPosition(), 200.0f, 20.0f);
-        this->bulletsInGame.push_back(b);
+        this->bulletsInGame.push_back(Bullet(p1.GetPosition(), 200.0f, 20.0f));
     }
 }
 

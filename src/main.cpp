@@ -39,17 +39,14 @@ int main()
         for (Alien& a : game.GetCurrentAliens()) {
             bool collision = false;
 
-            if (CheckCollisionCircleRec(a.GetPosition(), a.GetRadius(), {p1.GetPosition().x,
-                                                                         p1.GetPosition().y,
-                                                                         p1.GetHitBox().x,
-                                                                         p1.GetHitBox().y})){
+            if (CheckCollisionCircleRec(a.GetPosition(), a.GetRadius(), p1.GetHitBox())){
                 p1.SetPosition((float)GetScreenWidth()/2.0f, (float)GetScreenHeight()/2.0f);
             }
 
             if(game.GetBulletsInGame() > 0) {
 
                 int index2 = 0;
-                for (Character& bullet : game.GetCurrentBullets()){
+                for (Bullet& bullet : game.GetCurrentBullets()){
                     if (CheckCollisionCircleRec(a.GetPosition(), (float)a.GetRadius(), {bullet.GetPosition().x,
                                                                                         bullet.GetPosition().y,
                                                                                         2,
@@ -58,7 +55,7 @@ int main()
                         bullet.SetDirection(Vector2Invert(bullet.GetDirection()));
                     }
                     bullet.Move();
-                    game.UpdateBulletsInGame(bullet, index2);
+                    game.UpdateBulletInGame(bullet, index2);
                     index2++;
                 }
             }
@@ -93,7 +90,7 @@ int main()
         p1.DrawHitBox();
 
         for (Alien& a : game.GetCurrentAliens()){ a.DrawHitBox(); }
-        for (Character& b : game.GetCurrentBullets()){ b.DrawHitBox(); }
+        for (Bullet& b : game.GetCurrentBullets()){ b.DrawHitBox(); }
 
         if (show_text){
             str_pos = std::to_string((int)p1.GetPosition().x);

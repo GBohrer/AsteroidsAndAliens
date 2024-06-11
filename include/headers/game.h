@@ -1,6 +1,8 @@
 #pragma once
 #include "../master_header.h"
 
+#include "bullet.h"
+
 class Game {
 
     public:
@@ -11,9 +13,9 @@ class Game {
         void SetInitialAliens(Player p1);
         void UpdateAlienInGame(Alien alien, int position);
 
-        std::vector<Character> GetCurrentBullets();
+        std::vector<Bullet> GetCurrentBullets();
         int GetBulletsInGame();
-        void UpdateBulletsInGame(Character bullet, int position);
+        void UpdateBulletInGame(Bullet bullet, int position);
         void SpawnBullets(Player p1);
 
         void UpdateAnimationTime();
@@ -25,7 +27,7 @@ class Game {
 
     private:
         std::vector<Alien> aliensInGame;
-        std::vector<Character> bulletsInGame;
+        std::vector<Bullet> bulletsInGame;
         float animation_t_prev;
         float animation_t_now;
         float delta_t;

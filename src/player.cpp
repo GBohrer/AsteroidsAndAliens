@@ -14,13 +14,15 @@ Player::Player(std::string name){
 }
 
 // GETTERS & SETTERS
-Vector2 Player::GetHitBox() {
+Rectangle Player::GetHitBox() {
     return hitbox;
 }
 
 void Player::SetHitBox(float width, float height) {
-    this->hitbox.x = width;
-    this->hitbox.y = height;
+    this->hitbox.x = GetPosition().x;
+    this->hitbox.y = GetPosition().y;
+    this->hitbox.width = width;
+    this->hitbox.height - height;
 }
 
 std::string Player::GetName(){
