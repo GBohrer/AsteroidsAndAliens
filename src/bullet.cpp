@@ -20,8 +20,8 @@ Rectangle Bullet::GetHitBox() {
 void Bullet::SetHitBox() {
     this->hitbox.x = GetPosition().x;
     this->hitbox.y = GetPosition().y;
-    this->hitbox.width = 4;
-    this->hitbox.height = 10;
+    this->hitbox.width = 6;
+    this->hitbox.height = 6;
 }
 
 void Bullet::DrawHitBox() {

@@ -23,13 +23,19 @@ class Game {
         Player GetPlayer();
         void SetPlayer(Player p);
         void PlayerMove();
+        void UpdatePlayerScore(int value);
 
         void UpdateAnimationTime();
         float GetDeltaT();
 
+        bool CheckDifficultyIncrease(int score);
+        void IncreaseDifficulty();
+
     protected:
         int totalAliens;
-        int totalBullets;
+        float AlienSpawnTimer;
+        float BulletSpawnTimer;
+        int scoreThreshold;
 
     private:
         std::vector<Alien> aliensInGame;
@@ -40,5 +46,6 @@ class Game {
         float animation_t_now;
         float delta_t;
         float timeSinceLastShot;
+        float timeSinceLastAlienSpawn;
 };
 

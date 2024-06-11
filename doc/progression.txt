@@ -40,5 +40,6 @@ DAY 7 - 11/06/2024
     Vetor aliensInGame recebendo novos aliens ao player colidir com um alien
     Bullet despawn ao sair do cenário
     Logica 1 da colisao esfera-rectangle (colisao Alien-Player e Alien-Bullet)
+    BUG FIX: "collided aliens respawn" -> Atirar no alien de menor indice dentre aliens constantemente colidindo causava o respawn incorreto.
     
     

@@ -73,6 +73,7 @@
 		"stop_token": "cpp",
 		"thread": "cpp",
 		"variant": "cpp",
-		"*.m": "cpp"
+		"*.m": "cpp",
+		"list": "cpp"
 	}
 }

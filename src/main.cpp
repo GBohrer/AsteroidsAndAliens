@@ -8,20 +8,18 @@ Color color_space_background = Color{10, 10, 40, 255};
 int main()
 {
     bool game_over = false;
+    bool show_text = true;
 
-    const int screenWidth  = GetMonitorWidth(GetCurrentMonitor());
-    const int screenHeight = GetMonitorHeight(GetCurrentMonitor());
+    int score = 0;
+
+    const int screenWidth  = 700; //GetMonitorWidth(GetCurrentMonitor());
+    const int screenHeight = 700; //GetMonitorHeight(GetCurrentMonitor());
 
     InitWindow(screenWidth, screenHeight, "Galactic Adventures");
 
     SetTargetFPS(60);
 
-    std::string str_pos;
-    const char *cstr;
-    bool show_text = true;
-
     Game game = Game();
-
 
     while (!WindowShouldClose())
     {
@@ -34,10 +32,14 @@ int main()
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) game.PlayerMove();
         if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) game.SpawnBullets();
 
+        if (game.CheckDifficultyIncrease(score)){ game.IncreaseDifficulty();}
+
         game.UpdateAnimationTime();
         game.SpawnAliens();
 
         //std::cout << game.GetBulletsInGame() << "\n";
+
+        if (game.GetAliensInGame() == 0) {continue;}
 
         int index1 = 0;
         for (Alien& a : game.GetCurrentAliens()) {
@@ -64,6 +66,8 @@ int main()
                         collision = true;
                         game.DeleteBulletInGame(index2);
                         game.DeleteAlienInGame(index1);
+
+                        score++;
                     } else {
                         bullet.Move(game.GetDeltaT());
                         game.UpdateBulletInGame(bullet, index2);
@@ -99,28 +103,14 @@ int main()
         ClearBackground(color_space_background);
     
         game.GetPlayer().DrawHitBox();
+        PrintTextInGame(false, score, {GetScreenWidth()/2.0f, 70}, 50, WHITE);
 
         for (Alien& a : game.GetCurrentAliens()){ a.DrawHitBox(); }
-        for (Bullet& b : game.GetCurrentBullets()){
-            b.DrawHitBox();
-
-            if (show_text){
-                str_pos = std::to_string((int)b.GetPosition().x);
-                cstr = str_pos.c_str();
-                DrawText(cstr,200,200,60, WHITE);  
-
-                str_pos = std::to_string((int)b.GetPosition().y);
-                cstr = str_pos.c_str();
-                DrawText(cstr,200,260,60, WHITE);
-            }
-        }
+        for (Bullet& b : game.GetCurrentBullets()){b.DrawHitBox(); }
 
         if (show_text) {
             for (int i = 0; i < game.GetAliensInGame(); i++){
-                    str_pos = std::to_string(i);
-                    cstr = str_pos.c_str();
-                    DrawText(cstr,game.GetCurrentAliens()[i].GetPosition().x,
-                                  game.GetCurrentAliens()[i].GetPosition().y -50 ,30, WHITE);
+                PrintTextInGame(false, i, game.GetCurrentAliens()[i].GetPosition(), 20, WHITE);
             }
         }
         

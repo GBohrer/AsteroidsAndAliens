@@ -9,7 +9,9 @@
 #include <cmath>
 #include <vector>
 
+
 // HEADERS
+#include "headers/text_functions.h"
 
 #include "headers/alien.h"
 #include "headers/player.h"
