@@ -32,10 +32,13 @@ DAY 5 - 08/06/2024
 
 DAY 6 - 10/06/2024
     Exclusão da Classe Hitbox: parâmetros de hitbox como atributos diretamente da Classe
-    Logica 1 da colisão esfera-esfera (colisão entre aliens)
+    Logica 1 da colisao esfera-esfera (colisao entre aliens)
     Implementacao 1 da Bullet
 
 DAY 7 - 11/06/2024
     Mudanca para Classe Bullet
     Vetor aliensInGame recebendo novos aliens ao player colidir com um alien
+    Bullet despawn ao sair do cenário
+    Logica 1 da colisao esfera-rectangle (colisao Alien-Player e Alien-Bullet)
+    
     

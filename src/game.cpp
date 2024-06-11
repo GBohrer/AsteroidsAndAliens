@@ -3,8 +3,8 @@
 
 Game::Game() {
     animation_t_now = animation_t_prev = delta_t = 0;
-    totalAliens = 5;
-    totalBullets = 10;
+    totalAliens = 3;
+    totalBullets = 30;
     timeSinceLastShot = 0.0f;
     this->player = Player("Nickname");
 }
@@ -15,7 +15,8 @@ std::vector<Alien> Game::GetCurrentAliens() {
 }
 
 int Game::GetAliensInGame() {
-    return (int)aliensInGame.size();
+    if (aliensInGame.empty()) { return 0; }
+    else { return (int)aliensInGame.size(); }
 }
 
 void Game::SpawnAliens() {

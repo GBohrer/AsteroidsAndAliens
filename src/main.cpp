@@ -64,9 +64,10 @@ int main()
                         collision = true;
                         game.DeleteBulletInGame(index2);
                         game.DeleteAlienInGame(index1);
+                    } else {
+                        bullet.Move(game.GetDeltaT());
+                        game.UpdateBulletInGame(bullet, index2);
                     }
-                    bullet.Move(game.GetDeltaT());
-                    game.UpdateBulletInGame(bullet, index2);
                     index2++;
                 }
             }
@@ -79,9 +80,6 @@ int main()
                     collision = true;
                     
                     Vector2 new_direction = Vector2Add(a.GetDirection(), aa.GetDirection());
-
-                    a.Move(game.GetPlayer(), game.GetDeltaT(), new_direction);
-                    game.UpdateAlienInGame(a, index1);
 
                     aa.Move(game.GetPlayer(), game.GetDeltaT(), new_direction);
                     game.UpdateAlienInGame(aa, index2);
