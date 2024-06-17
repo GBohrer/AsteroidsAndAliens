@@ -9,7 +9,7 @@ Player::Player(std::string name){
     this->name = name;
     this->score = 0;
     this->isBuffed = false;
-    SetSpeed(0.03);
+    SetSpeed(0.01);
     SetDirection({0,0});
 }
 

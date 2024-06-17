@@ -41,5 +41,11 @@ DAY 7 - 11/06/2024
     Bullet despawn ao sair do cenário
     Logica 1 da colisao esfera-rectangle (colisao Alien-Player e Alien-Bullet)
     BUG FIX: "collided aliens respawn" -> Atirar no alien de menor indice dentre aliens constantemente colidindo causava o respawn incorreto.
+    Melhorias no spawn rate de objetos e na gameplay (progressao da dificuldade conforme score)
+
+DAY 8 - 17/06/2024
+    BUG FIX: game.GetPlayer() pega a referencia do player, nao mais copiando o objeto: plater score corrigido
+    Explorando conceito de QuadTree para otimização de colisões
+    Definicao de enum GameState
     
     

@@ -3,27 +3,37 @@
 
 #include "bullet.h"
 
+enum GameState {
+    Menu,
+    InGame,
+    GameOver,
+    Paused
+};
+
 class Game {
 
     public:
         Game();
 
-        std::vector<Alien> GetCurrentAliens();
+        GameState GetGameState();
+        void SetGameState(GameState state);
+
+        std::vector<Alien>& GetCurrentAliens();
         int GetAliensInGame();
         void SpawnAliens();
         void UpdateAlienInGame(Alien alien, int position);
         void DeleteAlienInGame(int position);
 
-        std::vector<Bullet> GetCurrentBullets();
+        std::vector<Bullet>& GetCurrentBullets();
         int GetBulletsInGame();
         void SpawnBullets();
         void UpdateBulletInGame(Bullet bullet, int position);
         void DeleteBulletInGame(int position);
 
-        Player GetPlayer();
+        Player& GetPlayer();
         void SetPlayer(Player p);
         void PlayerMove();
-        void UpdatePlayerScore(int value);
+        void UpdatePlayerScore();
 
         void UpdateAnimationTime();
         float GetDeltaT();
@@ -31,13 +41,17 @@ class Game {
         bool CheckDifficultyIncrease(int score);
         void IncreaseDifficulty();
 
+        void CheckEntityCollisions();
+
     protected:
         int totalAliens;
         float AlienSpawnTimer;
         float BulletSpawnTimer;
         int scoreThreshold;
 
+
     private:
+        GameState state;
         std::vector<Alien> aliensInGame;
         std::vector<Bullet> bulletsInGame;
         Player player;

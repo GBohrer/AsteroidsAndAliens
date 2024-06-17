@@ -2,8 +2,9 @@
 
 
 Game::Game() {
+    state = GameState::InGame;
     animation_t_now = animation_t_prev = delta_t = 0;
-    totalAliens = 3;
+    totalAliens = 10;
     AlienSpawnTimer = 2.0f;
     BulletSpawnTimer = 0.5f;
     timeSinceLastShot = timeSinceLastAlienSpawn = 0.0f;
@@ -11,8 +12,16 @@ Game::Game() {
     this->player = Player("Nickname");
 }
 
+GameState Game::GetGameState() {
+    return state;
+}
+
+void Game::SetGameState(GameState state) {
+    this->state = state;
+}
+
 // ALIENS
-std::vector<Alien> Game::GetCurrentAliens() {
+std::vector<Alien>& Game::GetCurrentAliens() {
     return aliensInGame;
 }
 
@@ -23,8 +32,8 @@ int Game::GetAliensInGame() {
 
 void Game::SpawnAliens() {
     if (GetAliensInGame() < totalAliens && timeSinceLastAlienSpawn >= AlienSpawnTimer){
-        Alien a_aux = Alien(30,1.0f);
-        a_aux.SetAlienToPlayer(GetPlayer(), 500);
+        Alien a_aux = Alien(30, 2.0f);
+        a_aux.SetAlienToPlayer(GetPlayer(), 600);
         this->aliensInGame.push_back(a_aux);
 
         timeSinceLastAlienSpawn = 0.0f;
@@ -40,7 +49,7 @@ void Game::DeleteAlienInGame(int position) {
 }
 
 // BULLETS
-std::vector<Bullet> Game::GetCurrentBullets() {
+std::vector<Bullet>& Game::GetCurrentBullets() {
     return bulletsInGame;
 }
 
@@ -65,7 +74,7 @@ void Game::DeleteBulletInGame(int position) {
 }
 
 // PLAYER
-Player Game::GetPlayer() {
+Player& Game::GetPlayer() {
     return player;
 }
 
@@ -77,13 +86,8 @@ void Game::PlayerMove() {
     this->player.Move();
 }
 
-void Game::UpdatePlayerScore(int value) {
-    Player p = GetPlayer();
-    int score = GetPlayer().GetScore();
-    p.SetScore(score + value);
-
-    this->GetPlayer().SetScore(p.GetScore());
-
+void Game::UpdatePlayerScore() {
+    this->GetPlayer().SetScore(this->GetPlayer().GetScore() + 1);
 }
 
 void Game::UpdateAnimationTime() {
@@ -108,6 +112,64 @@ void Game::IncreaseDifficulty() {
     totalAliens++;
     AlienSpawnTimer -= 0.2f;
     BulletSpawnTimer -= 0.02f;
+    GetPlayer().SetSpeed(GetPlayer().GetSpeed() + 0.01f);
 
     scoreThreshold += 10;
+}
+
+void Game::CheckEntityCollisions() {
+
+    if (GetAliensInGame() != 0) {
+
+        int index1 = 0;
+        for (Alien& a : GetCurrentAliens()) {
+            bool collision = false;
+
+            // Collision: Alien - Player
+            if (CheckCollisionCircleRec(a.GetPosition(), a.GetRadius(), GetPlayer().GetHitBox())){
+                state = GameState::GameOver;
+                break;
+            }
+            if(GetBulletsInGame() > 0) {
+                int index2 = 0;
+                for (Bullet& bullet : GetCurrentBullets()){
+                    if (bullet.IsOutOfBounds(GetPlayer().GetPosition())) {
+                        DeleteBulletInGame(index2);
+                        continue;
+                    }
+                    // Collision: Alien - Bullet
+                    if (CheckCollisionCircleRec(a.GetPosition(), (float)a.GetRadius(), bullet.GetHitBox())){
+                        collision = true;
+                        DeleteBulletInGame(index2);
+                        DeleteAlienInGame(index1);
+                        UpdatePlayerScore();
+                    } else {
+                        bullet.Move(GetDeltaT());
+                        UpdateBulletInGame(bullet, index2);
+                    }
+                    index2++;
+                }
+            }
+
+            int index2 = 0;
+            for (Alien& aa : GetCurrentAliens()) {
+                // Collision: Alien - Alien
+                if (&a != &aa && CheckCollisionCircles(a.GetPosition(), (float)a.GetRadius(), aa.GetPosition(), (float)aa.GetRadius())) {
+                    collision = true;
+
+                    Vector2 new_direction = Vector2Add(a.GetDirection(), aa.GetDirection());
+                    aa.Move(GetPlayer(), GetDeltaT(), new_direction);
+                    UpdateAlienInGame(aa, index2);
+                    break;
+                }
+                index2++;
+            }
+
+            if (!collision) {
+                a.Move(GetPlayer(), GetDeltaT(), a.GetDirection());
+                UpdateAlienInGame(a, index1);
+            }
+            index1++;
+        }
+    }
 }
