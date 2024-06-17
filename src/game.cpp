@@ -2,14 +2,25 @@
 
 
 Game::Game() {
-    state = GameState::InGame;
+    state = GameState::Menu;
     animation_t_now = animation_t_prev = delta_t = 0;
-    totalAliens = 10;
+}
+
+void Game::Start(std::string nickname) {
+    this->state = GameState::InGame;
+    totalAliens = 4;
     AlienSpawnTimer = 2.0f;
     BulletSpawnTimer = 0.5f;
     timeSinceLastShot = timeSinceLastAlienSpawn = 0.0f;
     scoreThreshold = 15;
-    this->player = Player("Nickname");
+    this->player = Player(nickname);
+    SetCamera();
+}
+
+void Game::Reset() {
+    this->state = GameState::Menu;
+    aliensInGame.clear();
+    bulletsInGame.clear();
 }
 
 GameState Game::GetGameState() {
@@ -84,10 +95,51 @@ void Game::SetPlayer(Player p) {
 
 void Game::PlayerMove() {
     this->player.Move();
+    //UpdateCamera();
 }
 
 void Game::UpdatePlayerScore() {
     this->GetPlayer().SetScore(this->GetPlayer().GetScore() + 1);
+}
+
+// CAMERA 2D
+Camera2D& Game::GetCamera() {
+    return camera;
+}
+
+void Game::SetCamera() {
+    camera.offset = {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
+    camera.target = GetPlayer().GetPosition();
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
+}
+
+void Game::SetCameraZoom(float zoom){
+    this->camera.zoom = zoom;
+}
+
+void Game::UpdateCamera() {
+    //camera->target = player->position;
+    //camera->offset = (Vector2){ width/2.0f, height/2.0f };
+    float minX = 1000, minY = 1000, maxX = -1000, maxY = -1000;
+
+    //for (int i = 0; i < envItemsLength; i++){
+    //    EnvItem *ei = envItems + i;
+    //    minX = fminf(ei->rect.x, minX);
+    //    maxX = fmaxf(ei->rect.x + ei->rect.width, maxX);
+    //    minY = fminf(ei->rect.y, minY);
+    //    maxY = fmaxf(ei->rect.y + ei->rect.height, maxY);
+    //}
+
+    Vector2 max = GetWorldToScreen2D({ maxX, maxY }, camera);
+    Vector2 min = GetWorldToScreen2D({ minX, minY }, camera);
+    float width = GetScreenWidth();
+    float height = GetScreenHeight();
+
+    if (max.x < width) camera.offset.x = width - (max.x - width/2);
+    if (max.y < height) camera.offset.y = height - (max.y - height/2);
+    if (min.x > 0) camera.offset.x = width/2 - min.x;
+    if (min.y > 0) camera.offset.y = height/2 - min.y;
 }
 
 void Game::UpdateAnimationTime() {
@@ -157,7 +209,7 @@ void Game::CheckEntityCollisions() {
                 if (&a != &aa && CheckCollisionCircles(a.GetPosition(), (float)a.GetRadius(), aa.GetPosition(), (float)aa.GetRadius())) {
                     collision = true;
 
-                    Vector2 new_direction = Vector2Add(a.GetDirection(), aa.GetDirection());
+                    Vector2 new_direction = (Vector2Add(a.GetDirection(), aa.GetDirection()));
                     aa.Move(GetPlayer(), GetDeltaT(), new_direction);
                     UpdateAlienInGame(aa, index2);
                     break;

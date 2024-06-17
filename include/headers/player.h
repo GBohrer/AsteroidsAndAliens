@@ -7,10 +7,10 @@ class Player : public Character {
 
 public:
     Player(); 
-    Player(std::string name);
+    Player(std::string nickname);
     
     std::string GetName();
-    void SetName(std::string name);
+    void SetName(std::string nickname);
     int GetScore();
     void SetScore(int value);
     bool GetIsBuffed();
@@ -24,7 +24,7 @@ public:
 
 private:
     Rectangle hitbox;
-    std::string name;
+    std::string nickname;
     int score;
     bool isBuffed;
 

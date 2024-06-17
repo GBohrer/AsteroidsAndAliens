@@ -36,7 +36,14 @@ void Alien::Move(Player player, float delta, Vector2 direction) {
     SetDirection(Vector2Normalize(Vector2Subtract(player.GetPosition(),this->GetPosition())));
 }
 
-void Alien::DrawHitBox()
-{
+void Alien::DrawHitBox(){
     DrawCircleLines(this->GetPosition().x, this->GetPosition().y, GetRadius(), LIGHTGRAY);
 }
+
+void Alien::DrawDirectionVector() {
+    Vector2 dir = {GetPosition().x + GetDirection().x * 150,
+                   GetPosition().y + GetDirection().y * 150};
+
+    DrawLineEx(GetPosition(), dir, 2, GREEN);
+}
+

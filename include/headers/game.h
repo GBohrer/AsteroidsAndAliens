@@ -14,6 +14,8 @@ class Game {
 
     public:
         Game();
+        void Start(std::string nickname);
+        void Reset();
 
         GameState GetGameState();
         void SetGameState(GameState state);
@@ -35,6 +37,11 @@ class Game {
         void PlayerMove();
         void UpdatePlayerScore();
 
+        Camera2D& GetCamera();
+        void SetCamera();
+        void SetCameraZoom(float zoom);
+        void UpdateCamera();
+
         void UpdateAnimationTime();
         float GetDeltaT();
 
@@ -55,6 +62,7 @@ class Game {
         std::vector<Alien> aliensInGame;
         std::vector<Bullet> bulletsInGame;
         Player player;
+        Camera2D camera;
         
         float animation_t_prev;
         float animation_t_now;

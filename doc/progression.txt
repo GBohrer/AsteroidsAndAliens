@@ -45,7 +45,8 @@ DAY 7 - 11/06/2024
 
 DAY 8 - 17/06/2024
     BUG FIX: game.GetPlayer() pega a referencia do player, nao mais copiando o objeto: plater score corrigido
-    Explorando conceito de QuadTree para otimização de colisões
-    Definicao de enum GameState
-    
+    Explorando conceito de QuadTree para otimizacao de colisoes
+    Definicao de enum GameState: modularizacao da parte de colisoes e movimentacao para a classe game
+    Logica 1 Game Loop: Tela Game Over + Menu
+    Prototipo da Camera2D em Game: zoom
     

@@ -3,13 +3,13 @@
 
 Player::Player() {}
 
-Player::Player(std::string name){
+Player::Player(std::string nickname){
     SetPosition((float)GetScreenWidth()/2.0f, (float)GetScreenHeight()/2.0f);
     SetHitBox();
-    this->name = name;
+    this->nickname = nickname;
     this->score = 0;
     this->isBuffed = false;
-    SetSpeed(0.01);
+    SetSpeed(0.06);
     SetDirection({0,0});
 }
 
@@ -26,11 +26,11 @@ void Player::SetHitBox() {
 }
 
 std::string Player::GetName(){
-    return name;
+    return nickname;
 }
 
-void Player::SetName(std::string name){
-    this->name = name;
+void Player::SetName(std::string nickname){
+    this->nickname = nickname;
 }
 
 int Player::GetScore(){
