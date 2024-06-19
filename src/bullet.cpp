@@ -6,7 +6,7 @@ Bullet::Bullet() {}
 Bullet::Bullet(Vector2 pos, float speed, float rate, float damage) {
     SetPosition(pos.x, pos.y);
     SetHitBox();
-    SetDirection(Vector2Normalize(Vector2Subtract(pos, GetMousePosition())));
+    SetDirection(Vector2Normalize(Vector2Subtract(GetMousePosition(),pos)));
     SetSpeed(speed);
     SetFireRate(rate);
     SetDamage(damage);

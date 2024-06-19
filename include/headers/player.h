@@ -20,6 +20,7 @@ public:
     void SetHitBox();
     void DrawHitBox();
     void DrawAimDirection();
+    void DrawHeathBar();
 
     void Move(Vector2 direction);
 

@@ -101,7 +101,13 @@ int Game::GetBulletsInGame() {
 
 void Game::SpawnBullets() {
     if (timeSinceLastShot >= BulletSpawnTimer){
-        this->bulletsInGame.push_back(Bullet(GetPlayer().GetPosition(), 200.0f, 0.4f, 20.0f));
+        Player p_offset = GetPlayer();
+        float bullet_spawn_angle = Vector2Angle({0,0},p_offset.GetDirection());
+
+        //p_offset.SetPosition(p_offset.GetPosition().x + p_offset.GetHitBox().width * cos(bullet_spawn_angle),
+        //                     p_offset.GetPosition().y + p_offset.GetHitBox().height * sin(bullet_spawn_angle));     
+
+        this->bulletsInGame.push_back(Bullet(p_offset.GetPosition(), 200.0f, 0.4f, 20.0f));
         timeSinceLastShot = 0.0f;
     }
 }
@@ -124,9 +130,14 @@ void Game::SetPlayer(Player p) {
 }
 
 void Game::PlayerMove() {
-    Vector2 mouse = GetMousePosition();
-    Vector2 direction = Vector2Subtract(mouse, player.GetPosition());
+    Vector2 pos = GetPlayer().GetPosition();
 
+    if (IsKeyDown(KEY_W)) { pos.y -= 50; }
+    if (IsKeyDown(KEY_A)) { pos.x -= 50; }
+    if (IsKeyDown(KEY_S)) { pos.y += 50; }
+    if (IsKeyDown(KEY_D)) { pos.x += 50; }
+
+    Vector2 direction = Vector2Normalize(Vector2Subtract(pos, GetPlayer().GetPosition()));
     this->player.Move(direction);
 }
 
@@ -205,42 +216,64 @@ bool Game::CheckDifficultyIncrease(int score) {
 
 void Game::IncreaseDifficulty() {
     totalAliens++;
-    AlienSpawnTimer -= 0.2f;
+    AlienSpawnTimer -= 0.5f;
     BulletSpawnTimer -= 0.02f;
-    GetPlayer().SetSpeed(GetPlayer().GetSpeed() + 0.01f);
+    GetPlayer().SetSpeed(GetPlayer().GetSpeed() + 0.5f);
 
     scoreThreshold += 10;
 }
 
-void Game::CheckAliensCollisions() {
+// COLLISIONS
+bool Game::CollisionAlienAlien(Alien a1, Alien a2) {
 
-    if (GetAliensInGame() > 0) {
+    if (CheckCollisionCircles(a1.GetPosition(), (float)a1.GetRadius(), a2.GetPosition(), (float)a2.GetRadius())) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
+bool Game::CollisionAlienPlayer(Alien a) {
+
+    if (CheckCollisionCircleRec(a.GetPosition(), a.GetRadius(), GetPlayer().GetHitBox())) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void Game::CheckAlienCollisions() {
+
+    if (GetAliensInGame() > 0){
+
+        bool alien_collision = false;
         int index1 = 0;
         for (Alien& a : GetCurrentAliens()) {
-            bool collision = false;
-
-            // Collision: Alien - Player
-            if (CheckCollisionCircleRec(a.GetPosition(), a.GetRadius(), GetPlayer().GetHitBox())){
-                state = GameState::GameOver;
+            // ALIEN - PLAYER
+            if (CollisionAlienPlayer(a)){
+                SetGameState(GameState::GameOver);
                 break;
             }
+            
+            if (GetAliensInGame() > 1) {
 
-            int index2 = 0;
-            for (Alien& aa : GetCurrentAliens()) {
-                // Collision: Alien - Alien
-                if (&a != &aa && CheckCollisionCircles(a.GetPosition(), (float)a.GetRadius(), aa.GetPosition(), (float)aa.GetRadius())) {
-                    collision = true;
-
-                    Vector2 new_direction = (Vector2Add(a.GetDirection(), aa.GetDirection()));
-                    aa.Move(GetPlayer(), GetDeltaT(), new_direction);
-                    UpdateAlienInGame(aa, index2);
-                    break;
+                int index2 = 0;
+                for (Alien& aa : GetCurrentAliens()) {
+                    // ALIEN - ALIEN
+                    if (&a != &aa) {
+                        if (CollisionAlienAlien(a, aa)) {
+                            alien_collision = true;
+                            Vector2 new_direction = (Vector2Add(a.GetDirection(), aa.GetDirection()));
+                            aa.Move(GetPlayer(), GetDeltaT(), new_direction);
+                            UpdateAlienInGame(aa, index2);
+                            break;
+                        }
+                    }
+                    index2++;
                 }
-                index2++;
             }
 
-            if (!collision) {
+            if (!alien_collision) {
                 a.Move(GetPlayer(), GetDeltaT(), a.GetDirection());
                 UpdateAlienInGame(a, index1);
             }
@@ -249,38 +282,77 @@ void Game::CheckAliensCollisions() {
     }
 }
 
-void Game::CheckBulletsCollisions() {
+bool Game::CollisionBulletAlien(Bullet b, Alien a) {
 
-    if(GetBulletsInGame() > 0) {
+    if (CheckCollisionCircleRec(a.GetPosition(), (float)a.GetRadius(), b.GetHitBox())) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
-        int index1 = 0;
-        for (Bullet& bullet : GetCurrentBullets()){
+bool Game::CollisionBulletPlayer(Bullet b) {
+    if (CheckCollisionRecs(b.GetHitBox(), GetPlayer().GetHitBox())) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
-            if (bullet.IsOutOfBounds(GetPlayer().GetPosition())) {
-                DeleteBulletInGame(index1);
+void Game::CheckBulletCollisions() {
+
+    if (GetBulletsInGame() > 0) {
+
+        int b_index = 0;
+        for (Bullet& b : GetCurrentBullets()) {
+
+            // BULLET MOVEMENT
+            if (b.IsOutOfBounds(GetPlayer().GetPosition())) {
+                DeleteBulletInGame(b_index);
                 continue;
 
             } else {
-                bullet.Move(GetDeltaT());
-                UpdateBulletInGame(bullet, index1);
+                b.Move(GetDeltaT());
+                UpdateBulletInGame(b, b_index);
             }
 
-            int index2 = 0;
-            for (Alien& alien : GetCurrentAliens()){
-                // Collision: Alien - Bullet
-                if (CheckCollisionCircleRec(alien.GetPosition(), (float)alien.GetRadius(), bullet.GetHitBox())){
+            if (GetAliensInGame() > 0) {
 
-                    alien.SetLife(alien.GetLife() - bullet.GetDamage());
-                    DeleteBulletInGame(index1);
+                int a_index = 0;
+                for (Alien& a : GetCurrentAliens()) {
+                    // BULLET - ALIEN
+                    if (CollisionBulletAlien(b, a)) {
 
-                    if (alien.GetLife() <= 0) {
-                        DeleteAlienInGame(index2);
-                        UpdatePlayerScore();
+                        a.SetLife(a.GetLife() - b.GetDamage());
+                        DeleteBulletInGame(b_index);
+
+                        if(a.GetLife() <= 0) {
+                            DeleteAlienInGame(a_index);
+                            UpdatePlayerScore();
+                        }
                     }
+                    a_index++;
                 }
-                index2++;
             }
-            index1++;
+
+            // BULLET - PLAYER
+            //if (CollisionBulletPlayer(b)) {
+            //    GetPlayer().SetLife(GetPlayer().GetLife() - (b.GetDamage()/2.0f));
+            //    DeleteBulletInGame(b_index);
+//
+            //    if (GetPlayer().GetLife() <= 0) {
+            //        SetGameState(GameState::GameOver);
+            //        break;
+            //    }
+            //}
+
+            b_index++;
         }
     }
+}
+
+void Game::CheckEntityCollisions() {
+
+    CheckAlienCollisions();
+    CheckBulletCollisions();
 }

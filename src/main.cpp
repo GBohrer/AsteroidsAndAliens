@@ -50,15 +50,16 @@ int main()
                 break;
             
             case GameState::InGame:
-                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) game.PlayerMove();
-                if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) game.SpawnBullets();
+                game.PlayerMove();
+                if (IsKeyDown(KEY_SPACE)) game.SpawnBullets();
 
                 if (game.CheckDifficultyIncrease(game.GetPlayer().GetScore())){ game.IncreaseDifficulty();}
 
                 game.UpdateAnimationTime();
-                game.SpawnAliens();
-                game.CheckAliensCollisions();
-                game.CheckBulletsCollisions();
+                
+                //game.SpawnAliens();
+
+                game.CheckEntityCollisions();
 
                 game.UpdateCamera(GetScreenWidth(), GetScreenHeight());
                 break;
@@ -92,6 +93,7 @@ int main()
 
                     game.GetPlayer().DrawHitBox();
                     game.GetPlayer().DrawAimDirection();
+                    game.GetPlayer().DrawHeathBar();
 
                     for (Alien& a : game.GetCurrentAliens()){ a.DrawHitBox(); }
                     for (Bullet& b : game.GetCurrentBullets()){b.DrawHitBox(); }

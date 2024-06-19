@@ -106,7 +106,7 @@ public:
             }
 
             int i = 0;
-            while (i < entities.size()) {
+            while (i < (int)entities.size()) {
                 int index = getIndex(entities[i].bounds);
                 if (index != -1) {
                     nodes[index]->insert(entities[i]);

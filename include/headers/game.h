@@ -14,9 +14,13 @@ class Game {
 
     public:
         Game();
+
         void Start(std::string nickname);
         void Reset();
-
+        void UpdateAnimationTime();
+        float GetDeltaT();
+        bool CheckDifficultyIncrease(int score);
+        void IncreaseDifficulty();
         GameState GetGameState();
         void SetGameState(GameState state);
 
@@ -26,36 +30,40 @@ class Game {
         std::vector<Entity>& GetCurrentAsteroidsInGame();
         void SetCurrentAsteroidsInGame();
 
+        //ALIENS
         std::vector<Alien>& GetCurrentAliens();
         int GetAliensInGame();
         void SpawnAliens();
         void UpdateAlienInGame(Alien alien, int position);
         void DeleteAlienInGame(int position);
 
+        bool CollisionAlienAlien(Alien a1, Alien a2);
+        bool CollisionAlienPlayer(Alien a);
+        void CheckAlienCollisions();
+
+        //BULLETS
         std::vector<Bullet>& GetCurrentBullets();
         int GetBulletsInGame();
         void SpawnBullets();
         void UpdateBulletInGame(Bullet bullet, int position);
         void DeleteBulletInGame(int position);
 
+        bool CollisionBulletAlien(Bullet b, Alien a);
+        bool CollisionBulletPlayer(Bullet b);
+        void CheckBulletCollisions();
+
+        //PLAYER
         Player& GetPlayer();
         void SetPlayer(Player p);
         void PlayerMove();
         void UpdatePlayerScore();
 
+        //CAMERA
         Camera2D& GetCamera();
         void SetCamera();
         void SetCameraZoom(float zoom);
         void UpdateCamera(int screenWidth, int screenHeight);
 
-        void UpdateAnimationTime();
-        float GetDeltaT();
-
-        bool CheckDifficultyIncrease(int score);
-        void IncreaseDifficulty();
-
-        void CheckAliensCollisions();add .
-        void CheckBulletsCollisions();
         void CheckEntityCollisions();
 
     protected:

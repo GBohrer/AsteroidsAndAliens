@@ -59,4 +59,5 @@ DAY 9 - 18/06/2024
 
 DAY 10 - 19/06/2024
     Logica 1 para vida de aliens e dano de bullets + heal bar
+    Melhor modularizacao de CheckEntityCollisions (novas colisoes)
     

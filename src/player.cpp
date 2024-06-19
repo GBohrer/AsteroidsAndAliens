@@ -9,8 +9,9 @@ Player::Player(std::string nickname){
     this->nickname = nickname;
     this->score = 0;
     this->isBuffed = false;
-    SetSpeed(0.06);
+    SetSpeed(5.0f);
     SetDirection({0,0});
+    SetLife(100.0f);
 }
 
 // GETTERS & SETTERS
@@ -67,9 +68,13 @@ void Player::DrawHitBox(){
 }
 
 void Player::DrawAimDirection() {
-    Vector2 dir = {GetPosition().x + GetDirection().x * -150,
-                   GetPosition().y + GetDirection().y * -150};
+    //Vector2 dir = {GetPosition().x + GetDirection().x * -150,
+    //               GetPosition().y + GetDirection().y * -150};
 
-    DrawLineEx(GetPosition(), dir, 2, GREEN);
+    DrawLineV(GetMousePosition(), GetPosition(), GREEN);
+}
+
+void Player::DrawHeathBar () {
+    DrawRectangle(GetPosition().x, GetPosition().y - GetHitBox().height, (int)GetLife(), 10, GREEN);                 
 }
 
