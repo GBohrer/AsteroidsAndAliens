@@ -8,7 +8,7 @@ class Alien : public Character {
 
 public:
     Alien();
-    Alien(int radius, float speed);
+    Alien(int radius, float speed, float life);
 
     int GetRadius();
     void SetRadius(int radius);

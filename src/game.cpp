@@ -4,23 +4,49 @@
 Game::Game() {
     state = GameState::Menu;
     animation_t_now = animation_t_prev = delta_t = 0;
+    SetCurrenLevelBounds({{0,0},{0,2000},{2000,2000}, {2000,0}} );
 }
 
 void Game::Start(std::string nickname) {
     this->state = GameState::InGame;
     totalAliens = 4;
-    AlienSpawnTimer = 2.0f;
+    AlienSpawnTimer = 8.0f;
     BulletSpawnTimer = 0.5f;
     timeSinceLastShot = timeSinceLastAlienSpawn = 0.0f;
     scoreThreshold = 15;
     this->player = Player(nickname);
     SetCamera();
+    SetCurrentAsteroidsInGame();
 }
 
 void Game::Reset() {
     this->state = GameState::Menu;
     aliensInGame.clear();
     bulletsInGame.clear();
+    asteroidsInGame.clear();
+}
+
+std::vector<Vector2>& Game::GetCurrentLevelBounds() {
+    return currentLevelBounds;
+}
+
+void Game::SetCurrenLevelBounds(std::vector<Vector2> level_bounds) {
+    this->currentLevelBounds = level_bounds;
+}
+
+std::vector<Entity>& Game::GetCurrentAsteroidsInGame() {
+    return asteroidsInGame;
+}
+
+void Game::SetCurrentAsteroidsInGame() {
+    for (int i = 0; i < 10; i++){
+        int posX = GetRandomValue(0,1000);
+        int posY = GetRandomValue(0,1000);
+
+        Entity asteroid = Entity();
+        asteroid.SetPosition((float)posX, (float)posY);
+        asteroidsInGame.push_back(asteroid);
+    }
 }
 
 GameState Game::GetGameState() {
@@ -43,8 +69,12 @@ int Game::GetAliensInGame() {
 
 void Game::SpawnAliens() {
     if (GetAliensInGame() < totalAliens && timeSinceLastAlienSpawn >= AlienSpawnTimer){
-        Alien a_aux = Alien(30, 2.0f);
-        a_aux.SetAlienToPlayer(GetPlayer(), 600);
+        int radius = GetRandomValue(15,40);
+        float speed = -0.076 * radius + 4.14;
+        float life = radius*2;
+
+        Alien a_aux = Alien(radius, speed, life);
+        a_aux.SetAlienToPlayer(GetPlayer(), 700);
         this->aliensInGame.push_back(a_aux);
 
         timeSinceLastAlienSpawn = 0.0f;
@@ -94,8 +124,10 @@ void Game::SetPlayer(Player p) {
 }
 
 void Game::PlayerMove() {
-    this->player.Move();
-    //UpdateCamera();
+    Vector2 mouse = GetMousePosition();
+    Vector2 direction = Vector2Subtract(mouse, player.GetPosition());
+
+    this->player.Move(direction);
 }
 
 void Game::UpdatePlayerScore() {
@@ -118,28 +150,39 @@ void Game::SetCameraZoom(float zoom){
     this->camera.zoom = zoom;
 }
 
-void Game::UpdateCamera() {
-    //camera->target = player->position;
-    //camera->offset = (Vector2){ width/2.0f, height/2.0f };
-    float minX = 1000, minY = 1000, maxX = -1000, maxY = -1000;
+void Game::UpdateCamera(int screenWidth, int screenHeight) {
+    //ZOOM
+    float camera_zoom = GetCamera().zoom;
+    camera_zoom += GetMouseWheelMove() * 0.1f;
 
-    //for (int i = 0; i < envItemsLength; i++){
-    //    EnvItem *ei = envItems + i;
-    //    minX = fminf(ei->rect.x, minX);
-    //    maxX = fmaxf(ei->rect.x + ei->rect.width, maxX);
-    //    minY = fminf(ei->rect.y, minY);
-    //    maxY = fmaxf(ei->rect.y + ei->rect.height, maxY);
+    if (camera_zoom > 2.0f) camera_zoom = 2.0f;
+    else if (camera_zoom < 0.25f) camera_zoom = 0.25;
+    SetCameraZoom(camera_zoom);
+
+    // OFFSET and TARGET
+    camera.target = GetPlayer().GetPosition();
+
+
+    //camera.offset = { screenWidth/2.0f, screenHeight/2.0f };
+//
+    //float minX = 10000, minY = 10000, maxX = -10000, maxY = -10000;
+//
+    //for (Vector2& pos : GetCurrentLevelBounds()){
+    //    
+    //    minX = fminf(pos.x, minX);
+    //    maxX = fmaxf(pos.x, maxX);
+    //    minY = fminf(pos.y, minY);
+    //    maxY = fmaxf(pos.y, maxY);
     //}
+//
+    //Vector2 max = GetWorldToScreen2D((Vector2){ maxX, maxY }, camera);
+    //Vector2 min = GetWorldToScreen2D((Vector2){ minX, minY }, camera);
+//
+    //if (max.x < screenWidth) camera.offset.x = screenWidth - (max.x - screenWidth/2);
+    //if (max.y < screenHeight) camera.offset.y = screenHeight - (max.y - screenHeight/2);
+    //if (min.x > 0) camera.offset.x = screenWidth/2 - min.x;
+    //if (min.y > 0) camera.offset.y = screenHeight/2 - min.y;
 
-    Vector2 max = GetWorldToScreen2D({ maxX, maxY }, camera);
-    Vector2 min = GetWorldToScreen2D({ minX, minY }, camera);
-    float width = GetScreenWidth();
-    float height = GetScreenHeight();
-
-    if (max.x < width) camera.offset.x = width - (max.x - width/2);
-    if (max.y < height) camera.offset.y = height - (max.y - height/2);
-    if (min.x > 0) camera.offset.x = width/2 - min.x;
-    if (min.y > 0) camera.offset.y = height/2 - min.y;
 }
 
 void Game::UpdateAnimationTime() {
@@ -169,9 +212,9 @@ void Game::IncreaseDifficulty() {
     scoreThreshold += 10;
 }
 
-void Game::CheckEntityCollisions() {
+void Game::CheckAliensCollisions() {
 
-    if (GetAliensInGame() != 0) {
+    if (GetAliensInGame() > 0) {
 
         int index1 = 0;
         for (Alien& a : GetCurrentAliens()) {
@@ -181,26 +224,6 @@ void Game::CheckEntityCollisions() {
             if (CheckCollisionCircleRec(a.GetPosition(), a.GetRadius(), GetPlayer().GetHitBox())){
                 state = GameState::GameOver;
                 break;
-            }
-            if(GetBulletsInGame() > 0) {
-                int index2 = 0;
-                for (Bullet& bullet : GetCurrentBullets()){
-                    if (bullet.IsOutOfBounds(GetPlayer().GetPosition())) {
-                        DeleteBulletInGame(index2);
-                        continue;
-                    }
-                    // Collision: Alien - Bullet
-                    if (CheckCollisionCircleRec(a.GetPosition(), (float)a.GetRadius(), bullet.GetHitBox())){
-                        collision = true;
-                        DeleteBulletInGame(index2);
-                        DeleteAlienInGame(index1);
-                        UpdatePlayerScore();
-                    } else {
-                        bullet.Move(GetDeltaT());
-                        UpdateBulletInGame(bullet, index2);
-                    }
-                    index2++;
-                }
             }
 
             int index2 = 0;
@@ -220,6 +243,42 @@ void Game::CheckEntityCollisions() {
             if (!collision) {
                 a.Move(GetPlayer(), GetDeltaT(), a.GetDirection());
                 UpdateAlienInGame(a, index1);
+            }
+            index1++;
+        }
+    }
+}
+
+void Game::CheckBulletsCollisions() {
+
+    if(GetBulletsInGame() > 0) {
+
+        int index1 = 0;
+        for (Bullet& bullet : GetCurrentBullets()){
+
+            if (bullet.IsOutOfBounds(GetPlayer().GetPosition())) {
+                DeleteBulletInGame(index1);
+                continue;
+
+            } else {
+                bullet.Move(GetDeltaT());
+                UpdateBulletInGame(bullet, index1);
+            }
+
+            int index2 = 0;
+            for (Alien& alien : GetCurrentAliens()){
+                // Collision: Alien - Bullet
+                if (CheckCollisionCircleRec(alien.GetPosition(), (float)alien.GetRadius(), bullet.GetHitBox())){
+
+                    alien.SetLife(alien.GetLife() - bullet.GetDamage());
+                    DeleteBulletInGame(index1);
+
+                    if (alien.GetLife() <= 0) {
+                        DeleteAlienInGame(index2);
+                        UpdatePlayerScore();
+                    }
+                }
+                index2++;
             }
             index1++;
         }

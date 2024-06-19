@@ -75,5 +75,6 @@
 		"variant": "cpp",
 		"*.m": "cpp",
 		"list": "cpp"
-	}
+	},
+	"C_Cpp.errorSquiggles": "disabled"
 }

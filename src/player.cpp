@@ -19,10 +19,10 @@ Rectangle Player::GetHitBox() {
 }
 
 void Player::SetHitBox() {
-    this->hitbox.x = GetPosition().x;
-    this->hitbox.y = GetPosition().y;
     this->hitbox.width = 20.0f;
     this->hitbox.height = 20.0f;
+    this->hitbox.x = GetPosition().x - hitbox.width/2.0f;
+    this->hitbox.y = GetPosition().y - hitbox.height/2.0f;
 }
 
 std::string Player::GetName(){
@@ -52,16 +52,24 @@ void Player::SetIsBuffed(bool value){
 
 //METHODS
 
-void Player::Move(){
+void Player::Move(Vector2 direction){
 
-    SetDirection(Vector2Subtract(GetMousePosition(), this->GetPosition()));
+    SetDirection(direction);
 
     SetPosition(this->GetPosition().x + this->GetDirection().x * this->GetSpeed(),
                 this->GetPosition().y + this->GetDirection().y * this->GetSpeed());
     SetHitBox();
+
 }
 
 void Player::DrawHitBox(){
     DrawRectangleLinesEx(GetHitBox(), 2.0f, YELLOW);
+}
+
+void Player::DrawAimDirection() {
+    Vector2 dir = {GetPosition().x + GetDirection().x * -150,
+                   GetPosition().y + GetDirection().y * -150};
+
+    DrawLineEx(GetPosition(), dir, 2, GREEN);
 }
 

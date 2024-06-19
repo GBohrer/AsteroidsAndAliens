@@ -76,6 +76,12 @@
 
 }
 
+/// CODIGO PARA MOVER A CAMERA ATRAVES DO MOUSE NOS LIMITES DA TELA
+    Vector2 mouse = GetMousePosition();
+    if (mouse.x > screenWidth - 15) camera.offset.x -= 5;
+    if (mouse.x < 15) camera.offset.x += 5;
+    if (mouse.y > screenHeight - 15) camera.offset.y -= 5;
+    if (mouse.y < 15) camera.offset.y += 5;
 
 
 */

@@ -19,8 +19,9 @@ public:
     Rectangle GetHitBox();
     void SetHitBox();
     void DrawHitBox();
+    void DrawAimDirection();
 
-    void Move();
+    void Move(Vector2 direction);
 
 private:
     Rectangle hitbox;

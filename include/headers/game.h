@@ -20,6 +20,12 @@ class Game {
         GameState GetGameState();
         void SetGameState(GameState state);
 
+        std::vector<Vector2>& GetCurrentLevelBounds();
+        void SetCurrenLevelBounds(std::vector<Vector2> level_bounds);
+
+        std::vector<Entity>& GetCurrentAsteroidsInGame();
+        void SetCurrentAsteroidsInGame();
+
         std::vector<Alien>& GetCurrentAliens();
         int GetAliensInGame();
         void SpawnAliens();
@@ -40,7 +46,7 @@ class Game {
         Camera2D& GetCamera();
         void SetCamera();
         void SetCameraZoom(float zoom);
-        void UpdateCamera();
+        void UpdateCamera(int screenWidth, int screenHeight);
 
         void UpdateAnimationTime();
         float GetDeltaT();
@@ -48,6 +54,8 @@ class Game {
         bool CheckDifficultyIncrease(int score);
         void IncreaseDifficulty();
 
+        void CheckAliensCollisions();add .
+        void CheckBulletsCollisions();
         void CheckEntityCollisions();
 
     protected:
@@ -59,6 +67,8 @@ class Game {
 
     private:
         GameState state;
+        std::vector<Vector2> currentLevelBounds;
+        std::vector<Entity> asteroidsInGame;
         std::vector<Alien> aliensInGame;
         std::vector<Bullet> bulletsInGame;
         Player player;

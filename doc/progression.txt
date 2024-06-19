@@ -48,5 +48,15 @@ DAY 8 - 17/06/2024
     Explorando conceito de QuadTree para otimizacao de colisoes
     Definicao de enum GameState: modularizacao da parte de colisoes e movimentacao para a classe game
     Logica 1 Game Loop: Tela Game Over + Menu
+    Render do vetor direction de aliens
     Prototipo da Camera2D em Game: zoom
+    
+DAY 9 - 18/06/2024
+    Refactoring dos metodos de CheckEntityCollisions
+    Experimentos com movimentacao da Camera2D
+    Level_bounds para Camera2D (classe Game)
+    Teste inicial para Asteroids (classe Entity)
+
+DAY 10 - 19/06/2024
+    Logica 1 para vida de aliens e dano de bullets + heal bar
     

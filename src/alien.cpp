@@ -2,9 +2,10 @@
 
 Alien::Alien(){}
 
-Alien::Alien(int radius, float speed){
-    this->radius = radius;
+Alien::Alien(int radius, float speed, float life){
+    SetRadius(radius);
     SetSpeed(speed);
+    SetLife(life);
 }
 
 // GETTERS & SETTERS
