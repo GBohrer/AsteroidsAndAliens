@@ -1,17 +1,23 @@
 #include "../include/master_header.h"
 
 
+const char * ConvertText (std::string string) {
+    std::string str;
+    const char *cstr;
+
+    str = string;
+    cstr = str.c_str();
+
+    return cstr;
+}
+
 void PrintTextInGame(bool isFloat, float value, Vector2 textPos, int fontSize, Color color){
 
     std::string str_pos;
-    const char *cstr;
-
     if (isFloat){
         str_pos = std::to_string(value);
     } else {
         str_pos = std::to_string((int)value);
     }
-
-    cstr = str_pos.c_str();
-    DrawText(cstr, textPos.x, textPos.y, fontSize, color);
+    DrawText(ConvertText(str_pos), textPos.x, textPos.y, fontSize, color);
 }

@@ -67,4 +67,12 @@ DAY 11 - 25/06/2024
     BUG FIX: reset do alien_collision em game.CheckAliensCollisions, nao mais movimentando apenas aliens que estao em colisao
     Utilizei o Debugger corretamente
     Logica 1 movimento do player quando fora do cenario (PlayerOutOfBoundsTimer para reduzir velocidade exponencialmente)
+    BUG FIX: Bullets nao se movimentam mais durante o Pause (Nao faço ideia como arrumei kkkkk)
+
+DAY 12 -
+    TO DO:
+        ✅ Arrumar bug da aim depois de voltar do Pause (Reset para o centro, do mesmo modo que no game.Start())
+        ❌ Implementar CollisionBulletPlayer <- Arrumar spawn da bullet (Nao sera feito por ora, já que o player DEVE ser mais lento que a bullet)
+    BUG FIX: Delete da Bullet ocorre depois de checar as colisoes, nao mais crashando o jogo quando ocorria varias CollisionAlienBullet
+    Uso do Mouse para selecionar no Menu (criada struct TextBox)
     

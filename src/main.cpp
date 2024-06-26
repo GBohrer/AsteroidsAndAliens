@@ -7,19 +7,23 @@ Color color_space_background = Color{10, 10, 40, 255};
 
 int main()
 {
-    bool IsGameRunning = true;
-
     const int screenWidth  = GetMonitorWidth(GetCurrentMonitor());
     const int screenHeight = GetMonitorHeight(GetCurrentMonitor());
 
     InitWindow(screenWidth, screenHeight, "Galactic Adventures");
 
-    Rectangle textBox = { screenWidth/2.0f - 100, screenHeight/2.0f, 225, 50 };
-    Rectangle textBox2 = { screenWidth/2.0f - 100, screenHeight/2.0f - 100, 225, 50 };
+    std::vector<TextBox> text_boxes;
+
+    TextBox tb1("Start", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 100, 230, 70 }, false);
+    text_boxes.push_back(tb1);
+
+    TextBox tb2("Exit", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 200, 230, 70 }, false);
+    text_boxes.push_back(tb2);
 
     SetTargetFPS(60);
 
     Game game = Game();
+    bool IsGameRunning = true;
 
     while (IsGameRunning)
     {
@@ -29,25 +33,37 @@ int main()
         if (IsKeyPressed(KEY_X)) IsGameRunning = false;
         if (IsKeyPressed(KEY_G)) game.SetGameState(GameState::GameOver);
 
-        if (IsKeyPressed(KEY_ESCAPE)) {
-           GameState currentState = game.GetGameState();
-
-           if (currentState == GameState::InGame) { game.SetGameState(GameState::Paused); }
-           else if (currentState == GameState::Paused) { game.SetGameState(GameState::InGame); }
-           else if (currentState == GameState::Menu) { IsGameRunning = false; }
-        }
-
         switch (game.GetGameState()) {
             case GameState::Menu:
-                if (IsKeyPressed(KEY_ENTER)) game.Start();
+                if (IsKeyPressed(KEY_ESCAPE)) IsGameRunning = false;
+
+                for (int i = 0; i < (int)text_boxes.size(); i++){
+                    TextBox tb = text_boxes[i];
+                    if (CheckCollisionPointRec(GetMousePosition(), tb.box)) {
+                        text_boxes[i].isMouseOn = true;
+
+                        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) { 
+                            if (i == 0) game.Start();
+                            if (i == 1) IsGameRunning = false;
+                        }
+
+                    } else { text_boxes[i].isMouseOn = false; }
+                }
+
                 break;
 
             case GameState::Paused:
-            
+                    if (IsKeyPressed(KEY_ESCAPE)) {
+                        game.SetGameState(GameState::InGame);
+                        SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
+                        game.GetPlayer().SetAimTarget(game.GetPlayer().GetPosition());
+                    }
                 break;
             
             case GameState::InGame:
                 game.UpdateAnimationTime();
+
+                if (IsKeyPressed(KEY_ESCAPE)) { game.SetGameState(GameState::Paused); break;}
 
                 game.UpdatePlayer();
                 if (IsKeyDown(KEY_SPACE)) game.SpawnBullets();
@@ -73,11 +89,21 @@ int main()
         switch (game.GetGameState()) {
             case GameState::Menu:
                 ClearBackground(color_space_background);
-                DrawText("GALACTIC ADVENTURES", 400, (int)GetScreenHeight()/2.0f - 200, 90, WHITE);
+
+                DrawText("GALACTIC ADVENTURES", 400, (int)GetScreenHeight()/2.0f - 200, 90, LIGHTGRAY);
                 //DrawText("Press ENTER to start", (int)GetScreenWidth()/2.0f - 200, (int)GetScreenHeight()/2.0f - 50, 40, WHITE);
 
-                DrawRectangleRec(textBox, LIGHTGRAY);
-                DrawRectangleRec(textBox2, LIGHTGRAY);
+                for (int i = 0; i < (int)text_boxes.size(); i++) {
+                    TextBox tb = text_boxes[i];
+
+                    if (tb.isMouseOn) {
+                        DrawRectangleRec(tb.box, LIGHTGRAY);
+                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, BLACK);
+                    } else {
+                        DrawRectangleLinesEx(tb.box, 4, LIGHTGRAY);
+                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, LIGHTGRAY);
+                    }
+                }
                 break;
 
             case GameState::Paused:

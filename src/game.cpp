@@ -9,11 +9,11 @@ Game::Game() {
 
 void Game::Start() {
     this->state = GameState::InGame;
-    totalAliens = 4;
+    totalAliens = 3;
     AlienSpawnTimer = 5.0f;
-    BulletSpawnTimer = 0.6f;
+    BulletSpawnTimer = 0.9f;
     timeSinceLastShot = timeSinceLastAlienSpawn = PlayerOutOfBoundsTimer = 0.0f;
-    scoreThreshold = 5;
+    scoreThreshold = 10;
     isPlayerOutOfBounds = false;
     this->player = Player(Vector2Scale(GetCurrentLevelBounds().back(), 0.5f));
     SetCamera();
@@ -160,7 +160,7 @@ void Game::UpdatePlayer() {
             PlayerOutOfBoundsTimer = 0;
         }
     } else { 
-        GetPlayer().SetSpeed(12.0f);
+        GetPlayer().SetSpeed(5.0f);
         isPlayerOutOfBounds = false;
     }
 
@@ -185,7 +185,7 @@ void Game::SetCamera() {
     camera.offset = {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
     camera.target = GetPlayer().GetPosition();
     camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
+    camera.zoom = 1.5f;
 }
 
 void Game::SetCameraZoom(float zoom){
@@ -246,7 +246,7 @@ void Game::IncreaseDifficulty() {
     BulletSpawnTimer -= 0.02f;
     GetPlayer().SetSpeed(GetPlayer().GetSpeed() + 0.1f);
 
-    scoreThreshold += 3;
+    scoreThreshold += 5;
 }
 
 // COLLISIONS
@@ -331,8 +331,9 @@ void Game::CheckBulletCollisions() {
     if (GetBulletsInGame() > 0) {
 
         int b_index = 0;
+        bool delete_bullet;
         for (Bullet& b : GetCurrentBullets()) {
-
+            delete_bullet = false;
             // BULLET MOVEMENT
             if (b.IsOutOfBounds(GetPlayer().GetPosition())) {
                 DeleteBulletInGame(b_index);
@@ -348,10 +349,11 @@ void Game::CheckBulletCollisions() {
                 int a_index = 0;
                 for (Alien& a : GetCurrentAliens()) {
                     // BULLET - ALIEN
-                    if (CollisionBulletAlien(b, a)) {
+                    if (CollisionBulletAlien(b, a) && !delete_bullet) {
 
                         a.SetLife(a.GetLife() - b.GetDamage());
-                        DeleteBulletInGame(b_index);
+                        delete_bullet = true;
+                        //DeleteBulletInGame(b_index);
 
                         if(a.GetLife() <= 0) {
                             DeleteAlienInGame(a_index);
@@ -361,6 +363,7 @@ void Game::CheckBulletCollisions() {
                     a_index++;
                 }
             }
+            if(delete_bullet) DeleteBulletInGame(b_index);
 
             // BULLET - PLAYER
             //if (CollisionBulletPlayer(b)) {
