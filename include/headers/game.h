@@ -15,7 +15,7 @@ class Game {
     public:
         Game();
 
-        void Start(std::string nickname);
+        void Start();
         void Reset();
         void UpdateAnimationTime();
         float GetDeltaT();
@@ -55,8 +55,9 @@ class Game {
         //PLAYER
         Player& GetPlayer();
         void SetPlayer(Player p);
-        void PlayerMove();
+        void UpdatePlayer();
         void UpdatePlayerScore();
+        bool IsPlayerOutOfBounds();
 
         //CAMERA
         Camera2D& GetCamera();
@@ -71,6 +72,8 @@ class Game {
         float AlienSpawnTimer;
         float BulletSpawnTimer;
         int scoreThreshold;
+        bool isPlayerOutOfBounds;
+        float PlayerOutOfBoundsTimer;
 
 
     private:

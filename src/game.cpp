@@ -4,19 +4,21 @@
 Game::Game() {
     state = GameState::Menu;
     animation_t_now = animation_t_prev = delta_t = 0;
-    SetCurrenLevelBounds({{0,0},{0,2000},{2000,2000}, {2000,0}} );
+    SetCurrenLevelBounds({{0,0}, {4000,4000}});
 }
 
-void Game::Start(std::string nickname) {
+void Game::Start() {
     this->state = GameState::InGame;
     totalAliens = 4;
-    AlienSpawnTimer = 8.0f;
-    BulletSpawnTimer = 0.5f;
-    timeSinceLastShot = timeSinceLastAlienSpawn = 0.0f;
-    scoreThreshold = 15;
-    this->player = Player(nickname);
+    AlienSpawnTimer = 5.0f;
+    BulletSpawnTimer = 0.6f;
+    timeSinceLastShot = timeSinceLastAlienSpawn = PlayerOutOfBoundsTimer = 0.0f;
+    scoreThreshold = 5;
+    isPlayerOutOfBounds = false;
+    this->player = Player(Vector2Scale(GetCurrentLevelBounds().back(), 0.5f));
     SetCamera();
     SetCurrentAsteroidsInGame();
+    SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
 }
 
 void Game::Reset() {
@@ -39,9 +41,12 @@ std::vector<Entity>& Game::GetCurrentAsteroidsInGame() {
 }
 
 void Game::SetCurrentAsteroidsInGame() {
-    for (int i = 0; i < 10; i++){
-        int posX = GetRandomValue(0,1000);
-        int posY = GetRandomValue(0,1000);
+    Vector2 min = GetCurrentLevelBounds().front();
+    Vector2 max = GetCurrentLevelBounds().back();
+
+    for (int i = 0; i < 50; i++){
+        int posX = GetRandomValue((int)min.x, (int)max.x);
+        int posY = GetRandomValue((int)min.y, (int)max.y);
 
         Entity asteroid = Entity();
         asteroid.SetPosition((float)posX, (float)posY);
@@ -101,13 +106,7 @@ int Game::GetBulletsInGame() {
 
 void Game::SpawnBullets() {
     if (timeSinceLastShot >= BulletSpawnTimer){
-        Player p_offset = GetPlayer();
-        float bullet_spawn_angle = Vector2Angle({0,0},p_offset.GetDirection());
-
-        //p_offset.SetPosition(p_offset.GetPosition().x + p_offset.GetHitBox().width * cos(bullet_spawn_angle),
-        //                     p_offset.GetPosition().y + p_offset.GetHitBox().height * sin(bullet_spawn_angle));     
-
-        this->bulletsInGame.push_back(Bullet(p_offset.GetPosition(), 200.0f, 0.4f, 20.0f));
+        this->bulletsInGame.push_back(Bullet(GetPlayer(), GetPlayer().GetSpeed() * 2.5f, 0.4f, 20.0f));
         timeSinceLastShot = 0.0f;
     }
 }
@@ -129,20 +128,52 @@ void Game::SetPlayer(Player p) {
     this->player = player;
 }
 
-void Game::PlayerMove() {
-    Vector2 pos = GetPlayer().GetPosition();
+void Game::UpdatePlayer() {
+    Vector2 player_pos = GetPlayer().GetPosition();
+    float speed = GetPlayer().GetSpeed();
 
-    if (IsKeyDown(KEY_W)) { pos.y -= 50; }
-    if (IsKeyDown(KEY_A)) { pos.x -= 50; }
-    if (IsKeyDown(KEY_S)) { pos.y += 50; }
-    if (IsKeyDown(KEY_D)) { pos.x += 50; }
+    if (IsKeyDown(KEY_W)) { player_pos.y -= speed; }
+    if (IsKeyDown(KEY_A)) { player_pos.x -= speed; }
+    if (IsKeyDown(KEY_S)) { player_pos.y += speed; }
+    if (IsKeyDown(KEY_D)) { player_pos.x += speed; }
 
-    Vector2 direction = Vector2Normalize(Vector2Subtract(pos, GetPlayer().GetPosition()));
+    Vector2 direction = Vector2Normalize(Vector2Subtract(player_pos, GetPlayer().GetPosition()));
+
+    Vector2 min = GetCurrentLevelBounds().front();
+    Vector2 max = GetCurrentLevelBounds().back();
+
+    //float new_speed_min = pow(0.5f, abs(Vector2Distance(player_pos, min) / 10) );
+    //float new_speed_max = pow(0.5f, abs(Vector2Distance(player_pos, max) / 10) );
+
+    if (player_pos.x < min.x || player_pos.y < min.y) {
+        isPlayerOutOfBounds = true;
+        PlayerOutOfBoundsTimer += GetDeltaT();
+        if (PlayerOutOfBoundsTimer >= 1.0f && speed > 0.2f) {
+            GetPlayer().SetSpeed(speed/2.0f);
+            PlayerOutOfBoundsTimer = 0;
+        }
+    } else if (player_pos.x > max.x || player_pos.y > max.y) {
+        isPlayerOutOfBounds = true;
+        PlayerOutOfBoundsTimer += GetDeltaT();
+        if (PlayerOutOfBoundsTimer >= 1.0f && speed > 0.2f) {
+            GetPlayer().SetSpeed(speed/2.0f);
+            PlayerOutOfBoundsTimer = 0;
+        }
+    } else { 
+        GetPlayer().SetSpeed(12.0f);
+        isPlayerOutOfBounds = false;
+    }
+
     this->player.Move(direction);
+    this->player.UpdateAim();
 }
 
 void Game::UpdatePlayerScore() {
     this->GetPlayer().SetScore(this->GetPlayer().GetScore() + 1);
+}
+
+bool Game::IsPlayerOutOfBounds() {
+    return isPlayerOutOfBounds;
 }
 
 // CAMERA 2D
@@ -162,38 +193,33 @@ void Game::SetCameraZoom(float zoom){
 }
 
 void Game::UpdateCamera(int screenWidth, int screenHeight) {
-    //ZOOM
-    float camera_zoom = GetCamera().zoom;
+
+    ////////// ZOOM
+    float camera_zoom = camera.zoom;
     camera_zoom += GetMouseWheelMove() * 0.1f;
 
     if (camera_zoom > 2.0f) camera_zoom = 2.0f;
     else if (camera_zoom < 0.25f) camera_zoom = 0.25;
     SetCameraZoom(camera_zoom);
 
-    // OFFSET and TARGET
-    camera.target = GetPlayer().GetPosition();
+    ////////// OFFSET and TARGET
 
+    this->camera.target = GetPlayer().GetPosition();
 
-    //camera.offset = { screenWidth/2.0f, screenHeight/2.0f };
-//
     //float minX = 10000, minY = 10000, maxX = -10000, maxY = -10000;
-//
-    //for (Vector2& pos : GetCurrentLevelBounds()){
-    //    
+    //for (Vector2& pos : GetCurrentLevelBounds()) {
     //    minX = fminf(pos.x, minX);
     //    maxX = fmaxf(pos.x, maxX);
     //    minY = fminf(pos.y, minY);
     //    maxY = fmaxf(pos.y, maxY);
     //}
-//
-    //Vector2 max = GetWorldToScreen2D((Vector2){ maxX, maxY }, camera);
-    //Vector2 min = GetWorldToScreen2D((Vector2){ minX, minY }, camera);
-//
+    //
+    //Vector2 max = GetWorldToScreen2D({ maxX, maxY }, camera);
+    //Vector2 min = GetWorldToScreen2D({ minX, minY }, camera);
     //if (max.x < screenWidth) camera.offset.x = screenWidth - (max.x - screenWidth/2);
     //if (max.y < screenHeight) camera.offset.y = screenHeight - (max.y - screenHeight/2);
     //if (min.x > 0) camera.offset.x = screenWidth/2 - min.x;
     //if (min.y > 0) camera.offset.y = screenHeight/2 - min.y;
-
 }
 
 void Game::UpdateAnimationTime() {
@@ -218,9 +244,9 @@ void Game::IncreaseDifficulty() {
     totalAliens++;
     AlienSpawnTimer -= 0.5f;
     BulletSpawnTimer -= 0.02f;
-    GetPlayer().SetSpeed(GetPlayer().GetSpeed() + 0.5f);
+    GetPlayer().SetSpeed(GetPlayer().GetSpeed() + 0.1f);
 
-    scoreThreshold += 10;
+    scoreThreshold += 3;
 }
 
 // COLLISIONS
@@ -256,8 +282,9 @@ void Game::CheckAlienCollisions() {
             }
             
             if (GetAliensInGame() > 1) {
-
+                alien_collision = false;
                 int index2 = 0;
+
                 for (Alien& aa : GetCurrentAliens()) {
                     // ALIEN - ALIEN
                     if (&a != &aa) {
@@ -312,7 +339,7 @@ void Game::CheckBulletCollisions() {
                 continue;
 
             } else {
-                b.Move(GetDeltaT());
+                b.Move();
                 UpdateBulletInGame(b, b_index);
             }
 

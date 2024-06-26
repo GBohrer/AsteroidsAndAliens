@@ -7,28 +7,28 @@ class Player : public Character {
 
 public:
     Player(); 
-    Player(std::string nickname);
+    Player(Vector2 pos);
     
-    std::string GetName();
-    void SetName(std::string nickname);
+    Rectangle GetHitBox();
+    void SetHitBox();
     int GetScore();
     void SetScore(int value);
     bool GetIsBuffed();
     void SetIsBuffed(bool value);
+    Vector2 GetAimTarget();
+    void SetAimTarget(Vector2 target);
 
-    Rectangle GetHitBox();
-    void SetHitBox();
     void DrawHitBox();
-    void DrawAimDirection();
+    void DrawAim();
     void DrawHeathBar();
 
     void Move(Vector2 direction);
+    void UpdateAim();
 
 private:
     Rectangle hitbox;
-    std::string nickname;
     int score;
     bool isBuffed;
-
+    Vector2 aimTarget;
 
 };

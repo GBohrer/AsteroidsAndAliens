@@ -3,10 +3,10 @@
 
 Bullet::Bullet() {}
 
-Bullet::Bullet(Vector2 pos, float speed, float rate, float damage) {
-    SetPosition(pos.x, pos.y);
+Bullet::Bullet(Player p, float speed, float rate, float damage) {
+    SetPosition(p.GetPosition().x, p.GetPosition().y);
     SetHitBox();
-    SetDirection(Vector2Normalize(Vector2Subtract(GetMousePosition(),pos)));
+    SetDirection(Vector2Normalize(Vector2Subtract(p.GetAimTarget(), p.GetPosition() )));
     SetSpeed(speed);
     SetFireRate(rate);
     SetDamage(damage);
@@ -20,8 +20,8 @@ Rectangle Bullet::GetHitBox() {
 void Bullet::SetHitBox() {
     this->hitbox.x = GetPosition().x;
     this->hitbox.y = GetPosition().y;
-    this->hitbox.width = 6;
-    this->hitbox.height = 6;
+    this->hitbox.width = 12;
+    this->hitbox.height = 12;
 }
 
 void Bullet::DrawHitBox() {
@@ -46,17 +46,20 @@ void Bullet::SetDamage(float value) {
 
 
 // METHODS
-void Bullet::Move(float delta) {
-    float bullet_desloc = GetSpeed() * delta;
-    SetPosition((float)this->GetPosition().x + GetDirection().x * bullet_desloc,
-                (float)this->GetPosition().y + GetDirection().y * bullet_desloc);
+void Bullet::Move() {
+    float bullet_speed = GetSpeed();
+    SetPosition(this->GetPosition().x + GetDirection().x * bullet_speed,
+                this->GetPosition().y + GetDirection().y * bullet_speed);
     SetHitBox();
 }
 
 bool Bullet::IsOutOfBounds(Vector2 pos) {
-    if ((GetPosition().x < 0 || GetPosition().x > GetScreenWidth()) ||
-        (GetPosition().y < 0 || GetPosition().y > GetScreenHeight())) {
-        
+
+    int max_radius;
+    if (GetScreenWidth() > GetScreenHeight()){ max_radius = GetScreenWidth(); }
+    else { max_radius = GetScreenHeight(); }
+
+    if (Vector2Distance(GetPosition(), pos) > max_radius) {
         return true;
     } else {
         return false;

@@ -3,10 +3,10 @@
 
 Player::Player() {}
 
-Player::Player(std::string nickname){
-    SetPosition((float)GetScreenWidth()/2.0f, (float)GetScreenHeight()/2.0f);
+Player::Player(Vector2 pos) {
+    SetPosition(pos.x, pos.y);
+    SetAimTarget(pos);
     SetHitBox();
-    this->nickname = nickname;
     this->score = 0;
     this->isBuffed = false;
     SetSpeed(5.0f);
@@ -26,52 +26,59 @@ void Player::SetHitBox() {
     this->hitbox.y = GetPosition().y - hitbox.height/2.0f;
 }
 
-std::string Player::GetName(){
-    return nickname;
-}
-
-void Player::SetName(std::string nickname){
-    this->nickname = nickname;
-}
-
-int Player::GetScore(){
+int Player::GetScore() {
     return score;
 }
 
-void Player::SetScore(int value){
+void Player::SetScore(int value) {
     this->score = value;
 }
 
-bool Player::GetIsBuffed(){
+bool Player::GetIsBuffed() {
     return isBuffed;
 }
 
-void Player::SetIsBuffed(bool value){
+void Player::SetIsBuffed(bool value) {
     this->isBuffed = value;
 }
 
+Vector2 Player::GetAimTarget() {
+    return aimTarget;
+}
+
+void Player::SetAimTarget(Vector2 target) {
+    this->aimTarget = target;
+}
 
 //METHODS
 
-void Player::Move(Vector2 direction){
+void Player::Move(Vector2 direction) {
 
     SetDirection(direction);
 
-    SetPosition(this->GetPosition().x + this->GetDirection().x * this->GetSpeed(),
-                this->GetPosition().y + this->GetDirection().y * this->GetSpeed());
+    SetPosition(GetPosition().x + GetDirection().x * GetSpeed(),
+                GetPosition().y + GetDirection().y * GetSpeed());
     SetHitBox();
+}
 
+void Player::UpdateAim () {
+
+    Vector2 mouseDelta = GetMouseDelta();
+    Vector2 newAimTarget = {GetAimTarget().x + mouseDelta.x,
+                            GetAimTarget().y + mouseDelta.y };
+
+    newAimTarget.x += GetDirection().x * GetSpeed();
+    newAimTarget.y += GetDirection().y * GetSpeed();
+    
+    SetAimTarget(newAimTarget);
 }
 
 void Player::DrawHitBox(){
     DrawRectangleLinesEx(GetHitBox(), 2.0f, YELLOW);
 }
 
-void Player::DrawAimDirection() {
-    //Vector2 dir = {GetPosition().x + GetDirection().x * -150,
-    //               GetPosition().y + GetDirection().y * -150};
-
-    DrawLineV(GetMousePosition(), GetPosition(), GREEN);
+void Player::DrawAim() {
+    DrawLineV(GetPosition(), GetAimTarget(), GREEN);
 }
 
 void Player::DrawHeathBar () {

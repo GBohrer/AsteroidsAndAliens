@@ -8,7 +8,7 @@ class Bullet : public Character {
 
     public:
         Bullet();
-        Bullet(Vector2 pos, float speed, float rate, float damage);
+        Bullet(Player p, float speed, float rate, float damage);
 
         Rectangle GetHitBox();
         void SetHitBox();
@@ -18,7 +18,7 @@ class Bullet : public Character {
         float GetDamage();
         void SetDamage(float value);
 
-        void Move(float delta);
+        void Move();
         bool IsOutOfBounds(Vector2 pos);
 
     private:
