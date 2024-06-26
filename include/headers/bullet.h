@@ -8,7 +8,7 @@ class Bullet : public Character {
 
     public:
         Bullet();
-        Bullet(Player p, float speed, float rate, float damage);
+        Bullet(Vector2 pos, Vector2 dir, float speed, float rate, float damage);
 
         Rectangle GetHitBox();
         void SetHitBox();

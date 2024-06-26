@@ -21,7 +21,7 @@ void Alien::SetRadius(int radius){
 // METHODS
 void Alien::SetAlienToPlayer(Player player, int Player_distance){
 
-    float Alien_spawn_angle = GetRandomValue(0, 360);
+    float Alien_spawn_angle = GetRandomValue(0, 360) / 57.2957795;
     SetPosition((float) player.GetPosition().x + Player_distance * cos(Alien_spawn_angle),
                 (float) player.GetPosition().y + Player_distance * sin(Alien_spawn_angle));
 

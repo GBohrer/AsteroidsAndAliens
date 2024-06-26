@@ -70,7 +70,7 @@ int main()
 
                 if (game.CheckDifficultyIncrease(game.GetPlayer().GetScore())){ game.IncreaseDifficulty();}
                 
-                game.SpawnAliens();
+                //game.SpawnAliens();
 
                 game.CheckEntityCollisions();
 

@@ -3,10 +3,10 @@
 
 Bullet::Bullet() {}
 
-Bullet::Bullet(Player p, float speed, float rate, float damage) {
-    SetPosition(p.GetPosition().x, p.GetPosition().y);
+Bullet::Bullet(Vector2 pos, Vector2 dir, float speed, float rate, float damage) {
+    SetPosition(pos.x, pos.y);
     SetHitBox();
-    SetDirection(Vector2Normalize(Vector2Subtract(p.GetAimTarget(), p.GetPosition() )));
+    SetDirection(dir);
     SetSpeed(speed);
     SetFireRate(rate);
     SetDamage(damage);

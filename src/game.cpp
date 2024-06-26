@@ -106,7 +106,14 @@ int Game::GetBulletsInGame() {
 
 void Game::SpawnBullets() {
     if (timeSinceLastShot >= BulletSpawnTimer){
-        this->bulletsInGame.push_back(Bullet(GetPlayer(), GetPlayer().GetSpeed() * 2.5f, 0.4f, 20.0f));
+
+        Vector2 direction = Vector2Normalize(Vector2Subtract(GetPlayer().GetAimTarget(), GetPlayer().GetPosition()));
+
+        Rectangle pos = GetPlayer().GetHitBox();
+        Vector2 bullet_pos = {(pos.x + pos.width/2) + direction.x * 30,
+                              (pos.y + pos.height/2) + direction.y * 30};
+
+        this->bulletsInGame.push_back(Bullet(bullet_pos, direction, 1.0f, 0.4f, 20.0f));
         timeSinceLastShot = 0.0f;
     }
 }
@@ -335,10 +342,21 @@ void Game::CheckBulletCollisions() {
         for (Bullet& b : GetCurrentBullets()) {
             delete_bullet = false;
             // BULLET MOVEMENT
+
             if (b.IsOutOfBounds(GetPlayer().GetPosition())) {
                 DeleteBulletInGame(b_index);
                 continue;
 
+            // BULLET - PLAYER
+            } else if (CollisionBulletPlayer(b)) {
+                GetPlayer().SetLife(GetPlayer().GetLife() - (b.GetDamage()/2.0f));
+                DeleteBulletInGame(b_index);
+
+                if (GetPlayer().GetLife() <= 0) {
+                    SetGameState(GameState::GameOver);
+                    break;
+                }
+                
             } else {
                 b.Move();
                 UpdateBulletInGame(b, b_index);
@@ -364,18 +382,6 @@ void Game::CheckBulletCollisions() {
                 }
             }
             if(delete_bullet) DeleteBulletInGame(b_index);
-
-            // BULLET - PLAYER
-            //if (CollisionBulletPlayer(b)) {
-            //    GetPlayer().SetLife(GetPlayer().GetLife() - (b.GetDamage()/2.0f));
-            //    DeleteBulletInGame(b_index);
-//
-            //    if (GetPlayer().GetLife() <= 0) {
-            //        SetGameState(GameState::GameOver);
-            //        break;
-            //    }
-            //}
-
             b_index++;
         }
     }
