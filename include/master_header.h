@@ -4,6 +4,8 @@
 // COMMON-LIBS
 #include <string>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <raylib.h>
 #include <raymath.h>
 #include <cmath>
@@ -19,6 +21,7 @@
 #include "headers/character.h"
 #include "headers/game.h"
 #include "headers/bullet.h"
+#include "headers/asteroid.h"
 
 
 #endif

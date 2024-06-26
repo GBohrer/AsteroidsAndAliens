@@ -78,7 +78,11 @@ void Player::DrawHitBox(){
 }
 
 void Player::DrawAim() {
-    DrawLineV(GetPosition(), GetAimTarget(), GREEN);
+    float mag = GetSpeed() * 20.0f;
+    Vector2 dir = {GetPosition().x - Vector2Normalize(Vector2Subtract(GetPosition(), GetAimTarget())).x * mag,
+                   GetPosition().y - Vector2Normalize(Vector2Subtract(GetPosition(), GetAimTarget())).y * mag};
+
+    DrawLineEx(dir, GetPosition(), 3, GREEN);
 }
 
 void Player::DrawHeathBar () {

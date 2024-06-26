@@ -70,7 +70,7 @@ int main()
 
                 if (game.CheckDifficultyIncrease(game.GetPlayer().GetScore())){ game.IncreaseDifficulty();}
                 
-                //game.SpawnAliens();
+                game.SpawnAliens();
 
                 game.CheckEntityCollisions();
 
@@ -124,18 +124,19 @@ int main()
 
                     for (Alien& a : game.GetCurrentAliens()) { 
                         a.DrawHitBox();
+                        //a.DrawDirectionVector();
                         DrawRectangle(a.GetPosition().x - a.GetLife()/2.0f, a.GetPosition().y - a.GetRadius() - 20, (int)a.GetLife()*2, 10, GREEN);
                     }
 
                     for (Bullet& b : game.GetCurrentBullets()) { b.DrawHitBox(); } 
-                    for (Entity& e : game.GetCurrentAsteroidsInGame()) {
-                        DrawCircle(e.GetPosition().x, e.GetPosition().y, 15, WHITE);
+                    for (Asteroid& ast : game.GetCurrentAsteroidsInGame()) {
+                        ast.DrawHitBox();
                     }
 
                 EndMode2D();
 
                 //CAMERA ZOOM
-                PrintTextInGame(true, game.GetCamera().zoom, {50,50}, 30, WHITE);
+                PrintTextInGame(true, game.GetCamera().zoom - 0.5f, {50,50}, 30, WHITE);
                 // SCORE
                 PrintTextInGame(false, game.GetPlayer().GetScore(), {(int)GetScreenWidth()/2.0f, 70}, 50, WHITE);
                 //COORDS

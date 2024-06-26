@@ -36,7 +36,7 @@ void Game::SetCurrenLevelBounds(std::vector<Vector2> level_bounds) {
     this->currentLevelBounds = level_bounds;
 }
 
-std::vector<Entity>& Game::GetCurrentAsteroidsInGame() {
+std::vector<Asteroid>& Game::GetCurrentAsteroidsInGame() {
     return asteroidsInGame;
 }
 
@@ -45,10 +45,13 @@ void Game::SetCurrentAsteroidsInGame() {
     Vector2 max = GetCurrentLevelBounds().back();
 
     for (int i = 0; i < 50; i++){
-        int posX = GetRandomValue((int)min.x, (int)max.x);
-        int posY = GetRandomValue((int)min.y, (int)max.y);
+        float posX = GetRandomValue((int)min.x, (int)max.x);
+        float posY = GetRandomValue((int)min.y, (int)max.y);
 
-        Entity asteroid = Entity();
+        int radius = GetRandomValue(15,40);
+        float life = radius*10;
+
+        Asteroid asteroid = Asteroid({posX, posY}, radius, life);
         asteroid.SetPosition((float)posX, (float)posY);
         asteroidsInGame.push_back(asteroid);
     }
@@ -113,7 +116,7 @@ void Game::SpawnBullets() {
         Vector2 bullet_pos = {(pos.x + pos.width/2) + direction.x * 30,
                               (pos.y + pos.height/2) + direction.y * 30};
 
-        this->bulletsInGame.push_back(Bullet(bullet_pos, direction, 1.0f, 0.4f, 20.0f));
+        this->bulletsInGame.push_back(Bullet(bullet_pos, direction, GetPlayer().GetSpeed() * 2.5, 0.8f, 20.0f));
         timeSinceLastShot = 0.0f;
     }
 }

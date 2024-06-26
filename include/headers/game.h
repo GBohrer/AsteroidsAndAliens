@@ -2,6 +2,7 @@
 #include "../master_header.h"
 
 #include "bullet.h"
+#include "asteroid.h"
 
 enum GameState {
     Menu,
@@ -27,7 +28,7 @@ class Game {
         std::vector<Vector2>& GetCurrentLevelBounds();
         void SetCurrenLevelBounds(std::vector<Vector2> level_bounds);
 
-        std::vector<Entity>& GetCurrentAsteroidsInGame();
+        std::vector<Asteroid>& GetCurrentAsteroidsInGame();
         void SetCurrentAsteroidsInGame();
 
         //ALIENS
@@ -79,7 +80,7 @@ class Game {
     private:
         GameState state;
         std::vector<Vector2> currentLevelBounds;
-        std::vector<Entity> asteroidsInGame;
+        std::vector<Asteroid> asteroidsInGame;
         std::vector<Alien> aliensInGame;
         std::vector<Bullet> bulletsInGame;
         Player player;

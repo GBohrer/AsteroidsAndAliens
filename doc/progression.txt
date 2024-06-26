@@ -75,5 +75,8 @@ DAY 12 - 26/06/2024
         ✅ Implementar CollisionBulletPlayer <- Arrumar spawn da bullet
     BUG FIX: Delete da Bullet ocorre depois de checar as colisoes, nao mais crashando o jogo quando ocorria varias CollisionAlienBullet
     Uso do Mouse para selecionar no Menu (criada struct TextBox)
+    Mudanca de Asteroid (entity) para classe propria (para herdar hitbox e direction)
+    DrawAin do Player agora fica normalizado
+    
 
 DAY 13 -

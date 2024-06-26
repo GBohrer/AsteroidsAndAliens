@@ -42,8 +42,9 @@ void Alien::DrawHitBox(){
 }
 
 void Alien::DrawDirectionVector() {
-    Vector2 dir = {GetPosition().x + GetDirection().x * 150,
-                   GetPosition().y + GetDirection().y * 150};
+    float mag = GetSpeed() * 100.0f;
+    Vector2 dir = {GetPosition().x + GetDirection().x * mag,
+                   GetPosition().y + GetDirection().y * mag};
 
     DrawLineEx(GetPosition(), dir, 2, GREEN);
 }
