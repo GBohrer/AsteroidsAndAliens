@@ -25,7 +25,7 @@ void Bullet::SetHitBox() {
 }
 
 void Bullet::DrawHitBox() {
-    DrawRectangleLinesEx(GetHitBox(), 2.0f, BLUE);
+    DrawRectangleRoundedLines(GetHitBox(), 1.0f, 4, 2.0f, BLUE);
 }
 
 float Bullet::GetFireRate() {

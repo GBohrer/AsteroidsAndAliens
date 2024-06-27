@@ -10,6 +10,7 @@ Game::Game() {
 void Game::Start() {
     this->state = GameState::InGame;
     totalAliens = 3;
+    totalAsteroids = 50;
     AlienSpawnTimer = 5.0f;
     BulletSpawnTimer = 0.9f;
     timeSinceLastShot = timeSinceLastAlienSpawn = PlayerOutOfBoundsTimer = 0.0f;
@@ -17,7 +18,7 @@ void Game::Start() {
     isPlayerOutOfBounds = false;
     this->player = Player(Vector2Scale(GetCurrentLevelBounds().back(), 0.5f));
     SetCamera();
-    SetCurrentAsteroidsInGame();
+    SpawnAsteroids();
     SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
 }
 
@@ -28,23 +29,39 @@ void Game::Reset() {
     asteroidsInGame.clear();
 }
 
+GameState Game::GetGameState() {
+    return state;
+}
+
+void Game::SetGameState(GameState state) {
+    this->state = state;
+}
+
 std::vector<Vector2>& Game::GetCurrentLevelBounds() {
     return currentLevelBounds;
 }
 
+// LEVEL
 void Game::SetCurrenLevelBounds(std::vector<Vector2> level_bounds) {
     this->currentLevelBounds = level_bounds;
 }
 
-std::vector<Asteroid>& Game::GetCurrentAsteroidsInGame() {
+
+// ASTEROIDS
+std::vector<Asteroid>& Game::GetCurrentAsteroids() {
     return asteroidsInGame;
 }
 
-void Game::SetCurrentAsteroidsInGame() {
+int Game::GetAsteroidsInGame() {
+    if (asteroidsInGame.empty()) { return 0; }
+    else { return (int)asteroidsInGame.size(); }
+}
+
+void Game::SpawnAsteroids() {
     Vector2 min = GetCurrentLevelBounds().front();
     Vector2 max = GetCurrentLevelBounds().back();
 
-    for (int i = 0; i < 50; i++){
+    for (int i = 0; i < totalAsteroids; i++){
         float posX = GetRandomValue((int)min.x, (int)max.x);
         float posY = GetRandomValue((int)min.y, (int)max.y);
 
@@ -57,13 +74,14 @@ void Game::SetCurrentAsteroidsInGame() {
     }
 }
 
-GameState Game::GetGameState() {
-    return state;
+void Game::UpdateAsteroidInGame(Asteroid ast, int position) {
+    this->asteroidsInGame[position] = ast;
 }
 
-void Game::SetGameState(GameState state) {
-    this->state = state;
+void Game::DeleteAsteroidInGame(int position) {
+    this->asteroidsInGame.erase(asteroidsInGame.begin() + position);
 }
+
 
 // ALIENS
 std::vector<Alien>& Game::GetCurrentAliens() {
@@ -390,8 +408,114 @@ void Game::CheckBulletCollisions() {
     }
 }
 
+bool Game::CollisionAsteroidAsteroid(Asteroid ast1, Asteroid ast2) {
+    if (CheckCollisionCircles(ast1.GetPosition(), ast1.GetRadius(), ast2.GetPosition(), ast2.GetRadius())) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Game::CollisionAsteroidAlien(Asteroid ast, Alien a) {
+    if (CheckCollisionCircles(ast.GetPosition(), ast.GetRadius(), a.GetPosition(), a.GetRadius())) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Game::CollisionAsteroidBullet(Asteroid ast, Bullet b) {
+    if (CheckCollisionCircleRec(ast.GetPosition(), ast.GetRadius(), b.GetHitBox())) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Game::CollisionAsteroidPlayer(Asteroid ast, Player p) {
+    if (CheckCollisionCircleRec(ast.GetPosition(), ast.GetRadius(), p.GetHitBox())) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void Game::CheckAsteroidCollisions () {
+    if (GetAsteroidsInGame() > 0) {
+
+        int ast_index = 0;
+        for (Asteroid& ast : GetCurrentAsteroids()) {
+            bool delete_asteroid = false;
+
+            //ASTEROID-ALIEN
+            if (GetAliensInGame() > 0) {
+
+                int a_index = 0;
+                for (Alien& a : GetCurrentAliens()) {
+                    if (CollisionAsteroidAlien(ast, a)) {
+                        ast.Move(a.GetDirection());
+                        UpdateAsteroidInGame(ast, ast_index);
+                    }
+                    a_index++;
+                }
+            }
+
+            //ASTEROID-BULLET
+            if(GetBulletsInGame() > 0) {
+
+              int b_index = 0;
+              for (Bullet& b : GetCurrentBullets()) {
+                if (CollisionAsteroidBullet(ast, b)) {
+                    ast.SetLife(ast.GetLife() - b.GetDamage());
+                    DeleteBulletInGame(b_index);
+                    if (ast.GetLife() <= 0) { delete_asteroid = true; }
+                }
+                b_index++;
+              }  
+            }
+
+            //ASTEROID-PLAYER
+            if (CollisionAsteroidPlayer(ast, GetPlayer())){
+                ast.Move(GetPlayer().GetDirection());
+                UpdateAsteroidInGame(ast, ast_index);
+            }
+
+            //ASTEROID-ASTEROID
+            bool asteroid_collision = false;
+
+            if (GetAsteroidsInGame() > 1) {
+
+                int ast2_index = 0;
+                for (Asteroid& ast2 : GetCurrentAsteroids()) {
+                    if (&ast != &ast2) {
+                        if (CollisionAsteroidAsteroid(ast, ast2)) {
+                            asteroid_collision = true;
+
+                            Vector2 new_direction = (Vector2Add(ast.GetDirection(), ast2.GetDirection()));
+                            ast2.Move(new_direction);
+                            UpdateAsteroidInGame(ast2, ast2_index);
+                            break;
+                        }
+                    }
+                    ast2_index++;
+                }
+            }
+
+            if (!asteroid_collision) {
+                ast.Move(ast.GetDirection());
+                UpdateAsteroidInGame(ast, ast_index);
+            }
+
+            if (delete_asteroid) { DeleteAsteroidInGame(ast_index); break; }
+
+            ast_index++;
+        }
+    }
+}
+
 void Game::CheckEntityCollisions() {
 
     CheckAlienCollisions();
     CheckBulletCollisions();
+    CheckAsteroidCollisions();
 }

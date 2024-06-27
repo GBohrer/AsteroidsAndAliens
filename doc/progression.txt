@@ -77,6 +77,6 @@ DAY 12 - 26/06/2024
     Uso do Mouse para selecionar no Menu (criada struct TextBox)
     Mudanca de Asteroid (entity) para classe propria (para herdar hitbox e direction)
     DrawAin do Player agora fica normalizado
-    
+    Logica 1 Colisao de Asteroids: Movimentacao de asteroids baseado na direcao das entidades
 
 DAY 13 -

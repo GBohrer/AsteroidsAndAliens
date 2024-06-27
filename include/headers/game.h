@@ -28,8 +28,18 @@ class Game {
         std::vector<Vector2>& GetCurrentLevelBounds();
         void SetCurrenLevelBounds(std::vector<Vector2> level_bounds);
 
-        std::vector<Asteroid>& GetCurrentAsteroidsInGame();
-        void SetCurrentAsteroidsInGame();
+        //ASTEROIDS
+        std::vector<Asteroid>& GetCurrentAsteroids();
+        int GetAsteroidsInGame();
+        void SpawnAsteroids();
+        void UpdateAsteroidInGame(Asteroid ast, int position);
+        void DeleteAsteroidInGame(int position);
+
+        bool CollisionAsteroidAsteroid(Asteroid ast1, Asteroid ast2);
+        bool CollisionAsteroidAlien(Asteroid ast, Alien a);
+        bool CollisionAsteroidBullet(Asteroid ast, Bullet b);
+        bool CollisionAsteroidPlayer(Asteroid ast, Player p);
+        void CheckAsteroidCollisions();
 
         //ALIENS
         std::vector<Alien>& GetCurrentAliens();
@@ -70,6 +80,7 @@ class Game {
 
     protected:
         int totalAliens;
+        int totalAsteroids;
         float AlienSpawnTimer;
         float BulletSpawnTimer;
         int scoreThreshold;

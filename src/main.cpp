@@ -129,7 +129,7 @@ int main()
                     }
 
                     for (Bullet& b : game.GetCurrentBullets()) { b.DrawHitBox(); } 
-                    for (Asteroid& ast : game.GetCurrentAsteroidsInGame()) {
+                    for (Asteroid& ast : game.GetCurrentAsteroids()) {
                         ast.DrawHitBox();
                     }
 

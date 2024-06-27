@@ -15,6 +15,7 @@ class Asteroid : public Character {
         void DrawHitBox();
         void DrawDirectionVector();
     
+        void Move(Vector2 direction);
 
     private:
         int radius;

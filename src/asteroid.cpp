@@ -26,3 +26,11 @@ void Asteroid::DrawDirectionVector() {
 
     DrawLineEx(GetPosition(), dir, 2, GREEN);
 }
+
+void Asteroid::Move(Vector2 direction) {
+
+    SetDirection(direction);
+    SetPosition((float)this->GetPosition().x + GetDirection().x,
+                (float)this->GetPosition().y + GetDirection().y);
+
+}
