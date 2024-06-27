@@ -12,18 +12,11 @@ int main()
 
     InitWindow(screenWidth, screenHeight, "Galactic Adventures");
 
-    std::vector<TextBox> text_boxes;
-
-    TextBox tb1("Start", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 100, 230, 70 }, false);
-    text_boxes.push_back(tb1);
-
-    TextBox tb2("Exit", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 200, 230, 70 }, false);
-    text_boxes.push_back(tb2);
-
     SetTargetFPS(60);
 
     Game game = Game();
     bool IsGameRunning = true;
+    int TextBoxIndex;
 
     while (IsGameRunning)
     {
@@ -31,70 +24,118 @@ int main()
         /// UPDATES
         if (IsKeyPressed(KEY_P)) ToggleFullscreen();
         if (IsKeyPressed(KEY_X)) IsGameRunning = false;
-        if (IsKeyPressed(KEY_G)) game.SetGameState(GameState::GameOver);
+        if (IsKeyPressed(KEY_G)) {
+            game.SetCurrentGameState(game.GetGameStates().at("GameOver"));
+        }
 
-        switch (game.GetGameState()) {
-            case GameState::Menu:
+        switch (game.GetCurrentGameState().state) {
+            case State::Menu:
                 if (IsKeyPressed(KEY_ESCAPE)) IsGameRunning = false;
 
-                for (int i = 0; i < (int)text_boxes.size(); i++){
-                    TextBox tb = text_boxes[i];
+                TextBoxIndex = 0;
+                for (TextBox& tb : game.GetCurrentGameState().text_boxes) {
                     if (CheckCollisionPointRec(GetMousePosition(), tb.box)) {
-                        text_boxes[i].isMouseOn = true;
+                        tb.isMouseOn = true;
+                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
 
-                        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) { 
-                            if (i == 0) game.Start();
-                            if (i == 1) IsGameRunning = false;
+                        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                            if (tb.text == "Start") game.Start();
+                            if (tb.text == "Exit") IsGameRunning = false;
                         }
 
-                    } else { text_boxes[i].isMouseOn = false; }
+                    } else {
+                        tb.isMouseOn = false;
+                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
+                    }
+                    TextBoxIndex++;
                 }
 
-                break;
+            break;
 
-            case GameState::Paused:
-                    if (IsKeyPressed(KEY_ESCAPE)) {
-                        game.SetGameState(GameState::InGame);
-                        SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
-                        game.GetPlayer().SetAimTarget(game.GetPlayer().GetPosition());
+            case State::Paused:
+
+                TextBoxIndex = 0;
+                for (TextBox& tb : game.GetCurrentGameState().text_boxes) {
+                    if (CheckCollisionPointRec(GetMousePosition(), tb.box)) {
+                        tb.isMouseOn = true;
+                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
+
+                        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                            if (tb.text == "Resume") {
+                                game.SetCurrentGameState(game.GetGameStates().at("InGame"));   
+                                SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
+                                game.GetPlayer().SetAimTarget(game.GetPlayer().GetPosition());
+                            }
+                            if (tb.text == "Exit") IsGameRunning = false;
+                        }
+
+                    } else {
+                        tb.isMouseOn = false;
+                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
                     }
-                break;
+                    TextBoxIndex++;
+                }
+            break;
             
-            case GameState::InGame:
+            case State::InGame:
                 game.UpdateAnimationTime();
 
-                if (IsKeyPressed(KEY_ESCAPE)) { game.SetGameState(GameState::Paused); break;}
+                if (IsKeyPressed(KEY_ESCAPE)) {
+                    game.SetCurrentGameState(game.GetGameStates().at("Paused"));
+                    break;
+                }
 
                 game.UpdatePlayer();
                 if (IsKeyDown(KEY_SPACE)) game.SpawnBullets();
 
                 if (game.CheckDifficultyIncrease(game.GetPlayer().GetScore())){ game.IncreaseDifficulty();}
                 
+                game.SpawnAsteroids();
                 game.SpawnAliens();
 
                 game.CheckEntityCollisions();
 
                 game.UpdateCamera(GetScreenWidth(), GetScreenHeight());
-                break;
+            break;
 
-            case GameState::GameOver:
-                if (IsKeyPressed(KEY_ENTER)) game.Reset();
+            case State::GameOver:
 
-                break;
+                TextBoxIndex = 0;
+                for (TextBox& tb : game.GetCurrentGameState().text_boxes) {
+                    if (CheckCollisionPointRec(GetMousePosition(), tb.box)) {
+                        tb.isMouseOn = true;
+                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
+
+                        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                            if (tb.text == "Restart") {
+                                game.Reset();
+                                game.Start();
+                            }
+                            if (tb.text == "Menu") game.Reset();
+                            if (tb.text == "Exit") IsGameRunning = false;
+                        }
+
+                    } else {
+                        tb.isMouseOn = false;
+                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
+                    }
+                    TextBoxIndex++;
+                }
+
+            break;
         }
 
         /// RENDERS
         BeginDrawing();
 
-        switch (game.GetGameState()) {
-            case GameState::Menu:
+        switch (game.GetCurrentGameState().state) {
+            case State::Menu:
                 ClearBackground(color_space_background);
 
                 DrawText("GALACTIC ADVENTURES", 400, (int)GetScreenHeight()/2.0f - 200, 90, LIGHTGRAY);
-                //DrawText("Press ENTER to start", (int)GetScreenWidth()/2.0f - 200, (int)GetScreenHeight()/2.0f - 50, 40, WHITE);
 
-                for (int i = 0; i < (int)text_boxes.size(); i++) {
-                    TextBox tb = text_boxes[i];
+                for (int i = 0; i < (int)game.GetCurrentGameState().text_boxes.size(); i++) {
+                    TextBox tb = game.GetCurrentGameState().text_boxes[i];
 
                     if (tb.isMouseOn) {
                         DrawRectangleRec(tb.box, LIGHTGRAY);
@@ -104,13 +145,26 @@ int main()
                         DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, LIGHTGRAY);
                     }
                 }
-                break;
+            break;
 
-            case GameState::Paused:
-                DrawText("PAUSE", (int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f, 35, WHITE);
-                break;
+            case State::Paused:
+                DrawText("PAUSE", (int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f - 200, 35, WHITE);
+
+                for (int i = 0; i < (int)game.GetCurrentGameState().text_boxes.size(); i++) {
+                    TextBox tb = game.GetCurrentGameState().text_boxes[i];
+
+                    if (tb.isMouseOn) {
+                        DrawRectangleRec(tb.box, LIGHTGRAY);
+                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, BLACK);
+                    } else {
+                        DrawRectangleLinesEx(tb.box, 4, LIGHTGRAY);
+                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, LIGHTGRAY);
+                    }
+                }
+
+            break;
             
-            case GameState::InGame:
+            case State::InGame:
                 ClearBackground(color_space_background);
 
                 BeginMode2D(game.GetCamera());
@@ -148,12 +202,23 @@ int main()
                     DrawText("The spaceship is entering the void",GetScreenWidth()/2.0f - 260, GetScreenHeight() - 220, 30, RED);
                 }
 
-                break;
+            break;
 
-            case GameState::GameOver:
-                DrawText("GAME OVER", 500, (int)GetScreenWidth()/2.0f - 200, 90, WHITE);
-                DrawText("Press ENTER to return to the Menu", (int)GetScreenWidth()/2.0f - 150, (int)GetScreenHeight()/2.0f - 50, 40, WHITE);
-                break;
+            case State::GameOver:
+                DrawText("GAME OVER", (int)GetScreenWidth()/2.0f - 250, (int)GetScreenHeight()/2.0f - 200, 90, WHITE);
+
+                for (int i = 0; i < (int)game.GetCurrentGameState().text_boxes.size(); i++) {
+                    TextBox tb = game.GetCurrentGameState().text_boxes[i];
+
+                    if (tb.isMouseOn) {
+                        DrawRectangleRec(tb.box, LIGHTGRAY);
+                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, BLACK);
+                    } else {
+                        DrawRectangleLinesEx(tb.box, 4, LIGHTGRAY);
+                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, LIGHTGRAY);
+                    }
+                }
+            break;
         }
         EndDrawing();
     }

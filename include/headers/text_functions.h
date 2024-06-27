@@ -8,7 +8,8 @@ typedef struct TextBox {
     Rectangle box;
     bool isMouseOn;
 
-    TextBox(std::string t, Rectangle b, bool m) : text(t), box(b), isMouseOn(m) {}
+    TextBox() {}
+    TextBox(std::string t, Rectangle b, bool m = false) : text(t), box(b), isMouseOn(m) {}
 
 } TextBox;
 

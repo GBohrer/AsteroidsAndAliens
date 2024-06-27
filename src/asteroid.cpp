@@ -17,7 +17,7 @@ void Asteroid::SetRadius(float radius) {
 }
 
 void Asteroid::DrawHitBox(){
-    DrawCircleLines(this->GetPosition().x, this->GetPosition().y, GetRadius(), GRAY);
+    DrawCircle(this->GetPosition().x, this->GetPosition().y, GetRadius(), GRAY);
 }
 
 void Asteroid::DrawDirectionVector() {
@@ -33,4 +33,17 @@ void Asteroid::Move(Vector2 direction) {
     SetPosition((float)this->GetPosition().x + GetDirection().x,
                 (float)this->GetPosition().y + GetDirection().y);
 
+}
+
+bool Asteroid::IsOutOfBounds(Vector2 pos) {
+    int max_radius;
+
+    if (GetScreenWidth() > GetScreenHeight()){ max_radius = GetScreenWidth(); }
+    else { max_radius = GetScreenHeight(); }
+
+    if (Vector2Distance(GetPosition(), pos) > max_radius) {
+        return true;
+    } else {
+        return false;
+    }
 }

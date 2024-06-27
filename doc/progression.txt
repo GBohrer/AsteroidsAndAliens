@@ -79,4 +79,11 @@ DAY 12 - 26/06/2024
     DrawAin do Player agora fica normalizado
     Logica 1 Colisao de Asteroids: Movimentacao de asteroids baseado na direcao das entidades
 
-DAY 13 -
+DAY 13 - 27/06/2024
+    TO DO:
+        ❌ Aprimorar o spawn e deslocamento de Asteroids
+    Aprimorei o GameState para guardar TextBox de cada state e modularizar melhor a adicao de novos estados e jogo e TextBoxes
+
+DAY 14 -
+    TO DO:
+        Aprimorar o spawn e deslocamento de Asteroids

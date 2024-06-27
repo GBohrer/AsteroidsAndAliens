@@ -2,13 +2,14 @@
 
 
 Game::Game() {
-    state = GameState::Menu;
+    SetInitialGameStates();
+    currentGameState = GetGameStates().at("Menu");
     animation_t_now = animation_t_prev = delta_t = 0;
     SetCurrenLevelBounds({{0,0}, {4000,4000}});
 }
 
 void Game::Start() {
-    this->state = GameState::InGame;
+    currentGameState = GetGameStates().at("InGame");
     totalAliens = 3;
     totalAsteroids = 50;
     AlienSpawnTimer = 5.0f;
@@ -18,24 +19,50 @@ void Game::Start() {
     isPlayerOutOfBounds = false;
     this->player = Player(Vector2Scale(GetCurrentLevelBounds().back(), 0.5f));
     SetCamera();
-    SpawnAsteroids();
     SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
 }
 
 void Game::Reset() {
-    this->state = GameState::Menu;
+    currentGameState = GetGameStates().at("Menu");
     aliensInGame.clear();
     bulletsInGame.clear();
     asteroidsInGame.clear();
 }
 
-GameState Game::GetGameState() {
-    return state;
+// GAME STATE:
+std::unordered_map<std::string, GameStateInfo>& Game::GetGameStates() {
+    return gameStates;
 }
 
-void Game::SetGameState(GameState state) {
-    this->state = state;
+void Game::SetInitialGameStates() {
+
+    //TEXT BOXES
+    TextBox start("Start", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 100, 230, 70 });
+    TextBox exit("Exit", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 200, 230, 70 });
+    TextBox resume("Resume", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 100, 230, 70 });
+    TextBox menu("Menu", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 300, 230, 70 });
+
+    GameStateInfo state1(State::Menu, {start,exit});
+    GameStateInfo state2(State::InGame, {});
+    GameStateInfo state3(State::Paused, {resume,exit});
+    GameStateInfo state4(State::GameOver, {resume,menu,exit});
+
+    this->gameStates.insert({{"Menu",state1}, {"InGame",state2}, {"Paused", state3}, {"GameOver",state4}});
 }
+
+GameStateInfo Game::GetCurrentGameState () {
+    return currentGameState;
+}
+
+void Game::SetCurrentGameState(GameStateInfo gameStateInfo) {
+    this->currentGameState = gameStateInfo;
+}
+
+void Game::UpdateCurrentGameStateTextBox (TextBox tb, int position) {
+    this->currentGameState.text_boxes[position] = tb;
+}
+
+
 
 std::vector<Vector2>& Game::GetCurrentLevelBounds() {
     return currentLevelBounds;
@@ -58,10 +85,12 @@ int Game::GetAsteroidsInGame() {
 }
 
 void Game::SpawnAsteroids() {
-    Vector2 min = GetCurrentLevelBounds().front();
-    Vector2 max = GetCurrentLevelBounds().back();
 
-    for (int i = 0; i < totalAsteroids; i++){
+    if (GetAsteroidsInGame() < totalAsteroids) {
+
+        Vector2 min = GetCurrentLevelBounds().front();
+        Vector2 max = GetCurrentLevelBounds().back();
+
         float posX = GetRandomValue((int)min.x, (int)max.x);
         float posY = GetRandomValue((int)min.y, (int)max.y);
 
@@ -305,7 +334,7 @@ void Game::CheckAlienCollisions() {
         for (Alien& a : GetCurrentAliens()) {
             // ALIEN - PLAYER
             if (CollisionAlienPlayer(a)){
-                SetGameState(GameState::GameOver);
+                SetCurrentGameState(GetGameStates().at("GameOver"));
                 break;
             }
             
@@ -374,7 +403,7 @@ void Game::CheckBulletCollisions() {
                 DeleteBulletInGame(b_index);
 
                 if (GetPlayer().GetLife() <= 0) {
-                    SetGameState(GameState::GameOver);
+                    SetCurrentGameState(GetGameStates().at("GameOver"));
                     break;
                 }
                 
@@ -447,6 +476,11 @@ void Game::CheckAsteroidCollisions () {
         for (Asteroid& ast : GetCurrentAsteroids()) {
             bool delete_asteroid = false;
 
+            if (ast.IsOutOfBounds(GetPlayer().GetPosition())) {
+                DeleteAsteroidInGame(ast_index);
+                continue;
+            }
+
             //ASTEROID-ALIEN
             if (GetAliensInGame() > 0) {
 
@@ -492,8 +526,8 @@ void Game::CheckAsteroidCollisions () {
                             asteroid_collision = true;
 
                             Vector2 new_direction = (Vector2Add(ast.GetDirection(), ast2.GetDirection()));
-                            ast2.Move(new_direction);
-                            UpdateAsteroidInGame(ast2, ast2_index);
+                            //ast2.Move(new_direction);
+                            //UpdateAsteroidInGame(ast2, ast2_index);
                             break;
                         }
                     }

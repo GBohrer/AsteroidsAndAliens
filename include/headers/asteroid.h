@@ -16,6 +16,7 @@ class Asteroid : public Character {
         void DrawDirectionVector();
     
         void Move(Vector2 direction);
+        bool IsOutOfBounds(Vector2 pos);
 
     private:
         int radius;
