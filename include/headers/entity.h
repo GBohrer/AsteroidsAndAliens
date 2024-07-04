@@ -5,19 +5,23 @@ class Entity {
 
 public:
     Entity();
-    Entity(Vector2 pos, float life, Image sprite);
+    Entity(Vector2 pos, Image sprite);
 
     Vector2 GetPosition();
     void SetPosition(float x, float y);
-    float GetLife();
-    void SetLife(float life);
+    float GetMaxLife();
+    void SetMaxLife(float lifeMax);
+    float GetCurrentLife();
+    void SetCurrentLife(float lifeCurrent);
     Image GetImage();
     void SetImage(Image sprite);
 
 
 private:
     Vector2 pos;
-    float life;
+    float lifeMax;
+    float lifeCurrent;
+
     Image sprite;
 
 };

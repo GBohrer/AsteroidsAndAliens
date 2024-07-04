@@ -4,8 +4,10 @@ Alien::Alien(){}
 
 Alien::Alien(int radius, float speed, float life){
     SetRadius(radius);
-    SetSpeed(speed);
-    SetLife(life);
+    SetCurrentSpeed(speed);
+    SetMaxSpeed(speed);
+    SetMaxLife(life);
+    SetCurrentLife(life);
 }
 
 // GETTERS & SETTERS
@@ -30,7 +32,7 @@ void Alien::SetAlienToPlayer(Player player, int Player_distance){
 
 void Alien::Move(Player player, float delta, Vector2 direction) {
 
-    float alien_desloc = GetSpeed();
+    float alien_desloc = GetCurrentSpeed();
     SetPosition((float)this->GetPosition().x + direction.x * alien_desloc,
                 (float)this->GetPosition().y + direction.y * alien_desloc);
 
@@ -42,10 +44,15 @@ void Alien::DrawHitBox(){
 }
 
 void Alien::DrawDirectionVector() {
-    float mag = GetSpeed() * 100.0f;
+    float mag = GetCurrentSpeed() * 100.0f;
     Vector2 dir = {GetPosition().x + GetDirection().x * mag,
                    GetPosition().y + GetDirection().y * mag};
 
     DrawLineEx(GetPosition(), dir, 2, GREEN);
 }
 
+void Alien::DrawHealthBar () {
+    DrawRectangle(GetPosition().x - GetMaxLife()/2.0f, GetPosition().y - GetRadius() - 20, (int)GetMaxLife()*2, 10, RED);
+    DrawRectangle(GetPosition().x - GetMaxLife()/2.0f, GetPosition().y - GetRadius() - 20, (int)GetCurrentLife()*2, 10, GREEN);
+                    
+}

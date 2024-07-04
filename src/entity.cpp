@@ -2,9 +2,8 @@
 
 Entity::Entity() {};
 
-Entity::Entity(Vector2 pos, float life, Image sprite) {
+Entity::Entity(Vector2 pos, Image sprite) {
     SetPosition(pos.x, pos.y);
-    SetLife(life);
     SetImage(sprite);
 }
 
@@ -18,12 +17,20 @@ void Entity::SetPosition(float x, float y) {
     this->pos.y = y;
 }
 
-float Entity::GetLife() {
-    return life;
+float Entity::GetMaxLife() {
+    return lifeMax;
 }
 
-void Entity::SetLife(float life) {
-    this->life = life;
+void Entity::SetMaxLife(float lifeMax) {
+    this->lifeMax = lifeMax;
+}
+
+float Entity::GetCurrentLife() {
+    return lifeCurrent;
+}
+
+void Entity::SetCurrentLife(float lifeCurrent) {
+    this->lifeCurrent = lifeCurrent;
 }
 
 Image Entity::GetImage() {

@@ -3,13 +3,23 @@
 
 #include "../master_header.h"
 
+enum TextBoxId {
+    Start,
+    Restart,
+    Exit,
+    Resume,
+    Menu,
+    Loading
+};
+
 typedef struct TextBox {
+    TextBoxId id;
     std::string text;
     Rectangle box;
     bool isMouseOn;
 
     TextBox() {}
-    TextBox(std::string t, Rectangle b, bool m = false) : text(t), box(b), isMouseOn(m) {}
+    TextBox(TextBoxId i, std::string t, Rectangle b, bool m = false) : id(i), text(t), box(b), isMouseOn(m) {}
 
 } TextBox;
 

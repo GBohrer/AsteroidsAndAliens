@@ -7,7 +7,8 @@ Bullet::Bullet(Vector2 pos, Vector2 dir, float speed, float rate, float damage) 
     SetPosition(pos.x, pos.y);
     SetHitBox();
     SetDirection(dir);
-    SetSpeed(speed);
+    SetMaxSpeed(speed);
+    SetCurrentSpeed(speed);
     SetFireRate(rate);
     SetDamage(damage);
 }
@@ -47,7 +48,7 @@ void Bullet::SetDamage(float value) {
 
 // METHODS
 void Bullet::Move() {
-    float bullet_speed = GetSpeed();
+    float bullet_speed = GetCurrentSpeed();
     SetPosition(this->GetPosition().x + GetDirection().x * bullet_speed,
                 this->GetPosition().y + GetDirection().y * bullet_speed);
     SetHitBox();

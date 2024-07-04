@@ -5,12 +5,20 @@ Character::Character(){}
 
 
 // GETTERS & SETTERS
-float Character::GetSpeed() {
-    return speed;
+float Character::GetMaxSpeed() {
+    return speedMax;
 }
 
-void Character::SetSpeed(float speed) {
-    this->speed = speed;
+void Character::SetMaxSpeed(float speedMax) {
+    this->speedMax = speedMax;
+}
+
+float Character::GetCurrentSpeed() {
+    return speedCurrent;
+}
+
+void Character::SetCurrentSpeed(float speedCurrent) {
+    this->speedCurrent = speedCurrent;
 }
 
 Vector2 Character::GetDirection(){

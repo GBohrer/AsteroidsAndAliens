@@ -15,6 +15,7 @@ public:
 
     void DrawHitBox();
     void DrawDirectionVector();
+    void DrawHealthBar();
     
     void SetAlienToPlayer(Player player, int Player_distance);
     void Move(Player player, float delta, Vector2 direction);

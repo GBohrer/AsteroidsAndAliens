@@ -5,15 +5,16 @@
 #include "asteroid.h"
 
 enum State {
-    Menu,
+    InMenu,
     InGame,
     GameOver,
-    Paused
+    Paused,
+    IsLoading
 };
 
 typedef struct GameStateInfo {
     State state;
-    std::vector<TextBox> text_boxes; 
+    std::vector<TextBox> text_boxes;
 
     GameStateInfo() {}
     GameStateInfo(State s, std::vector<TextBox> v) : state(s), text_boxes(v) {}
@@ -27,13 +28,14 @@ class Game {
 
         void Start();
         void Reset();
+        void SetGameLevel();
         void UpdateAnimationTime();
         float GetDeltaT();
         bool CheckDifficultyIncrease(int score);
         void IncreaseDifficulty();
 
         //GAME STATE
-        std::unordered_map<std::string, GameStateInfo>& GetGameStates();
+        std::unordered_map<State, GameStateInfo>& GetGameStates();
         void SetInitialGameStates();
         GameStateInfo GetCurrentGameState();
         void SetCurrentGameState (GameStateInfo gameStateInfo);
@@ -98,13 +100,14 @@ class Game {
         int totalAsteroids;
         float AlienSpawnTimer;
         float BulletSpawnTimer;
+        float AsteroidDirectionAngle;
         int scoreThreshold;
         bool isPlayerOutOfBounds;
         float PlayerOutOfBoundsTimer;
 
 
     private:
-        std::unordered_map<std::string, GameStateInfo> gameStates;
+        std::unordered_map<State, GameStateInfo> gameStates;
         std::vector<Vector2> currentLevelBounds;
         std::vector<Asteroid> asteroidsInGame;
         std::vector<Alien> aliensInGame;

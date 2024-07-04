@@ -20,7 +20,7 @@ public:
 
     void DrawHitBox();
     void DrawAim();
-    void DrawHeathBar();
+    void DrawHealthBar();
 
     void Move(Vector2 direction);
     void UpdateAim();

@@ -9,9 +9,11 @@ Player::Player(Vector2 pos) {
     SetHitBox();
     this->score = 0;
     this->isBuffed = false;
-    SetSpeed(5.0f);
+    SetMaxSpeed(5.0f);
+    SetCurrentSpeed(GetMaxSpeed());
     SetDirection({0,0});
-    SetLife(100.0f);
+    SetMaxLife(100.0f);
+    SetCurrentLife(GetMaxLife());
 }
 
 // GETTERS & SETTERS
@@ -56,8 +58,8 @@ void Player::Move(Vector2 direction) {
 
     SetDirection(direction);
 
-    SetPosition(GetPosition().x + GetDirection().x * GetSpeed(),
-                GetPosition().y + GetDirection().y * GetSpeed());
+    SetPosition(GetPosition().x + GetDirection().x * GetCurrentSpeed(),
+                GetPosition().y + GetDirection().y * GetCurrentSpeed());
     SetHitBox();
 }
 
@@ -67,8 +69,8 @@ void Player::UpdateAim () {
     Vector2 newAimTarget = {GetAimTarget().x + mouseDelta.x,
                             GetAimTarget().y + mouseDelta.y };
 
-    newAimTarget.x += GetDirection().x * GetSpeed();
-    newAimTarget.y += GetDirection().y * GetSpeed();
+    newAimTarget.x += GetDirection().x * GetCurrentSpeed();
+    newAimTarget.y += GetDirection().y * GetCurrentSpeed();
     
     SetAimTarget(newAimTarget);
 }
@@ -78,14 +80,16 @@ void Player::DrawHitBox(){
 }
 
 void Player::DrawAim() {
-    float mag = GetSpeed() * 20.0f;
+    float mag = GetCurrentSpeed() * 20.0f;
     Vector2 dir = {GetPosition().x - Vector2Normalize(Vector2Subtract(GetPosition(), GetAimTarget())).x * mag,
                    GetPosition().y - Vector2Normalize(Vector2Subtract(GetPosition(), GetAimTarget())).y * mag};
 
     DrawLineEx(dir, GetPosition(), 3, GREEN);
 }
 
-void Player::DrawHeathBar () {
-    DrawRectangle(GetPosition().x, GetPosition().y - GetHitBox().height, (int)GetLife(), 10, GREEN);                 
+void Player::DrawHealthBar () {
+    DrawRectangle(GetPosition().x, GetPosition().y - GetHitBox().height, (int)GetMaxLife(), 10, RED);                 
+    DrawRectangle(GetPosition().x, GetPosition().y - GetHitBox().height, (int)GetCurrentLife(), 10, GREEN);                 
+
 }
 

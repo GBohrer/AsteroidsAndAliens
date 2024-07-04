@@ -7,7 +7,7 @@ class Asteroid : public Character {
 
     public:
         Asteroid();
-        Asteroid(Vector2 pos, int radius, float life);
+        Asteroid(Vector2 pos, int radius, float life, float speed);
 
         float GetRadius();
         void SetRadius(float radius);
@@ -16,7 +16,7 @@ class Asteroid : public Character {
         void DrawDirectionVector();
     
         void Move(Vector2 direction);
-        bool IsOutOfBounds(Vector2 pos);
+        bool IsOutOfBounds(std::vector<Vector2> bounds);
 
     private:
         int radius;

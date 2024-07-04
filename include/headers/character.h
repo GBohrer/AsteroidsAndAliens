@@ -8,14 +8,16 @@ class Character : public Entity {
 public:
     Character();
 
-    float GetSpeed();
-    void SetSpeed(float speed);
+    float GetCurrentSpeed();
+    void SetCurrentSpeed(float speedMax);
+    float GetMaxSpeed();
+    void SetMaxSpeed(float speedCurrent);
     Vector2 GetDirection();
     void SetDirection(Vector2 direction);
-    
 
 private:
-    float speed;
+    float speedMax;
+    float speedCurrent;
     Vector2 direction;
 
 };

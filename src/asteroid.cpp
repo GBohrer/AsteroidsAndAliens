@@ -2,10 +2,13 @@
 
 Asteroid::Asteroid() {}
 
-Asteroid::Asteroid(Vector2 pos, int radius, float life) {
+Asteroid::Asteroid(Vector2 pos, int radius, float life, float speed) {
     SetPosition(pos.x, pos.y);
     SetRadius(radius);
-    SetLife(life);
+    SetCurrentSpeed(speed);
+    SetMaxSpeed(speed);
+    SetMaxLife(life);
+    SetCurrentLife(life);
 }
 
 float Asteroid::GetRadius() {
@@ -21,8 +24,8 @@ void Asteroid::DrawHitBox(){
 }
 
 void Asteroid::DrawDirectionVector() {
-    Vector2 dir = {GetPosition().x + GetDirection().x * GetSpeed(),
-                   GetPosition().y + GetDirection().y * GetSpeed()};
+    Vector2 dir = {GetPosition().x + GetDirection().x * GetCurrentSpeed(),
+                   GetPosition().y + GetDirection().y * GetCurrentSpeed()};
 
     DrawLineEx(GetPosition(), dir, 2, GREEN);
 }
@@ -30,20 +33,16 @@ void Asteroid::DrawDirectionVector() {
 void Asteroid::Move(Vector2 direction) {
 
     SetDirection(direction);
-    SetPosition((float)this->GetPosition().x + GetDirection().x,
-                (float)this->GetPosition().y + GetDirection().y);
+    SetPosition((float)this->GetPosition().x + GetDirection().x * GetCurrentSpeed(),
+                (float)this->GetPosition().y + GetDirection().y * GetCurrentSpeed());
 
 }
 
-bool Asteroid::IsOutOfBounds(Vector2 pos) {
-    int max_radius;
+bool Asteroid::IsOutOfBounds(std::vector<Vector2> bounds) {
 
-    if (GetScreenWidth() > GetScreenHeight()){ max_radius = GetScreenWidth(); }
-    else { max_radius = GetScreenHeight(); }
+    Vector2 pos = this->GetPosition();
+    Vector2 min = bounds.front();
+    Vector2 max = bounds.back();
 
-    if (Vector2Distance(GetPosition(), pos) > max_radius) {
-        return true;
-    } else {
-        return false;
-    }
+    return (pos.x < min.x - 1000 || pos.x > max.x + 1000 || pos.y < min.y - 1000 || pos.y > max.y + 1000);
 }

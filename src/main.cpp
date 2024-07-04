@@ -15,6 +15,7 @@ int main()
     SetTargetFPS(60);
 
     Game game = Game();
+
     bool IsGameRunning = true;
     int TextBoxIndex;
 
@@ -25,11 +26,12 @@ int main()
         if (IsKeyPressed(KEY_P)) ToggleFullscreen();
         if (IsKeyPressed(KEY_X)) IsGameRunning = false;
         if (IsKeyPressed(KEY_G)) {
-            game.SetCurrentGameState(game.GetGameStates().at("GameOver"));
+            game.SetCurrentGameState(game.GetGameStates().at(State::GameOver));
         }
 
         switch (game.GetCurrentGameState().state) {
-            case State::Menu:
+
+            case State::InMenu:
                 if (IsKeyPressed(KEY_ESCAPE)) IsGameRunning = false;
 
                 TextBoxIndex = 0;
@@ -62,7 +64,7 @@ int main()
 
                         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                             if (tb.text == "Resume") {
-                                game.SetCurrentGameState(game.GetGameStates().at("InGame"));   
+                                game.SetCurrentGameState(game.GetGameStates().at(State::InGame));   
                                 SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
                                 game.GetPlayer().SetAimTarget(game.GetPlayer().GetPosition());
                             }
@@ -81,7 +83,7 @@ int main()
                 game.UpdateAnimationTime();
 
                 if (IsKeyPressed(KEY_ESCAPE)) {
-                    game.SetCurrentGameState(game.GetGameStates().at("Paused"));
+                    game.SetCurrentGameState(game.GetGameStates().at(State::Paused));
                     break;
                 }
 
@@ -107,12 +109,24 @@ int main()
                         game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
 
                         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                            if (tb.text == "Restart") {
-                                game.Reset();
-                                game.Start();
+
+                            switch (tb.id) {
+                                case TextBoxId::Restart:
+                                    game.Reset();
+                                    game.Start();
+                                break;
+                            
+                                case TextBoxId::Menu:
+                                    game.Reset();
+                                break;
+
+                                case TextBoxId::Exit:
+                                    IsGameRunning = false;
+                                break;
+
+                                default:
+                                break;
                             }
-                            if (tb.text == "Menu") game.Reset();
-                            if (tb.text == "Exit") IsGameRunning = false;
                         }
 
                     } else {
@@ -123,13 +137,19 @@ int main()
                 }
 
             break;
+
+            case State::IsLoading:
+            break;
+
+            default:
+            break;
         }
 
         /// RENDERS
         BeginDrawing();
 
         switch (game.GetCurrentGameState().state) {
-            case State::Menu:
+            case State::InMenu:
                 ClearBackground(color_space_background);
 
                 DrawText("GALACTIC ADVENTURES", 400, (int)GetScreenHeight()/2.0f - 200, 90, LIGHTGRAY);
@@ -173,14 +193,14 @@ int main()
                     DrawRectangleLinesEx( {0, 0,  game.GetCurrentLevelBounds().back().x,  game.GetCurrentLevelBounds().back().y}, 15.0f, PURPLE);
 
                     game.GetPlayer().DrawHitBox();
-                    game.GetPlayer().DrawHeathBar();
+                    game.GetPlayer().DrawHealthBar();
                     game.GetPlayer().DrawAim();
 
                     for (Alien& a : game.GetCurrentAliens()) { 
                         a.DrawHitBox();
+                        a.DrawHealthBar();
                         //a.DrawDirectionVector();
-                        DrawRectangle(a.GetPosition().x - a.GetLife()/2.0f, a.GetPosition().y - a.GetRadius() - 20, (int)a.GetLife()*2, 10, GREEN);
-                    }
+                     }
 
                     for (Bullet& b : game.GetCurrentBullets()) { b.DrawHitBox(); } 
                     for (Asteroid& ast : game.GetCurrentAsteroids()) {
@@ -218,6 +238,12 @@ int main()
                         DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, LIGHTGRAY);
                     }
                 }
+            break;
+
+            case State::IsLoading:
+            break;
+
+            default:
             break;
         }
         EndDrawing();
