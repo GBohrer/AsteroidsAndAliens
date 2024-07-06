@@ -27,14 +27,41 @@ void Game::Reset() {
 void Game::SetGameLevel() {
     SetCurrenLevelBounds({{0,0}, {4000,4000}});
     
-    totalAliens = 5;
+    totalAliens = 3;
     totalAsteroids = 50;
-    AlienSpawnTimer = 2.0f;
+    AlienSpawnTimer = 7.0f;
     BulletSpawnTimer = 0.9f;
     scoreThreshold = 10;
     AsteroidDirectionAngle = GetRandomValue(1,360) / 57.2957795f;
 
     while (GetAsteroidsInGame() < totalAsteroids) { SpawnAsteroids(); }
+}
+
+void Game::UpdateAnimationTime() {
+    animation_t_now = (float)GetTime();
+    delta_t = animation_t_now - animation_t_prev;
+    animation_t_prev = animation_t_now;
+
+    timeSinceLastShot += delta_t;
+    timeSinceLastAlienSpawn += delta_t;
+}
+
+void Game::IncreaseDifficulty() {
+    totalAliens++;
+    AlienSpawnTimer -= 0.5f;
+    BulletSpawnTimer -= 0.03f;
+    GetPlayer().SetCurrentSpeed(GetPlayer().GetCurrentSpeed() + 0.1f);
+
+    scoreThreshold += 5;
+}
+
+float Game::GetDeltaT() {
+    return delta_t;
+}
+
+bool Game::CheckDifficultyIncrease(int score) {
+    if (score > scoreThreshold) {return true; }
+    else {return false;}
 }
 
 // GAME STATE:
@@ -297,32 +324,6 @@ void Game::UpdateCamera(int screenWidth, int screenHeight) {
     //if (min.y > 0) camera.offset.y = screenHeight/2 - min.y;
 }
 
-void Game::UpdateAnimationTime() {
-    animation_t_now = (float)GetTime();
-    delta_t = animation_t_now - animation_t_prev;
-    animation_t_prev = animation_t_now;
-
-    timeSinceLastShot += delta_t;
-    timeSinceLastAlienSpawn += delta_t;
-}
-
-float Game::GetDeltaT() {
-    return delta_t;
-}
-
-bool Game::CheckDifficultyIncrease(int score) {
-    if (score > scoreThreshold) {return true; }
-    else {return false;}
-}
-
-void Game::IncreaseDifficulty() {
-    totalAliens++;
-    AlienSpawnTimer -= 0.5f;
-    BulletSpawnTimer -= 0.02f;
-    GetPlayer().SetCurrentSpeed(GetPlayer().GetCurrentSpeed() + 0.1f);
-
-    scoreThreshold += 5;
-}
 
 // COLLISIONS
 bool Game::CollisionAlienAlien(Alien a1, Alien a2) {
@@ -511,6 +512,8 @@ void Game::CheckAsteroidCollisions () {
                         ast.Move(a.GetDirection());
                         UpdateAsteroidInGame(ast, ast_index);
                         a.SetCurrentSpeed(ast.GetCurrentSpeed());
+                    } else {
+                        a.SetCurrentSpeed(a.GetMaxSpeed());
                     }
                     a_index++;
                 }

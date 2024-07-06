@@ -1,0 +1,11 @@
+
+26/06/2024 - ✅ Arrumar bug da aim depois de voltar do Pause (Reset para o centro, do mesmo modo que no game.Start())
+26/06/2024 - ✅ Implementar CollisionBulletPlayer <- Arrumar spawn da bullet
+03/07/2024 - ✅ Aprimorar o spawn e deslocamento de Asteroids + colisoes!
+                
+Arrumar bug do TextBox que nao renderiza corretamente
+Implementar hotbar com novas bullets para escolher (?)
+Revisar e modificar a dinamica das entidades (para ter aceleracao)
+Criar estrutura de Level
+Criar Save/Load file do game
+Implementar o algoritmo de Sweep and Prune (otimizacao de colisoes)

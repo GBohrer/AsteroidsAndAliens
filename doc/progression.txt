@@ -70,9 +70,6 @@ DAY 11 - 25/06/2024
     BUG FIX: Bullets nao se movimentam mais durante o Pause (Nao faço ideia como arrumei kkkkk)
 
 DAY 12 - 26/06/2024
-    TO DO:
-        ✅ Arrumar bug da aim depois de voltar do Pause (Reset para o centro, do mesmo modo que no game.Start())
-        ✅ Implementar CollisionBulletPlayer <- Arrumar spawn da bullet
     BUG FIX: Delete da Bullet ocorre depois de checar as colisoes, nao mais crashando o jogo quando ocorria varias CollisionAlienBullet
     Uso do Mouse para selecionar no Menu (criada struct TextBox)
     Mudanca de Asteroid (entity) para classe propria (para herdar hitbox e direction)
@@ -80,15 +77,12 @@ DAY 12 - 26/06/2024
     Logica 1 Colisao de Asteroids: Movimentacao de asteroids baseado na direcao das entidades
 
 DAY 13 - 27/06/2024
-    TO DO:
-        ❌ Aprimorar o spawn e deslocamento de Asteroids
     Aprimoramento o GameState para guardar TextBox de cada state e modularizar melhor a adicao de novos estados e jogo e TextBoxes
 
 DAY 14 - 03/07/2024
-    TO DO:
-        ✅ Aprimorar o spawn e deslocamento de Asteroids + colisoes!
     Refactoring do map gameStates para a key ser o proprio state
     Mudanca TextBox para possuir id
     Adicao de "Max" e "Current" na vida e velocidade de Entity/Character
         Melhora na UI + Controle para quando isOutOfBounds
     
+DAY 15 - 

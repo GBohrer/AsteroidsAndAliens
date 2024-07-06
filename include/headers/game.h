@@ -29,10 +29,10 @@ class Game {
         void Start();
         void Reset();
         void SetGameLevel();
-        void UpdateAnimationTime();
-        float GetDeltaT();
         bool CheckDifficultyIncrease(int score);
         void IncreaseDifficulty();
+        void UpdateAnimationTime();
+        float GetDeltaT();
 
         //GAME STATE
         std::unordered_map<State, GameStateInfo>& GetGameStates();
