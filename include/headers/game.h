@@ -29,10 +29,13 @@ class Game {
         void Start();
         void Reset();
         void SetGameLevel();
-        bool CheckDifficultyIncrease(int score);
+        bool CheckDifficultyIncrease();
         void IncreaseDifficulty();
         void UpdateAnimationTime();
         float GetDeltaT();
+
+        int GetScore();
+        void SetScore(int value);
 
         //GAME STATE
         std::unordered_map<State, GameStateInfo>& GetGameStates();
@@ -83,7 +86,6 @@ class Game {
         Player& GetPlayer();
         void SetPlayer(Player p);
         void UpdatePlayer();
-        void UpdatePlayerScore();
         bool IsPlayerOutOfBounds();
 
         //CAMERA
@@ -93,6 +95,7 @@ class Game {
         void UpdateCamera(int screenWidth, int screenHeight);
 
         void CheckEntityCollisions();
+        std::tuple<Vector2, Vector2> CollisionResponse(Vector2 v1, Vector2 v2, Vector2 pos1, Vector2 pos2, float m1, float m2);
 
     protected:
         GameStateInfo currentGameState;
@@ -114,6 +117,8 @@ class Game {
         std::vector<Bullet> bulletsInGame;
         Player player;
         Camera2D camera;
+
+        int score;
         
         float animation_t_prev;
         float animation_t_now;

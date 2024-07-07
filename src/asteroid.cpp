@@ -2,13 +2,12 @@
 
 Asteroid::Asteroid() {}
 
-Asteroid::Asteroid(Vector2 pos, int radius, float life, float speed) {
+Asteroid::Asteroid(Vector2 pos, int radius, float life) {
     SetPosition(pos.x, pos.y);
     SetRadius(radius);
-    SetCurrentSpeed(speed);
-    SetMaxSpeed(speed);
-    SetMaxLife(life);
-    SetCurrentLife(life);
+    SetLife(life, life, 0.0f);
+    SetVelocity(0.0f, 0.0f);
+    SetAcceleration(0.0f, 0.0f);
 }
 
 float Asteroid::GetRadius() {
@@ -23,18 +22,13 @@ void Asteroid::DrawHitBox(){
     DrawCircle(this->GetPosition().x, this->GetPosition().y, GetRadius(), GRAY);
 }
 
-void Asteroid::DrawDirectionVector() {
-    Vector2 dir = {GetPosition().x + GetDirection().x * GetCurrentSpeed(),
-                   GetPosition().y + GetDirection().y * GetCurrentSpeed()};
+void Asteroid::Move(float delta) {
 
-    DrawLineEx(GetPosition(), dir, 2, GREEN);
-}
+    SetVelocity(GetVelocity().current.x + GetAcceleration().current.x * delta,
+                GetVelocity().current.y + GetAcceleration().current.y * delta);
 
-void Asteroid::Move(Vector2 direction) {
-
-    SetDirection(direction);
-    SetPosition((float)this->GetPosition().x + GetDirection().x * GetCurrentSpeed(),
-                (float)this->GetPosition().y + GetDirection().y * GetCurrentSpeed());
+    SetPosition(GetPosition().x + GetVelocity().current.x * delta,
+                GetPosition().y + GetVelocity().current.y * delta);
 
 }
 

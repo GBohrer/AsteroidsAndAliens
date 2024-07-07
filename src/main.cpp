@@ -15,9 +15,7 @@ int main()
     SetTargetFPS(60);
 
     Game game = Game();
-
     bool IsGameRunning = true;
-    int TextBoxIndex;
 
     while (IsGameRunning)
     {
@@ -34,33 +32,31 @@ int main()
             case State::InMenu:
                 if (IsKeyPressed(KEY_ESCAPE)) IsGameRunning = false;
 
-                TextBoxIndex = 0;
-                for (TextBox& tb : game.GetCurrentGameState().text_boxes) {
+                for (int i = 0; i < (int)game.GetCurrentGameState().text_boxes.size(); i++) {
+                    TextBox tb = game.GetCurrentGameState().text_boxes[i];
+
                     if (CheckCollisionPointRec(GetMousePosition(), tb.box)) {
                         tb.isMouseOn = true;
-                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
-
+                        game.UpdateCurrentGameStateTextBox(tb, i);
                         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                             if (tb.text == "Start") game.Start();
                             if (tb.text == "Exit") IsGameRunning = false;
                         }
-
                     } else {
                         tb.isMouseOn = false;
-                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
+                        game.UpdateCurrentGameStateTextBox(tb, i);
                     }
-                    TextBoxIndex++;
                 }
-
             break;
 
             case State::Paused:
 
-                TextBoxIndex = 0;
-                for (TextBox& tb : game.GetCurrentGameState().text_boxes) {
+                for (int i = 0; i < (int)game.GetCurrentGameState().text_boxes.size(); i++) {
+                    TextBox tb = game.GetCurrentGameState().text_boxes[i];
+
                     if (CheckCollisionPointRec(GetMousePosition(), tb.box)) {
                         tb.isMouseOn = true;
-                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
+                        game.UpdateCurrentGameStateTextBox(tb, i);
 
                         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                             if (tb.text == "Resume") {
@@ -73,9 +69,8 @@ int main()
 
                     } else {
                         tb.isMouseOn = false;
-                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
+                        game.UpdateCurrentGameStateTextBox(tb, i);
                     }
-                    TextBoxIndex++;
                 }
             break;
             
@@ -90,7 +85,7 @@ int main()
                 game.UpdatePlayer();
                 if (IsKeyDown(KEY_SPACE)) game.SpawnBullets();
 
-                if (game.CheckDifficultyIncrease(game.GetPlayer().GetScore())){ game.IncreaseDifficulty();}
+                if (game.CheckDifficultyIncrease()){ game.IncreaseDifficulty();}
                 
                 game.SpawnAsteroids();
                 game.SpawnAliens();
@@ -102,11 +97,12 @@ int main()
 
             case State::GameOver:
 
-                TextBoxIndex = 0;
-                for (TextBox& tb : game.GetCurrentGameState().text_boxes) {
+                for (int i = 0; i < (int)game.GetCurrentGameState().text_boxes.size(); i++) {
+                    TextBox tb = game.GetCurrentGameState().text_boxes[i];
+
                     if (CheckCollisionPointRec(GetMousePosition(), tb.box)) {
                         tb.isMouseOn = true;
-                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
+                        game.UpdateCurrentGameStateTextBox(tb, i);
 
                         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 
@@ -131,11 +127,9 @@ int main()
 
                     } else {
                         tb.isMouseOn = false;
-                        game.UpdateCurrentGameStateTextBox(tb, TextBoxIndex);
+                        game.UpdateCurrentGameStateTextBox(tb, i);
                     }
-                    TextBoxIndex++;
                 }
-
             break;
 
             case State::IsLoading:
@@ -158,8 +152,8 @@ int main()
                     TextBox tb = game.GetCurrentGameState().text_boxes[i];
 
                     if (tb.isMouseOn) {
-                        DrawRectangleRec(tb.box, LIGHTGRAY);
-                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, BLACK);
+                        DrawRectangleLinesEx(tb.box, 4, YELLOW);
+                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, YELLOW);
                     } else {
                         DrawRectangleLinesEx(tb.box, 4, LIGHTGRAY);
                         DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, LIGHTGRAY);
@@ -168,14 +162,14 @@ int main()
             break;
 
             case State::Paused:
-                DrawText("PAUSE", (int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f - 200, 35, WHITE);
+                DrawText("PAUSE", (int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f - 200, 35, LIGHTGRAY);
 
                 for (int i = 0; i < (int)game.GetCurrentGameState().text_boxes.size(); i++) {
                     TextBox tb = game.GetCurrentGameState().text_boxes[i];
 
                     if (tb.isMouseOn) {
-                        DrawRectangleRec(tb.box, LIGHTGRAY);
-                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, BLACK);
+                        DrawRectangleLinesEx(tb.box, 4, YELLOW);
+                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, YELLOW);
                     } else {
                         DrawRectangleLinesEx(tb.box, 4, LIGHTGRAY);
                         DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, LIGHTGRAY);
@@ -199,7 +193,7 @@ int main()
                     for (Alien& a : game.GetCurrentAliens()) { 
                         a.DrawHitBox();
                         a.DrawHealthBar();
-                        //a.DrawDirectionVector();
+                        a.DrawDirectionVector();
                      }
 
                     for (Bullet& b : game.GetCurrentBullets()) { b.DrawHitBox(); } 
@@ -212,10 +206,20 @@ int main()
                 //CAMERA ZOOM
                 PrintTextInGame(true, game.GetCamera().zoom - 0.5f, {50,50}, 30, WHITE);
                 // SCORE
-                PrintTextInGame(false, game.GetPlayer().GetScore(), {(int)GetScreenWidth()/2.0f, 70}, 50, WHITE);
-                //COORDS
+                PrintTextInGame(false, game.GetScore(), {(int)GetScreenWidth()/2.0f, 70}, 50, WHITE);
+                
+                DrawText("COORDS", (int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 160.0f, 30, WHITE );
                 PrintTextInGame(false, game.GetPlayer().GetPosition().x, {(int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 120.0f}, 30, WHITE);
                 PrintTextInGame(false, game.GetPlayer().GetPosition().y, {(int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 90.0f}, 30, WHITE);
+                
+                DrawText("ACC", (int)GetScreenWidth()/2.0f - 200, (int)GetScreenHeight() - 160.0f, 30, WHITE );
+                PrintTextInGame(true, game.GetPlayer().GetAcceleration().current.x, {(int)GetScreenWidth()/2.0f - 200, (int)GetScreenHeight() - 120.0f}, 30, WHITE);
+                PrintTextInGame(true, game.GetPlayer().GetAcceleration().current.y, {(int)GetScreenWidth()/2.0f - 200, (int)GetScreenHeight() - 90.0f}, 30, WHITE);
+                
+                DrawText("VELOCITY", (int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 160.0f, 30, WHITE );
+                PrintTextInGame(false, game.GetPlayer().GetVelocity().current.x, {(int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 120.0f}, 30, WHITE);
+                PrintTextInGame(false, game.GetPlayer().GetVelocity().current.y, {(int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 90.0f}, 30, WHITE);
+
 
                 if (game.IsPlayerOutOfBounds()) {
                     DrawText("WARNING!!!", GetScreenWidth()/2.0f - 200, GetScreenHeight() - 300, 80, RED);
@@ -231,8 +235,8 @@ int main()
                     TextBox tb = game.GetCurrentGameState().text_boxes[i];
 
                     if (tb.isMouseOn) {
-                        DrawRectangleRec(tb.box, LIGHTGRAY);
-                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, BLACK);
+                        DrawRectangleLinesEx(tb.box, 4, YELLOW);
+                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, YELLOW);
                     } else {
                         DrawRectangleLinesEx(tb.box, 4, LIGHTGRAY);
                         DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, LIGHTGRAY);

@@ -26,15 +26,27 @@ void Game::Reset() {
 
 void Game::SetGameLevel() {
     SetCurrenLevelBounds({{0,0}, {4000,4000}});
+    SetScore(0);
     
-    totalAliens = 3;
+    totalAliens = 5;
     totalAsteroids = 50;
-    AlienSpawnTimer = 7.0f;
-    BulletSpawnTimer = 0.9f;
+    AlienSpawnTimer = 4.0f;
+    BulletSpawnTimer = 0.05f;
     scoreThreshold = 10;
     AsteroidDirectionAngle = GetRandomValue(1,360) / 57.2957795f;
 
     while (GetAsteroidsInGame() < totalAsteroids) { SpawnAsteroids(); }
+}
+
+void Game::IncreaseDifficulty() {
+    totalAliens++;
+    AlienSpawnTimer -= 0.5f;
+    BulletSpawnTimer -= 0.03f;
+    scoreThreshold += 5;
+}
+
+bool Game::CheckDifficultyIncrease() {
+    if (GetScore() > scoreThreshold) { return true; } else { return false; }
 }
 
 void Game::UpdateAnimationTime() {
@@ -46,22 +58,16 @@ void Game::UpdateAnimationTime() {
     timeSinceLastAlienSpawn += delta_t;
 }
 
-void Game::IncreaseDifficulty() {
-    totalAliens++;
-    AlienSpawnTimer -= 0.5f;
-    BulletSpawnTimer -= 0.03f;
-    GetPlayer().SetCurrentSpeed(GetPlayer().GetCurrentSpeed() + 0.1f);
-
-    scoreThreshold += 5;
-}
-
 float Game::GetDeltaT() {
     return delta_t;
 }
 
-bool Game::CheckDifficultyIncrease(int score) {
-    if (score > scoreThreshold) {return true; }
-    else {return false;}
+int Game::GetScore() {
+    return score;
+}
+
+void Game::SetScore(int value) {
+    this->score = value;
 }
 
 // GAME STATE:
@@ -138,11 +144,11 @@ void Game::SpawnAsteroids() {
         int radius = GetRandomValue(15,40);
         float life = radius*10;
 
-        Asteroid asteroid = Asteroid({posX, posY}, radius, life, 1);
-        asteroid.SetPosition((float)posX, (float)posY);
+        Asteroid asteroid = Asteroid({posX, posY}, radius, life);
+        Vector2 dir = {asteroid.GetPosition().x - (asteroid.GetPosition().x + 10.0f * cos(AsteroidDirectionAngle)),
+                       asteroid.GetPosition().y - (asteroid.GetPosition().y + 10.0f * sin(AsteroidDirectionAngle))};
 
-        asteroid.SetDirection(Vector2Normalize({asteroid.GetPosition().x - (asteroid.GetPosition().x + 0.05f * cos(AsteroidDirectionAngle)),
-                                                asteroid.GetPosition().y - (asteroid.GetPosition().y + 0.05f * sin(AsteroidDirectionAngle))}));
+        asteroid.SetVelocity(dir.x, dir.y);
 
         if (!CollisionAsteroidPlayer(asteroid, GetPlayer())) { asteroidsInGame.push_back(asteroid); }
     }
@@ -208,7 +214,7 @@ void Game::SpawnBullets() {
         Vector2 bullet_pos = {(pos.x + pos.width/2) + direction.x * 30,
                               (pos.y + pos.height/2) + direction.y * 30};
 
-        this->bulletsInGame.push_back(Bullet(bullet_pos, direction, GetPlayer().GetCurrentSpeed() * 2.5, 0.8f, 20.0f));
+        this->bulletsInGame.push_back(Bullet(bullet_pos, direction, 10.0f, 0.8f, 20.0f));
         timeSinceLastShot = 0.0f;
     }
 }
@@ -231,21 +237,9 @@ void Game::SetPlayer(Player p) {
 }
 
 void Game::UpdatePlayer() {
-    Vector2 player_pos = GetPlayer().GetPosition();
-    float speed = GetPlayer().GetCurrentSpeed();
-
-    if (IsKeyDown(KEY_W)) { player_pos.y -= speed; }
-    if (IsKeyDown(KEY_A)) { player_pos.x -= speed; }
-    if (IsKeyDown(KEY_S)) { player_pos.y += speed; }
-    if (IsKeyDown(KEY_D)) { player_pos.x += speed; }
-
-    Vector2 direction = Vector2Normalize(Vector2Subtract(player_pos, GetPlayer().GetPosition()));
-
+/*
     Vector2 min = GetCurrentLevelBounds().front();
     Vector2 max = GetCurrentLevelBounds().back();
-
-    //float new_speed_min = pow(0.5f, abs(Vector2Distance(player_pos, min) / 10) );
-    //float new_speed_max = pow(0.5f, abs(Vector2Distance(player_pos, max) / 10) );
 
     if (player_pos.x < min.x || player_pos.y < min.y) {
         isPlayerOutOfBounds = true;
@@ -265,13 +259,9 @@ void Game::UpdatePlayer() {
         GetPlayer().SetCurrentSpeed(5.0f);
         isPlayerOutOfBounds = false;
     }
-
-    this->player.Move(direction);
-    this->player.UpdateAim();
-}
-
-void Game::UpdatePlayerScore() {
-    this->GetPlayer().SetScore(this->GetPlayer().GetScore() + 1);
+*/
+    this->player.Move(GetDeltaT());
+    this->player.UpdateAim(GetDeltaT());
 }
 
 bool Game::IsPlayerOutOfBounds() {
@@ -367,8 +357,16 @@ void Game::CheckAlienCollisions() {
                     if (&a != &aa) {
                         if (CollisionAlienAlien(a, aa)) {
                             alien_collision = true;
-                            Vector2 new_direction = (Vector2Add(a.GetDirection(), aa.GetDirection()));
-                            aa.Move(GetPlayer(), GetDeltaT(), new_direction);
+                            
+                            const auto velocities = CollisionResponse(a.GetVelocity().current, aa.GetVelocity().current,
+                                                                      a.GetPosition(), aa.GetPosition(),
+                                                                      a.GetRadius(), aa.GetRadius());
+                            Vector2 a_v = std::get<0>(velocities);
+                            a.SetVelocity(a_v.x, a_v.y);
+                            UpdateAlienInGame(a, index1);
+                            
+                            a_v = std::get<1>(velocities);
+                            aa.SetVelocity(a_v.x, a_v.y);
                             UpdateAlienInGame(aa, index2);
                             break;
                         }
@@ -378,7 +376,7 @@ void Game::CheckAlienCollisions() {
             }
 
             if (!alien_collision) {
-                a.Move(GetPlayer(), GetDeltaT(), a.GetDirection());
+                a.Move(GetPlayer(), GetDeltaT());
                 UpdateAlienInGame(a, index1);
             }
             index1++;
@@ -420,10 +418,11 @@ void Game::CheckBulletCollisions() {
 
             // BULLET - PLAYER
             } else if (CollisionBulletPlayer(b)) {
-                GetPlayer().SetCurrentLife(GetPlayer().GetCurrentLife() - (b.GetDamage()/2.0f));
+                float new_life = GetPlayer().GetLife().current - (b.GetDamage()/2.0f);
+                GetPlayer().UpdateCurrentLife(new_life);
                 DeleteBulletInGame(b_index);
 
-                if (GetPlayer().GetCurrentLife() <= 0) {
+                if (GetPlayer().GetLife().current <= 0) {
                     SetCurrentGameState(GetGameStates().at(State::GameOver));
                     break;
                 }
@@ -445,7 +444,7 @@ void Game::CheckBulletCollisions() {
 
                         if(a.GetCurrentLife() <= 0) {
                             DeleteAlienInGame(a_index);
-                            UpdatePlayerScore();
+                            SetScore(GetScore() + 1);
                         }
                     }
                     a_index++;
@@ -509,11 +508,16 @@ void Game::CheckAsteroidCollisions () {
                 for (Alien& a : GetCurrentAliens()) {
 
                     if (CollisionAsteroidAlien(ast, a)) {
-                        ast.Move(a.GetDirection());
+                        const auto velocities = CollisionResponse(ast.GetVelocity().current, a.GetVelocity().current,
+                                                                  ast.GetPosition(), a.GetPosition(),
+                                                                  ast.GetRadius(), a.GetRadius());
+                        Vector2 ast_v = std::get<0>(velocities);
+                        ast.SetVelocity(ast_v.x, ast_v.y);
                         UpdateAsteroidInGame(ast, ast_index);
-                        a.SetCurrentSpeed(ast.GetCurrentSpeed());
-                    } else {
-                        a.SetCurrentSpeed(a.GetMaxSpeed());
+                        
+                        Vector2 a_v = std::get<1>(velocities);
+                        a.SetVelocity(a_v.x, a_v.y);
+                        UpdateAlienInGame(a, a_index);
                     }
                     a_index++;
                 }
@@ -526,9 +530,10 @@ void Game::CheckAsteroidCollisions () {
               for (Bullet& b : GetCurrentBullets()) {
 
                 if (CollisionAsteroidBullet(ast, b)) {
-                    ast.SetCurrentLife(ast.GetCurrentLife() - b.GetDamage());
+                    float new_life = ast.GetLife().current - b.GetDamage();
+                    ast.UpdateCurrentLife(new_life);
                     DeleteBulletInGame(b_index);
-                    if (ast.GetCurrentLife() <= 0) { delete_asteroid = true; }
+                    if (ast.GetLife().current <= 0) { delete_asteroid = true; }
                 }
                 b_index++;
               }  
@@ -536,9 +541,16 @@ void Game::CheckAsteroidCollisions () {
 
             //ASTEROID-PLAYER
             if (CollisionAsteroidPlayer(ast, GetPlayer())) {
-                ast.Move(Vector2Scale(GetPlayer().GetDirection(), GetPlayer().GetCurrentSpeed()));
+                
+                const auto velocities = CollisionResponse(ast.GetVelocity().current, GetPlayer().GetVelocity().current,
+                                                          ast.GetPosition(), GetPlayer().GetPosition(),
+                                                          ast.GetRadius(), GetPlayer().GetHitBox().width);
+                Vector2 ast_v = std::get<0>(velocities);
+                ast.SetVelocity(ast_v.x, ast_v.y);
                 UpdateAsteroidInGame(ast, ast_index);
 
+                Vector2 player_v = std::get<1>(velocities);
+                GetPlayer().SetVelocity(player_v.x, player_v.y);
             }
 
             //ASTEROID-ASTEROID
@@ -550,24 +562,23 @@ void Game::CheckAsteroidCollisions () {
                     if (&ast != &ast2) {
                         if (CollisionAsteroidAsteroid(ast, ast2)) {
 
-                            float ast_force = Vector2Length(ast.GetDirection());
-                            float ast2_force = Vector2Length(ast2.GetDirection());
+                            const auto velocities = CollisionResponse(ast.GetVelocity().current, ast2.GetVelocity().current,
+                                                                      ast.GetPosition(), ast2.GetPosition(),
+                                                                      ast.GetRadius(), ast2.GetRadius());
+                            Vector2 ast_v = std::get<0>(velocities);
+                            ast.SetVelocity(ast_v.x, ast_v.y);
+                            UpdateAsteroidInGame(ast, ast_index);
 
-                            if (ast_force > ast2_force) {
-                                ast2.Move(ast.GetDirection());
-                                UpdateAsteroidInGame(ast2, ast2_index);
-                            } else {
-                                ast.SetDirection(ast2.GetDirection());
-                                UpdateAsteroidInGame(ast, ast_index);
-                            }
-                            break;
+                            ast_v = std::get<1>(velocities);
+                            ast2.SetVelocity(ast_v.x, ast_v.y);
+                            UpdateAsteroidInGame(ast2, ast2_index);
                         }
                     }
                     ast2_index++;
                 }
             }
 
-            ast.Move(ast.GetDirection());
+            ast.Move(GetDeltaT());
             UpdateAsteroidInGame(ast, ast_index);
 
             if (delete_asteroid) DeleteAsteroidInGame(ast_index);
@@ -581,4 +592,25 @@ void Game::CheckEntityCollisions() {
     CheckAlienCollisions();
     CheckBulletCollisions();
     CheckAsteroidCollisions();
+}
+
+std::tuple<Vector2, Vector2> Game::CollisionResponse (Vector2 v1, Vector2 v2, Vector2 pos1, Vector2 pos2, float m1, float m2) {
+
+    Vector2 C1 = Vector2Subtract(pos1,pos2);
+    Vector2 C2 = Vector2Subtract(pos2,pos1);
+
+    float value1 = (2 * m2) / (m1 + m2);
+    float value2 = Vector2DotProduct(v1,C1) - Vector2DotProduct(v2,C1);
+    float value3 = Vector2LengthSqr(C1);
+
+    Vector2 new_velocity1 = Vector2Subtract(v1, (Vector2Scale(C1,(value1 * value2 / value3))));
+
+    value1 = (2 * m1) / (m1 + m2);
+    value2 = Vector2DotProduct(v2,C2) - Vector2DotProduct(v1,C2);
+    value3 = Vector2LengthSqr(C2);
+
+    Vector2 new_velocity2 = Vector2Subtract(v2, (Vector2Scale(C2,(value1 * value2 / value3))));
+
+    return {new_velocity1, new_velocity2};
+
 }

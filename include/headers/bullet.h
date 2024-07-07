@@ -1,10 +1,8 @@
 #pragma once
 #include "../master_header.h"
 
-#include "character.h"
 
-
-class Bullet : public Character {
+class Bullet : public Entity {
 
     public:
         Bullet();

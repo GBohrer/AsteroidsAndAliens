@@ -17,10 +17,9 @@
 // HEADERS
 #include "headers/text_functions.h"
 
+#include "headers/entity.h"
 #include "headers/alien.h"
 #include "headers/player.h"
-#include "headers/entity.h"
-#include "headers/character.h"
 #include "headers/game.h"
 #include "headers/bullet.h"
 #include "headers/asteroid.h"

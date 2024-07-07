@@ -1,34 +1,27 @@
 #pragma once
 #include "../master_header.h"
 
-#include "character.h"
 
-class Player : public Character {
+class Player : public Entity {
 
-public:
-    Player(); 
-    Player(Vector2 pos);
-    
-    Rectangle GetHitBox();
-    void SetHitBox();
-    int GetScore();
-    void SetScore(int value);
-    bool GetIsBuffed();
-    void SetIsBuffed(bool value);
-    Vector2 GetAimTarget();
-    void SetAimTarget(Vector2 target);
+    public:
+        Player(); 
+        Player(Vector2 pos);
 
-    void DrawHitBox();
-    void DrawAim();
-    void DrawHealthBar();
+        Rectangle GetHitBox();
+        void SetHitBox();
+        Vector2 GetAimTarget();
+        void SetAimTarget(Vector2 target);
 
-    void Move(Vector2 direction);
-    void UpdateAim();
+        void DrawHitBox();
+        void DrawAim();
+        void DrawHealthBar();
 
-private:
-    Rectangle hitbox;
-    int score;
-    bool isBuffed;
-    Vector2 aimTarget;
+        void Move(float delta);
+        void UpdateAim(float delta);
+
+    private:
+        Rectangle hitbox;
+        Vector2 aimTarget;
 
 };

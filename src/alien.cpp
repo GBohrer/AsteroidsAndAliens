@@ -4,10 +4,9 @@ Alien::Alien(){}
 
 Alien::Alien(int radius, float speed, float life){
     SetRadius(radius);
-    SetCurrentSpeed(speed);
-    SetMaxSpeed(speed);
-    SetMaxLife(life);
-    SetCurrentLife(life);
+    SetVelocity(0.0f, 0.0f);
+    SetAcceleration(0.0f, 0.0f);
+    SetLife(life,life, 0.0f);
 }
 
 // GETTERS & SETTERS
@@ -19,24 +18,31 @@ void Alien::SetRadius(int radius){
     this->radius = radius;
 }
 
-
-// METHODS
-void Alien::SetAlienToPlayer(Player player, int Player_distance){
-
-    float Alien_spawn_angle = GetRandomValue(0, 360) / 57.2957795;
-    SetPosition((float) player.GetPosition().x + Player_distance * cos(Alien_spawn_angle),
-                (float) player.GetPosition().y + Player_distance * sin(Alien_spawn_angle));
-
-    SetDirection(Vector2Normalize(Vector2Subtract(player.GetPosition(),this->GetPosition())));
+Vector2 Alien::GetDirection() {
+    return direction;
 }
 
-void Alien::Move(Player player, float delta, Vector2 direction) {
+void Alien::SetDirection(float x, float y) {
+    this->direction = {x,y};
+}
 
-    float alien_desloc = GetCurrentSpeed();
-    SetPosition((float)this->GetPosition().x + direction.x * alien_desloc,
-                (float)this->GetPosition().y + direction.y * alien_desloc);
+// METHODS
+void Alien::SetAlienToPlayer(Player p, int Player_distance){
 
-    SetDirection(Vector2Normalize(Vector2Subtract(player.GetPosition(),this->GetPosition())));
+    float Alien_spawn_angle = GetRandomValue(0, 360) / 57.2957795;
+    SetPosition((float) p.GetPosition().x + Player_distance * cos(Alien_spawn_angle),
+                (float) p.GetPosition().y + Player_distance * sin(Alien_spawn_angle));
+}
+
+void Alien::Move(Player p, float delta) {
+    Vector2 dir = Vector2Normalize(Vector2Subtract(p.GetPosition(), GetPosition()));
+    SetDirection(dir.x, dir.y);
+
+    SetVelocity(GetVelocity().current.x + GetAcceleration().current.x * delta,
+                GetVelocity().current.y + GetAcceleration().current.y * delta);
+
+    SetPosition(GetPosition().x + GetVelocity().current.x * delta + GetDirection().x * 2.0f,
+                GetPosition().y + GetVelocity().current.y * delta + GetDirection().y * 2.0f );
 }
 
 void Alien::DrawHitBox(){
@@ -44,7 +50,7 @@ void Alien::DrawHitBox(){
 }
 
 void Alien::DrawDirectionVector() {
-    float mag = GetCurrentSpeed() * 100.0f;
+    float mag = 100.0f;
     Vector2 dir = {GetPosition().x + GetDirection().x * mag,
                    GetPosition().y + GetDirection().y * mag};
 
@@ -52,7 +58,7 @@ void Alien::DrawDirectionVector() {
 }
 
 void Alien::DrawHealthBar () {
-    DrawRectangle(GetPosition().x - GetMaxLife()/2.0f, GetPosition().y - GetRadius() - 20, (int)GetMaxLife()*2, 10, RED);
-    DrawRectangle(GetPosition().x - GetMaxLife()/2.0f, GetPosition().y - GetRadius() - 20, (int)GetCurrentLife()*2, 10, GREEN);
+    DrawRectangle(GetPosition().x - GetLife().max/2.0f, GetPosition().y - GetRadius() - 20, (int)GetLife().max*2, 10, RED);
+    DrawRectangle(GetPosition().x - GetLife().max/2.0f, GetPosition().y - GetRadius() - 20, (int)GetLife().current*2, 10, GREEN);
                     
 }

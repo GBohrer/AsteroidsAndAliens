@@ -9,7 +9,7 @@ DAY 2 - 29/05/2024
     Movimentar objeto com o cursor do Mouse
 
 DAY 3 - 31/05/2024
-    Exclusão da Classe Position
+    Exclusao da Classe Position
     Mudança do nome Ball para Alien (ideia do jogo)
     Mudança de atributos de Alien e Player: agora possuem um Vector2 pos (posicao) e Camera2D
     Explorando funções da window e monitor
@@ -85,4 +85,7 @@ DAY 14 - 03/07/2024
     Adicao de "Max" e "Current" na vida e velocidade de Entity/Character
         Melhora na UI + Controle para quando isOutOfBounds
     
-DAY 15 - 
+DAY 15 - 06/07/2024
+    Exclusao da classe Character. Entity suporta dinamica de particulas! (MRUV)
+    Refactoring de classes filhas de Entity e métodos de game para utilizar nova estrutura: calculo da colisao entre duas particulas
+    
