@@ -11,7 +11,7 @@ void Game::Start() {
     SetGameLevel();
     timeSinceLastShot = timeSinceLastAlienSpawn = PlayerOutOfBoundsTimer = 0.0f;
     animation_t_now = animation_t_prev = delta_t = 0.0f;
-    isPlayerOutOfBounds = false;
+    isPlayerOutOfBounds = isGameOver = false;
     this->player = Player(Vector2Scale(GetCurrentLevelBounds().back(), 0.5f));
     SetCamera();
     SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
@@ -28,11 +28,11 @@ void Game::SetGameLevel() {
     SetCurrenLevelBounds({{0,0}, {4000,4000}});
     SetScore(0);
     
-    totalAliens = 5;
+    totalAliens = 10;
     totalAsteroids = 50;
     AlienSpawnTimer = 4.0f;
-    BulletSpawnTimer = 0.1f;
-    scoreThreshold = 10;
+    BulletSpawnTimer = 1.0f;
+    scoreThreshold = 5;
     VoidVelocityDecay = 10.0f;
     VoidDecayTimer = 1.0f;
     VoidVelocityMin = 10.0f;
@@ -42,14 +42,21 @@ void Game::SetGameLevel() {
 }
 
 void Game::IncreaseDifficulty() {
-    totalAliens++;
-    AlienSpawnTimer -= 0.5f;
-    BulletSpawnTimer -= 0.03f;
+    if (totalAliens <= 100) totalAliens++;
+    if (totalAsteroids <= 100) totalAsteroids++;
+    if (AlienSpawnTimer >= 0.1f) AlienSpawnTimer -= 0.5f;
+    if (BulletSpawnTimer >= 0.05f) BulletSpawnTimer -= 0.05f;
+    VoidVelocityDecay += 0.05f;
+    VoidVelocityMin -= 0.05f;
     scoreThreshold += 5;
 }
 
 bool Game::CheckDifficultyIncrease() {
     if (GetScore() > scoreThreshold) { return true; } else { return false; }
+}
+
+void Game::CheckGameState() {
+    if (isGameOver) SetCurrentGameState(GetGameStates().at(State::GameOver));
 }
 
 void Game::UpdateAnimationTime() {
@@ -241,6 +248,7 @@ void Game::SetPlayer(Player p) {
 
 void Game::UpdatePlayer() {
 
+    //Check IsOutOfBounds:
     Vector2 min = GetCurrentLevelBounds().front();
     Vector2 max = GetCurrentLevelBounds().back();
     EntityVelocity v = GetPlayer().GetVelocity();
@@ -262,8 +270,19 @@ void Game::UpdatePlayer() {
         }
     }
 
+    //Check Spaceship Fuel:
+    if (v.current.x != 0.0f || v.current.y != 0.0f) {
+        Spaceship s = GetPlayer().GetSpaceshipStats();
+        float new_current_fuel = s.currentFuel - ((0.0001f * (abs(v.current.x) + abs(v.current.y))) / s.fuelInfo.burningEfficiency);
+        
+        PrintTextInGame(true, s.currentFuel - new_current_fuel, {(int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 220.0f}, 20, WHITE);
+        GetPlayer().UpdateSpaceshipCurrentFuel(new_current_fuel);
+    }
+    if (GetPlayer().GetSpaceshipStats().currentFuel <= 0.0f) isGameOver = true;
+
+    //Player Move:
     this->player.Move(GetDeltaT());
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) game.GetPlayer().SetVelocity(0.0f, 0.0f);
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) GetPlayer().SetVelocity(0.0f, 0.0f);
     this->player.UpdateAim(GetDeltaT());
 }
 
@@ -331,10 +350,7 @@ void Game::CheckAlienCollisions() {
         int index1 = 0;
         for (Alien& a : GetCurrentAliens()) {
             // ALIEN - PLAYER
-            if (CollisionAlienPlayer(a)){
-                SetCurrentGameState(GetGameStates().at(State::GameOver));
-                break;
-            }
+            if (CollisionAlienPlayer(a)) isGameOver = true;
             
             if (GetAliensInGame() > 1) {
                 alien_collision = false;
@@ -351,12 +367,16 @@ void Game::CheckAlienCollisions() {
                                                                       a.GetRadius(), aa.GetRadius());
                             Vector2 a_v = std::get<0>(velocities);
                             a.SetVelocity(a_v.x, a_v.y);
+                            a.SetDirection(a_v.x, a_v.y);
                             UpdateAlienInGame(a, index1);
                             
                             a_v = std::get<1>(velocities);
                             aa.SetVelocity(a_v.x, a_v.y);
+                            aa.Move(GetDeltaT());
                             UpdateAlienInGame(aa, index2);
                             break;
+                        } else {
+                            aa.UpdateDirection(GetPlayer());
                         }
                     }
                     index2++;
@@ -364,7 +384,8 @@ void Game::CheckAlienCollisions() {
             }
 
             if (!alien_collision) {
-                a.Move(GetPlayer(), GetDeltaT());
+                a.UpdateDirection(GetPlayer());
+                a.Move(GetDeltaT());
                 UpdateAlienInGame(a, index1);
             }
             index1++;
@@ -411,8 +432,7 @@ void Game::CheckBulletCollisions() {
                 DeleteBulletInGame(b_index);
 
                 if (GetPlayer().GetLife().current <= 0) {
-                    SetCurrentGameState(GetGameStates().at(State::GameOver));
-                    break;
+                    isGameOver = true;
                 }
                 
             } else {

@@ -10,21 +10,21 @@ enum FuelType {
 typedef struct Fuel {
     FuelType type;
     float burningEfficiency;
-    float thrustControl;
+    float thrustControlEfficiency;
 
-    Fuel() : type(), burningEfficiency(0.0f), thrustControl(0.0f) {}
-    Fuel(FuelType t, float e, float c) : type(t), burningEfficiency(e), thrustControl(c) {}
+    Fuel() : type(), burningEfficiency(0.0f), thrustControlEfficiency(0.0f) {}
+    Fuel(FuelType t, float e, float c) : type(t), burningEfficiency(e), thrustControlEfficiency(c) {}
 
 } Fuel;
 
 typedef struct Spaceship {
     Fuel fuelInfo;
     float tankMaxCapacity;
-    float currentFuel;
+    double currentFuel;
     float VelocityMax;
 
     Spaceship() : fuelInfo(), tankMaxCapacity(0.0f), currentFuel(0.0f), VelocityMax(100.0f) {}
-    Spaceship(Fuel f, float t, float c, float v) : fuelInfo(f), tankMaxCapacity(t), currentFuel(c), VelocityMax(v) {}
+    Spaceship(Fuel f, float t, double c, float v) : fuelInfo(f), tankMaxCapacity(t), currentFuel(c), VelocityMax(v) {}
 
 } Spaceship;
 

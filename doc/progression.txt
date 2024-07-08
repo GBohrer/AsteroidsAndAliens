@@ -93,4 +93,8 @@ DAY 16 - 07/07/2024
     Fixes do resto das classes filhas de entity para implementar MRUV
     Nova struct Spaceship para Player: adicionado atributos para o combustivel
     Logica 2 movimento do player quando fora do cenario (atributos de game para parametros de VoidDecay)
+
+DAY 17 - 08/07/2024
+    Aprimorada movimentacao de aliens enquanto em colisao
+    Implementacao dos atributos de Fuel e Spaceship na gameplay e movimentacao de player!
     

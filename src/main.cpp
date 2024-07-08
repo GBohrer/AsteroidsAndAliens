@@ -94,6 +94,7 @@ int main()
                 game.CheckEntityCollisions();
 
                 game.UpdateCamera(GetScreenWidth(), GetScreenHeight());
+                game.CheckGameState();
             break;
 
             case State::GameOver:
@@ -194,7 +195,7 @@ int main()
                     for (Alien& a : game.GetCurrentAliens()) { 
                         a.DrawHitBox();
                         a.DrawHealthBar();
-                        a.DrawDirectionVector();
+                        //a.DrawDirectionVector();
                      }
 
                     for (Bullet& b : game.GetCurrentBullets()) { b.DrawHitBox(); } 
@@ -208,7 +209,9 @@ int main()
                 PrintTextInGame(true, game.GetCamera().zoom - 0.5f, {50,50}, 30, WHITE);
                 // SCORE
                 PrintTextInGame(false, game.GetScore(), {(int)GetScreenWidth()/2.0f, 70}, 50, WHITE);
-                
+                //FUEL
+                game.GetPlayer().DrawSpacechipFuelBar();
+
                 DrawText("COORDS", (int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 160.0f, 30, WHITE );
                 PrintTextInGame(false, game.GetPlayer().GetPosition().x, {(int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 120.0f}, 30, WHITE);
                 PrintTextInGame(false, game.GetPlayer().GetPosition().y, {(int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 90.0f}, 30, WHITE);

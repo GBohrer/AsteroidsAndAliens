@@ -31,6 +31,7 @@ class Game {
         void SetGameLevel();
         bool CheckDifficultyIncrease();
         void IncreaseDifficulty();
+        void CheckGameState();
         void UpdateAnimationTime();
         float GetDeltaT();
 
@@ -98,7 +99,7 @@ class Game {
         std::tuple<Vector2, Vector2> CollisionResponse(Vector2 v1, Vector2 v2, Vector2 pos1, Vector2 pos2, float m1, float m2);
 
     protected:
-        GameStateInfo currentGameState;
+        // OBS.: maioria destes atributos estará compondo o LevelModifiers
         int totalAliens;
         int totalAsteroids;
         float AlienSpawnTimer;
@@ -106,6 +107,7 @@ class Game {
         float AsteroidDirectionAngle;
         int scoreThreshold;
         bool isPlayerOutOfBounds;
+        bool isGameOver;
         float PlayerOutOfBoundsTimer;
 
         float VoidVelocityDecay;
@@ -114,6 +116,7 @@ class Game {
 
 
     private:
+        GameStateInfo currentGameState;
         std::unordered_map<State, GameStateInfo> gameStates;
         std::vector<Vector2> currentLevelBounds;
         std::vector<Asteroid> asteroidsInGame;

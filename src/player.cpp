@@ -7,7 +7,7 @@ Player::Player(Vector2 pos) {
     SetPosition(pos.x, pos.y);
     SetVelocity({0.0f, 0.0f}, 200.0f, -200.0f);
     SetAcceleration({0.0f, 0.0f}, 2.0f, -2.0f);
-    SetSpeed(20.0f);
+    SetSpeed(10.0f);
     SetLife(100.0f, 100.0f, 0.0f);
     SetAimTarget(pos);
     SetHitBox();
@@ -47,8 +47,8 @@ void Player::UpdateSpaceshipCurrentFuel(float value) {
 }
 
 void Player::SetSpaceship() {
-    Fuel fuel(FuelType::Solid, 0.5f, 5.0f);
-    Spaceship s(fuel, 1000.0f, 1000.0f, GetVelocity().max);
+    Fuel fuel(FuelType::Liquid, 0.9f, 0.9f);
+    Spaceship s(fuel, 500.0f, 500.0f, GetVelocity().max);
     SetSpaceshipStats(s);
 }
 
@@ -59,11 +59,12 @@ void Player::Move(float delta) {
     float min = GetVelocity().min;
     float max = GetVelocity().max;
     float speed = GetSpeed();
+    Spaceship s = GetSpaceshipStats();
 
-    if (IsKeyDown(KEY_W)) { force.y -= speed; }
-    if (IsKeyDown(KEY_A)) { force.x -= speed; }
-    if (IsKeyDown(KEY_S)) { force.y += speed; }
-    if (IsKeyDown(KEY_D)) { force.x += speed; }
+    if (IsKeyDown(KEY_W)) { force.y -= speed * s.fuelInfo.thrustControlEfficiency; }
+    if (IsKeyDown(KEY_A)) { force.x -= speed * s.fuelInfo.thrustControlEfficiency; }
+    if (IsKeyDown(KEY_S)) { force.y += speed * s.fuelInfo.thrustControlEfficiency; }
+    if (IsKeyDown(KEY_D)) { force.x += speed * s.fuelInfo.thrustControlEfficiency; }
 
     if (force.x > max) { force.x = max; }
     else if (force.x < min) { force.x = min; }
@@ -107,11 +108,10 @@ void Player::DrawHealthBar() {
 
 }
 
-void Player::DrawSpacechipFuelBar() {
-    DrawText("VELOCITY", (int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 160.0f, 30, WHITE );
-                
-    DrawRectangle((int)GetScreenWidth()/2.0f - 700, (int)GetScreenHeight() - 140.0f, (int)GetSpaceshipStats().tankMaxCapacity, 10, GRAY);                 
-    DrawRectangle((int)GetScreenWidth()/2.0f - 700, (int)GetScreenHeight() - 140.0f, (int)GetSpaceshipStats().currentFuel, 10, ORANGE);                 
+void Player::DrawSpacechipFuelBar() {    
+    Spaceship s = GetSpaceshipStats();
+    DrawRectangle((int)GetScreenWidth()/2.0f - (int)s.tankMaxCapacity/2.0f, (int)GetScreenHeight() - 200.0f, (int)s.tankMaxCapacity, 20, BLACK);                 
+    DrawRectangle((int)GetScreenWidth()/2.0f - (int)s.tankMaxCapacity/2.0f, (int)GetScreenHeight() - 200.0f, (int)s.currentFuel, 20, ORANGE);                 
 
 }
 

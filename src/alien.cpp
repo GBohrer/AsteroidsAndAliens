@@ -35,15 +35,18 @@ void Alien::SetAlienToPlayer(Player p, int Player_distance){
                 (float) p.GetPosition().y + Player_distance * sin(Alien_spawn_angle));
 }
 
-void Alien::Move(Player p, float delta) {
-    Vector2 dir = Vector2Normalize(Vector2Subtract(p.GetPosition(), GetPosition()));
-    SetDirection(dir.x, dir.y);
+void Alien::Move(float delta) {
 
     SetVelocity(GetVelocity().current.x + GetAcceleration().current.x * delta,
                 GetVelocity().current.y + GetAcceleration().current.y * delta);
 
     SetPosition(GetPosition().x + GetVelocity().current.x * delta + GetDirection().x * GetSpeed(),
                 GetPosition().y + GetVelocity().current.y * delta + GetDirection().y * GetSpeed() );
+}
+
+void Alien::UpdateDirection(Player p) {
+    Vector2 dir = Vector2Normalize(Vector2Subtract(p.GetPosition(), GetPosition()));
+    SetDirection(dir.x, dir.y);
 }
 
 void Alien::DrawHitBox(){

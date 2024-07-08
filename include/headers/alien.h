@@ -19,8 +19,8 @@ class Alien : public Entity {
         void DrawHealthBar();
 
         void SetAlienToPlayer(Player p, int Player_distance);
-        void Move(Player p, float delta);
-
+        void Move(float delta);
+        void UpdateDirection(Player p);
 
     private:
         int radius;
