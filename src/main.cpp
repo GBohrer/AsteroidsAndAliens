@@ -83,12 +83,13 @@ int main()
                 }
 
                 game.UpdatePlayer();
+
                 if (IsKeyDown(KEY_SPACE)) game.SpawnBullets();
 
-                if (game.CheckDifficultyIncrease()){ game.IncreaseDifficulty();}
+                if (game.CheckDifficultyIncrease()) game.IncreaseDifficulty();
                 
                 game.SpawnAsteroids();
-                game.SpawnAliens();
+                //game.SpawnAliens();
 
                 game.CheckEntityCollisions();
 

@@ -31,8 +31,11 @@ void Game::SetGameLevel() {
     totalAliens = 5;
     totalAsteroids = 50;
     AlienSpawnTimer = 4.0f;
-    BulletSpawnTimer = 0.05f;
+    BulletSpawnTimer = 0.1f;
     scoreThreshold = 10;
+    VoidVelocityDecay = 10.0f;
+    VoidDecayTimer = 1.0f;
+    VoidVelocityMin = 10.0f;
     AsteroidDirectionAngle = GetRandomValue(1,360) / 57.2957795f;
 
     while (GetAsteroidsInGame() < totalAsteroids) { SpawnAsteroids(); }
@@ -211,8 +214,8 @@ void Game::SpawnBullets() {
         Vector2 direction = Vector2Normalize(Vector2Subtract(GetPlayer().GetAimTarget(), GetPlayer().GetPosition()));
 
         Rectangle pos = GetPlayer().GetHitBox();
-        Vector2 bullet_pos = {(pos.x + pos.width/2) + direction.x * 30,
-                              (pos.y + pos.height/2) + direction.y * 30};
+        Vector2 bullet_pos = {(pos.x + pos.width/2) + direction.x * 35.0f,
+                              (pos.y + pos.height/2) + direction.y * 35.0f};
 
         this->bulletsInGame.push_back(Bullet(bullet_pos, direction, 10.0f, 0.8f, 20.0f));
         timeSinceLastShot = 0.0f;
@@ -237,30 +240,30 @@ void Game::SetPlayer(Player p) {
 }
 
 void Game::UpdatePlayer() {
-/*
+
     Vector2 min = GetCurrentLevelBounds().front();
     Vector2 max = GetCurrentLevelBounds().back();
+    EntityVelocity v = GetPlayer().GetVelocity();
+    Vector2 player_pos = GetPlayer().GetPosition();
 
-    if (player_pos.x < min.x || player_pos.y < min.y) {
+    PlayerOutOfBoundsTimer += GetDeltaT();
+
+    if (player_pos.x < min.x || player_pos.y < min.y || player_pos.x > max.x || player_pos.y > max.y) {
         isPlayerOutOfBounds = true;
-        PlayerOutOfBoundsTimer += GetDeltaT();
-        if (PlayerOutOfBoundsTimer >= 1.0f && speed > 0.2f) {
-            GetPlayer().SetCurrentSpeed(speed/2.0f);
-            PlayerOutOfBoundsTimer = 0;
-        }
-    } else if (player_pos.x > max.x || player_pos.y > max.y) {
-        isPlayerOutOfBounds = true;
-        PlayerOutOfBoundsTimer += GetDeltaT();
-        if (PlayerOutOfBoundsTimer >= 1.0f && speed > 0.2f) {
-            GetPlayer().SetCurrentSpeed(speed/2.0f);
+        if (PlayerOutOfBoundsTimer >= VoidDecayTimer && v.max > VoidVelocityMin) {
+            GetPlayer().SetVelocity(v.current, v.max - VoidVelocityDecay, v.min + VoidVelocityDecay);
             PlayerOutOfBoundsTimer = 0;
         }
     } else { 
-        GetPlayer().SetCurrentSpeed(5.0f);
         isPlayerOutOfBounds = false;
+        if (PlayerOutOfBoundsTimer >= VoidDecayTimer * 0.20f && v.max < GetPlayer().GetSpaceshipStats().VelocityMax) {
+            GetPlayer().SetVelocity(v.current, v.max + VoidVelocityDecay, v.min - VoidVelocityDecay);
+            PlayerOutOfBoundsTimer = 0;
+        }
     }
-*/
+
     this->player.Move(GetDeltaT());
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) game.GetPlayer().SetVelocity(0.0f, 0.0f);
     this->player.UpdateAim(GetDeltaT());
 }
 
@@ -297,21 +300,6 @@ void Game::UpdateCamera(int screenWidth, int screenHeight) {
     ////////// OFFSET and TARGET
 
     this->camera.target = GetPlayer().GetPosition();
-
-    //float minX = 10000, minY = 10000, maxX = -10000, maxY = -10000;
-    //for (Vector2& pos : GetCurrentLevelBounds()) {
-    //    minX = fminf(pos.x, minX);
-    //    maxX = fmaxf(pos.x, maxX);
-    //    minY = fminf(pos.y, minY);
-    //    maxY = fmaxf(pos.y, maxY);
-    //}
-    //
-    //Vector2 max = GetWorldToScreen2D({ maxX, maxY }, camera);
-    //Vector2 min = GetWorldToScreen2D({ minX, minY }, camera);
-    //if (max.x < screenWidth) camera.offset.x = screenWidth - (max.x - screenWidth/2);
-    //if (max.y < screenHeight) camera.offset.y = screenHeight - (max.y - screenHeight/2);
-    //if (min.x > 0) camera.offset.x = screenWidth/2 - min.x;
-    //if (min.y > 0) camera.offset.y = screenHeight/2 - min.y;
 }
 
 
@@ -428,7 +416,7 @@ void Game::CheckBulletCollisions() {
                 }
                 
             } else {
-                b.Move();
+                b.Move(GetDeltaT());
                 UpdateBulletInGame(b, b_index);
             }
 
@@ -438,11 +426,11 @@ void Game::CheckBulletCollisions() {
                 for (Alien& a : GetCurrentAliens()) {
                     // BULLET - ALIEN
                     if (CollisionBulletAlien(b, a) && !delete_bullet) {
-
-                        a.SetCurrentLife(a.GetCurrentLife() - b.GetDamage());
+                        float new_life = a.GetLife().current - b.GetDamage();
+                        a.UpdateCurrentLife(new_life);
                         delete_bullet = true;
 
-                        if(a.GetCurrentLife() <= 0) {
+                        if(a.GetLife().current <= 0) {
                             DeleteAlienInGame(a_index);
                             SetScore(GetScore() + 1);
                         }
@@ -497,8 +485,9 @@ void Game::CheckAsteroidCollisions () {
             bool delete_asteroid = false;
 
             if (ast.IsOutOfBounds(GetCurrentLevelBounds())) {
-                ast.SetCurrentLife(ast.GetCurrentLife() - 1);
-                if (ast.GetCurrentLife() <= 0) {delete_asteroid = true;}
+                float new_life = ast.GetLife().current - 1.0f;
+                ast.UpdateCurrentLife(new_life);
+                if (ast.GetLife().current <= 0) {delete_asteroid = true;}
             }
 
             //ASTEROID-ALIEN

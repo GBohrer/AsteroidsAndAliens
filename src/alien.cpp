@@ -6,6 +6,7 @@ Alien::Alien(int radius, float speed, float life){
     SetRadius(radius);
     SetVelocity(0.0f, 0.0f);
     SetAcceleration(0.0f, 0.0f);
+    SetSpeed(speed);
     SetLife(life,life, 0.0f);
 }
 
@@ -41,8 +42,8 @@ void Alien::Move(Player p, float delta) {
     SetVelocity(GetVelocity().current.x + GetAcceleration().current.x * delta,
                 GetVelocity().current.y + GetAcceleration().current.y * delta);
 
-    SetPosition(GetPosition().x + GetVelocity().current.x * delta + GetDirection().x * 2.0f,
-                GetPosition().y + GetVelocity().current.y * delta + GetDirection().y * 2.0f );
+    SetPosition(GetPosition().x + GetVelocity().current.x * delta + GetDirection().x * GetSpeed(),
+                GetPosition().y + GetVelocity().current.y * delta + GetDirection().y * GetSpeed() );
 }
 
 void Alien::DrawHitBox(){
@@ -59,6 +60,5 @@ void Alien::DrawDirectionVector() {
 
 void Alien::DrawHealthBar () {
     DrawRectangle(GetPosition().x - GetLife().max/2.0f, GetPosition().y - GetRadius() - 20, (int)GetLife().max*2, 10, RED);
-    DrawRectangle(GetPosition().x - GetLife().max/2.0f, GetPosition().y - GetRadius() - 20, (int)GetLife().current*2, 10, GREEN);
-                    
+    DrawRectangle(GetPosition().x - GetLife().max/2.0f, GetPosition().y - GetRadius() - 20, (int)GetLife().current*2, 10, GREEN);              
 }

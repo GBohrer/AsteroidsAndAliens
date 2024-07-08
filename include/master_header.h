@@ -20,9 +20,9 @@
 #include "headers/entity.h"
 #include "headers/alien.h"
 #include "headers/player.h"
-#include "headers/game.h"
 #include "headers/bullet.h"
 #include "headers/asteroid.h"
+#include "headers/game.h"
 
 
 #endif

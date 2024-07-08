@@ -46,6 +46,11 @@ public:
     void SetLife(float max, float current, float regen);
     void UpdateCurrentLife(float value);
 
+    float GetSpeed();
+    void SetSpeed(float speed);
+    Vector2 GetDirection();
+    void SetDirection(Vector2 direction);
+
 
 
     float GetMaxLife();
@@ -57,20 +62,14 @@ public:
     void SetCurrentSpeed(float speedMax);
     float GetMaxSpeed();
     void SetMaxSpeed(float speedCurrent);
-    Vector2 GetDirection();
-    void SetDirection(Vector2 direction);
-
+ 
 
 private:
     Vector2 pos;
     EntityVelocity velocity;
     EntityAcceleration acceleration;
     EntityLife life;
-
-    float lifeMax;
-    float lifeCurrent;
-    float speedMax;
-    float speedCurrent;
+    float speedModifier;
     Vector2 direction;
 
 };

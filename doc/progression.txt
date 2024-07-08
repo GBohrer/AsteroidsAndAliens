@@ -89,3 +89,8 @@ DAY 15 - 06/07/2024
     Exclusao da classe Character. Entity suporta dinamica de particulas! (MRUV)
     Refactoring de classes filhas de Entity e métodos de game para utilizar nova estrutura: calculo da colisao entre duas particulas
     
+DAY 16 - 07/07/2024
+    Fixes do resto das classes filhas de entity para implementar MRUV
+    Nova struct Spaceship para Player: adicionado atributos para o combustivel
+    Logica 2 movimento do player quando fora do cenario (atributos de game para parametros de VoidDecay)
+    

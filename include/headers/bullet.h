@@ -16,7 +16,7 @@ class Bullet : public Entity {
         float GetDamage();
         void SetDamage(float value);
 
-        void Move();
+        void Move(float delta);
         bool IsOutOfBounds(Vector2 pos);
 
     private:

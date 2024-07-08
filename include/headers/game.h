@@ -108,6 +108,10 @@ class Game {
         bool isPlayerOutOfBounds;
         float PlayerOutOfBoundsTimer;
 
+        float VoidVelocityDecay;
+        float VoidVelocityMin;
+        float VoidDecayTimer;
+
 
     private:
         std::unordered_map<State, GameStateInfo> gameStates;

@@ -7,8 +7,9 @@ Bullet::Bullet(Vector2 pos, Vector2 dir, float speed, float rate, float damage) 
     SetPosition(pos.x, pos.y);
     SetHitBox();
     SetDirection(dir);
-    SetMaxSpeed(speed);
-    SetCurrentSpeed(speed);
+    SetVelocity(0.0f, 0.0f);
+    SetAcceleration(0.0f, 0.0f);
+    SetSpeed(speed);
     SetFireRate(rate);
     SetDamage(damage);
 }
@@ -26,7 +27,7 @@ void Bullet::SetHitBox() {
 }
 
 void Bullet::DrawHitBox() {
-    DrawRectangleRoundedLines(GetHitBox(), 1.0f, 4, 2.0f, BLUE);
+    DrawRectangleRoundedLines(GetHitBox(), 1.0f, 4, 1.0f, BLUE);
 }
 
 float Bullet::GetFireRate() {
@@ -47,10 +48,19 @@ void Bullet::SetDamage(float value) {
 
 
 // METHODS
-void Bullet::Move() {
-    float bullet_speed = GetCurrentSpeed();
-    SetPosition(this->GetPosition().x + GetDirection().x * bullet_speed,
-                this->GetPosition().y + GetDirection().y * bullet_speed);
+void Bullet::Move(float delta) {
+
+    SetVelocity(GetVelocity().current.x + GetAcceleration().current.x * delta,
+                GetVelocity().current.y + GetAcceleration().current.y * delta);
+
+    SetPosition(GetPosition().x + GetVelocity().current.x * delta + GetDirection().x * GetSpeed(),
+                GetPosition().y + GetVelocity().current.y * delta + GetDirection().y * GetSpeed() );
+
+
+
+    //float bullet_speed = GetCurrentSpeed();
+   // SetPosition(this->GetPosition().x + GetDirection().x * bullet_speed,
+    //            this->GetPosition().y + GetDirection().y * bullet_speed);
     SetHitBox();
 }
 

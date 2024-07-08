@@ -67,38 +67,12 @@ void Entity::UpdateCurrentLife(float value) {
     this->life.current = value;
 }
 
-
-
-float Entity::GetMaxLife() {
-    return lifeMax;
+float Entity::GetSpeed() {
+    return speedModifier;
 }
 
-void Entity::SetMaxLife(float lifeMax) {
-    this->lifeMax = lifeMax;
-}
-
-float Entity::GetCurrentLife() {
-    return lifeCurrent;
-}
-
-void Entity::SetCurrentLife(float lifeCurrent) {
-    this->lifeCurrent = lifeCurrent;
-}
-
-float Entity::GetMaxSpeed() {
-    return speedMax;
-}
-
-void Entity::SetMaxSpeed(float speedMax) {
-    this->speedMax = speedMax;
-}
-
-float Entity::GetCurrentSpeed() {
-    return speedCurrent;
-}
-
-void Entity::SetCurrentSpeed(float speedCurrent) {
-    this->speedCurrent = speedCurrent;
+void Entity::SetSpeed(float speed) {
+    this->speedModifier = speed;
 }
 
 Vector2 Entity::GetDirection(){
