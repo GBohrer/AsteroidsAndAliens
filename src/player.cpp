@@ -47,7 +47,7 @@ void Player::UpdateSpaceshipCurrentFuel(float value) {
 }
 
 void Player::SetSpaceship() {
-    Fuel fuel(FuelType::Liquid, 0.9f, 0.9f);
+    Fuel fuel(FuelType::Liquid, 2.0f, 2.0f);
     Spaceship s(fuel, 500.0f, 500.0f, GetVelocity().max);
     SetSpaceshipStats(s);
 }
@@ -95,16 +95,20 @@ void Player::DrawHitBox(){
     DrawRectangleLinesEx(GetHitBox(), 2.0f, YELLOW);
 }
 
-void Player::DrawAim() {
+void Player::DrawAimDirection() {
     Vector2 dir = {GetPosition().x - Vector2Normalize(Vector2Subtract(GetPosition(), GetAimTarget())).x * 100.0f,
                    GetPosition().y - Vector2Normalize(Vector2Subtract(GetPosition(), GetAimTarget())).y * 100.0f};
 
     DrawLineEx(dir, GetPosition(), 3, GREEN);
 }
 
+void Player::DrawAimTarget() {
+    DrawCircleV(GetAimTarget(), 15.0f, YELLOW);
+}
+
 void Player::DrawHealthBar() {
-    DrawRectangle(GetPosition().x, GetPosition().y - GetHitBox().height, (int)GetLife().max, 10, RED);                 
-    DrawRectangle(GetPosition().x, GetPosition().y - GetHitBox().height, (int)GetLife().current, 10, GREEN);                 
+    DrawRectangle(GetPosition().x - (int)GetLife().max/2.0f, GetPosition().y - GetHitBox().height * 1.2f, (int)GetLife().max, 10, RED);                 
+    DrawRectangle(GetPosition().x - (int)GetLife().max/2.0f, GetPosition().y - GetHitBox().height * 1.2f, (int)GetLife().current, 10, GREEN);                 
 
 }
 

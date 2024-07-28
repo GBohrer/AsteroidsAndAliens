@@ -32,11 +32,9 @@ class Game {
         bool CheckDifficultyIncrease();
         void IncreaseDifficulty();
         void CheckGameState();
-        void UpdateAnimationTime();
-        float GetDeltaT();
 
-        int GetScore();
-        void SetScore(int value);
+        LevelMap GetGameLevelMap();
+        void SetGameLevelMap(LevelMap level);
 
         //GAME STATE
         std::unordered_map<State, GameStateInfo>& GetGameStates();
@@ -45,8 +43,8 @@ class Game {
         void SetCurrentGameState (GameStateInfo gameStateInfo);
         void UpdateCurrentGameStateTextBox (TextBox tb, int position);
 
-        std::vector<Vector2>& GetCurrentLevelBounds();
-        void SetCurrenLevelBounds(std::vector<Vector2> level_bounds);
+        Vector2 GetLastMousePosition();
+        void SetLastMousePosition(Vector2 mouse);
 
         //ASTEROIDS
         std::vector<Asteroid>& GetCurrentAsteroids();
@@ -56,9 +54,9 @@ class Game {
         void DeleteAsteroidInGame(int position);
 
         bool CollisionAsteroidAsteroid(Asteroid ast1, Asteroid ast2);
-        bool CollisionAsteroidAlien(Asteroid ast, Alien a);
+
         bool CollisionAsteroidBullet(Asteroid ast, Bullet b);
-        bool CollisionAsteroidPlayer(Asteroid ast, Player p);
+        bool CollisionAsteroidPlayer(Asteroid ast);
         void CheckAsteroidCollisions();
 
         //ALIENS
@@ -70,6 +68,7 @@ class Game {
 
         bool CollisionAlienAlien(Alien a1, Alien a2);
         bool CollisionAlienPlayer(Alien a);
+        bool CollisionAlienAsteroid(Alien a,Asteroid ast);
         void CheckAlienCollisions();
 
         //BULLETS
@@ -87,7 +86,6 @@ class Game {
         Player& GetPlayer();
         void SetPlayer(Player p);
         void UpdatePlayer();
-        bool IsPlayerOutOfBounds();
 
         //CAMERA
         Camera2D& GetCamera();
@@ -96,41 +94,23 @@ class Game {
         void UpdateCamera(int screenWidth, int screenHeight);
 
         void CheckEntityCollisions();
+        void UpdateEntityVelocities();
         std::tuple<Vector2, Vector2> CollisionResponse(Vector2 v1, Vector2 v2, Vector2 pos1, Vector2 pos2, float m1, float m2);
 
     protected:
-        // OBS.: maioria destes atributos estará compondo o LevelModifiers
-        int totalAliens;
-        int totalAsteroids;
-        float AlienSpawnTimer;
-        float BulletSpawnTimer;
-        float AsteroidDirectionAngle;
-        int scoreThreshold;
-        bool isPlayerOutOfBounds;
         bool isGameOver;
-        float PlayerOutOfBoundsTimer;
-
-        float VoidVelocityDecay;
-        float VoidVelocityMin;
-        float VoidDecayTimer;
-
+        Vector2 LastMousePosition;
 
     private:
-        GameStateInfo currentGameState;
         std::unordered_map<State, GameStateInfo> gameStates;
-        std::vector<Vector2> currentLevelBounds;
+        GameStateInfo currentGameState;
+        LevelMap LevelMap;
+
         std::vector<Asteroid> asteroidsInGame;
         std::vector<Alien> aliensInGame;
         std::vector<Bullet> bulletsInGame;
         Player player;
         Camera2D camera;
 
-        int score;
-        
-        float animation_t_prev;
-        float animation_t_now;
-        float delta_t;
-        float timeSinceLastShot;
-        float timeSinceLastAlienSpawn;
 };
 

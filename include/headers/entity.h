@@ -13,6 +13,9 @@ typedef struct EntityVelocity {
     float max;
     float min;
 
+    EntityVelocity() {}
+    EntityVelocity(Vector2 c, float x, float n) : current(c), max(x), min(n) {}
+
 } EntityVelocity;
 
 typedef struct EntityAcceleration {
@@ -51,18 +54,11 @@ public:
     Vector2 GetDirection();
     void SetDirection(Vector2 direction);
 
+    bool GetisOutOfBounds();
+    void SetOutOfBounds(bool b);
+    float GetIsOutBoundsTime();
+    void SetIsOutOfBoundsTime(float value);
 
-
-    float GetMaxLife();
-    void SetMaxLife(float lifeMax);
-    float GetCurrentLife();
-    void SetCurrentLife(float lifeCurrent);
-
-    float GetCurrentSpeed();
-    void SetCurrentSpeed(float speedMax);
-    float GetMaxSpeed();
-    void SetMaxSpeed(float speedCurrent);
- 
 
 private:
     Vector2 pos;
@@ -71,5 +67,7 @@ private:
     EntityLife life;
     float speedModifier;
     Vector2 direction;
+    bool isOutOfBounds;
+    float isOutOfBoundsTime;
 
 };

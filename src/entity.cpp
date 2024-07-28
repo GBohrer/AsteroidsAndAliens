@@ -82,3 +82,19 @@ Vector2 Entity::GetDirection(){
 void Entity::SetDirection(Vector2 direction){
     this->direction = direction;
 }
+
+bool Entity::GetisOutOfBounds() {
+    return isOutOfBounds;
+}
+
+void Entity::SetOutOfBounds(bool b) {
+    this->isOutOfBounds = b;
+}
+
+float Entity::GetIsOutBoundsTime() {
+    return isOutOfBoundsTime;
+}
+
+void Entity::SetIsOutOfBoundsTime(float value) {
+    this->isOutOfBoundsTime = value;
+}

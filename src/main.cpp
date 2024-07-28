@@ -23,9 +23,7 @@ int main()
         /// UPDATES
         if (IsKeyPressed(KEY_P)) ToggleFullscreen();
         if (IsKeyPressed(KEY_X)) IsGameRunning = false;
-        if (IsKeyPressed(KEY_G)) {
-            game.SetCurrentGameState(game.GetGameStates().at(State::GameOver));
-        }
+        if (IsKeyPressed(KEY_G)) game.SetCurrentGameState(game.GetGameStates().at(State::GameOver));
 
         switch (game.GetCurrentGameState().state) {
 
@@ -50,6 +48,7 @@ int main()
             break;
 
             case State::Paused:
+                game.GetGameLevelMap().UpdateAnimationTime();
 
                 for (int i = 0; i < (int)game.GetCurrentGameState().text_boxes.size(); i++) {
                     TextBox tb = game.GetCurrentGameState().text_boxes[i];
@@ -60,9 +59,8 @@ int main()
 
                         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                             if (tb.text == "Resume") {
-                                game.SetCurrentGameState(game.GetGameStates().at(State::InGame));   
-                                SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
-                                game.GetPlayer().SetAimTarget(game.GetPlayer().GetPosition());
+                                game.SetCurrentGameState(game.GetGameStates().at(State::InGame));
+                                SetMousePosition(game.GetLastMousePosition().x, game.GetLastMousePosition().y);
                             }
                             if (tb.text == "Exit") IsGameRunning = false;
                         }
@@ -75,21 +73,22 @@ int main()
             break;
             
             case State::InGame:
-                game.UpdateAnimationTime();
+                game.GetGameLevelMap().UpdateAnimationTime();
 
                 if (IsKeyPressed(KEY_ESCAPE)) {
                     game.SetCurrentGameState(game.GetGameStates().at(State::Paused));
+                    game.SetLastMousePosition(GetMousePosition());
                     break;
                 }
 
                 game.UpdatePlayer();
 
-                if (IsKeyDown(KEY_SPACE)) game.SpawnBullets();
+                if (IsKeyDown(KEY_SPACE)) game.GetGameLevelMap().SpawnBullets(game.GetPlayer());
 
                 if (game.CheckDifficultyIncrease()) game.IncreaseDifficulty();
                 
-                game.SpawnAsteroids();
-                //game.SpawnAliens();
+                game.GetGameLevelMap().SpawnAsteroids();
+                game.GetGameLevelMap().SpawnAliens(game.GetPlayer());
 
                 game.CheckEntityCollisions();
 
@@ -186,11 +185,12 @@ int main()
                 BeginMode2D(game.GetCamera());
 
                     //Draw Level Boundries
-                    DrawRectangleLinesEx( {0, 0,  game.GetCurrentLevelBounds().back().x,  game.GetCurrentLevelBounds().back().y}, 15.0f, PURPLE);
+                    DrawRectangleLinesEx( {0, 0,  game.GetGameLevelMap().GetCurrentLevelBounds().back().x,  game.GetGameLevelMap().GetCurrentLevelBounds().back().y}, 15.0f, PURPLE);
 
                     game.GetPlayer().DrawHitBox();
                     game.GetPlayer().DrawHealthBar();
-                    game.GetPlayer().DrawAim();
+                    game.GetPlayer().DrawAimDirection();
+                    //game.GetPlayer().DrawAimTarget();
 
                     for (Alien& a : game.GetCurrentAliens()) { 
                         a.DrawHitBox();
@@ -207,8 +207,6 @@ int main()
 
                 //CAMERA ZOOM
                 PrintTextInGame(true, game.GetCamera().zoom - 0.5f, {50,50}, 30, WHITE);
-                // SCORE
-                PrintTextInGame(false, game.GetScore(), {(int)GetScreenWidth()/2.0f, 70}, 50, WHITE);
                 //FUEL
                 game.GetPlayer().DrawSpacechipFuelBar();
 
@@ -224,10 +222,9 @@ int main()
                 PrintTextInGame(false, game.GetPlayer().GetVelocity().current.x, {(int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 120.0f}, 30, WHITE);
                 PrintTextInGame(false, game.GetPlayer().GetVelocity().current.y, {(int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 90.0f}, 30, WHITE);
 
-
-                if (game.IsPlayerOutOfBounds()) {
-                    DrawText("WARNING!!!", GetScreenWidth()/2.0f - 200, GetScreenHeight() - 300, 80, RED);
-                    DrawText("The spaceship is entering the void",GetScreenWidth()/2.0f - 260, GetScreenHeight() - 220, 30, RED);
+                if (game.GetPlayer().GetisOutOfBounds()) {
+                    DrawText("WARNING!!!", GetScreenWidth()/2.0f - 200, GetScreenHeight() - 360, 80, RED);
+                    DrawText("The spaceship is entering the void",GetScreenWidth()/2.0f - 260, GetScreenHeight() - 280, 30, RED);
                 }
 
             break;

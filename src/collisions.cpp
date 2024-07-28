@@ -1,157 +1,45 @@
 #include "../include/master_header.h"
 
-
-Game::Game() {
-    SetInitialGameStates();
-    currentGameState = GetGameStates().at(State::InMenu);
-}
-
-void Game::Start() {
-    SetCurrentGameState(GetGameStates().at(State::InGame));
-    isGameOver = false;
-    LevelMap.Set();
-    this->player = Player(Vector2Scale(GetGameLevelMap().GetCurrentLevelBounds().back(), 0.5f));
-    SetCamera();
-    SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
-}
-
-void Game::Reset() {
-    currentGameState = GetGameStates().at(State::InMenu);
-    LevelMap.Reset();
-}
-
-void Game::CheckGameState() {
-    if (isGameOver) SetCurrentGameState(GetGameStates().at(State::GameOver));
-}
-
-LevelMap Game::GetGameLevelMap() {
-    return this->LevelMap;
-}
-
-
-// GAME STATE:
-std::unordered_map<State, GameStateInfo>& Game::GetGameStates() {
-    return gameStates;
-}
-
-void Game::SetInitialGameStates() {
-
-    //TEXT BOXES
-    TextBox start(TextBoxId::Start,"Start", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 100, 230, 70 });
-    TextBox restart(TextBoxId::Restart,"Restart", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 100, 230, 70 });
-    TextBox exit(TextBoxId::Exit,"Exit", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 200, 230, 70 });
-    TextBox resume(TextBoxId::Resume,"Resume", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 100, 230, 70 });
-    TextBox menu(TextBoxId::Menu,"Menu", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 300, 230, 70 });
-    TextBox loading(TextBoxId::Loading,"Loading...", { (int)GetScreenWidth()/2.0f - 140, (int)GetScreenHeight()/2.0f + 100, 230, 70 });
-
-    GameStateInfo state1(State::InMenu, {start,exit});
-    GameStateInfo state2(State::InGame, {});
-    GameStateInfo state3(State::Paused, {resume,exit});
-    GameStateInfo state4(State::GameOver, {restart,menu,exit});
-    GameStateInfo state5(State::IsLoading, {loading});
-
-    this->gameStates.insert({{State::InMenu,state1}, 
-                             {State::InGame,state2}, 
-                             {State::Paused, state3}, 
-                             {State::GameOver,state4},
-                             {State::IsLoading,state5}});
-}
-
-GameStateInfo Game::GetCurrentGameState () {
-    return currentGameState;
-}
-
-void Game::SetCurrentGameState(GameStateInfo gameStateInfo) {
-    this->currentGameState = gameStateInfo;
-}
-
-void Game::UpdateCurrentGameStateTextBox (TextBox tb, int position) {
-    this->currentGameState.text_boxes[position] = tb;
-}
-
-Vector2 Game::GetLastMousePosition() {
-    return LastMousePosition;
-}
-
-void Game::SetLastMousePosition(Vector2 mouse) {
-    this->LastMousePosition = mouse;
-}
-
-
 // PLAYER
-Player& Game::GetPlayer() {
-    return player;
+bool CollisionPlayerAlien(Player p, Alien a) {
+    return CheckCollisionCircleRec(a.GetPosition(), a.GetRadius(), p.GetHitBox());
 }
 
-void Game::SetPlayer(Player p) {
-    this->player = player;
+bool CollisionPlayerBullet(Player p, Bullet b) {
+    return CheckCollisionRecs(b.GetHitBox(), p.GetHitBox());
 }
 
-void Game::UpdatePlayer() {
-
-    EntityVelocity v = GetPlayer().GetVelocity();
-
-    //Check Spaceship Fuel:
-    if (v.current.x != 0.0f || v.current.y != 0.0f) {
-        Spaceship s = GetPlayer().GetSpaceshipStats();
-        float new_current_fuel = s.currentFuel - ((0.0001f * (abs(v.current.x) + abs(v.current.y))) / s.fuelInfo.burningEfficiency);
-        
-        PrintTextInGame(true, s.currentFuel - new_current_fuel, {(int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 220.0f}, 20, WHITE);
-        GetPlayer().UpdateSpaceshipCurrentFuel(new_current_fuel);
-    }
-    if (GetPlayer().GetSpaceshipStats().currentFuel <= 0.0f) isGameOver = true;
-
-    //Player Move:
-    this->player.Move(GetGameLevelMap().GetDeltaT());
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) GetPlayer().SetVelocity(0.0f, 0.0f);
-    this->player.UpdateAim(GetGameLevelMap().GetDeltaT());
+bool CollisionPlayerAsteroid(Player p, Asteroid ast) {
+    return CheckCollisionCircleRec(ast.GetPosition(), ast.GetRadius(), p.GetHitBox());
 }
 
-
-// CAMERA 2D
-Camera2D& Game::GetCamera() {
-    return camera;
-}
-
-void Game::SetCamera() {
-    camera.offset = {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
-    camera.target = GetPlayer().GetPosition();
-    camera.rotation = 0.0f;
-    camera.zoom = 1.5f;
-}
-
-void Game::SetCameraZoom(float zoom){
-    this->camera.zoom = zoom;
-}
-
-void Game::UpdateCamera(int screenWidth, int screenHeight) {
-
-    ////////// ZOOM
-    float camera_zoom = camera.zoom;
-    camera_zoom += GetMouseWheelMove() * 0.1f;
-
-    if (camera_zoom > 2.0f) camera_zoom = 2.0f;
-    else if (camera_zoom < 0.25f) camera_zoom = 0.25;
-    SetCameraZoom(camera_zoom);
-
-    ////////// OFFSET and TARGET
-
-    this->camera.target = GetPlayer().GetPosition();
-}
-
-
-// COLLISIONS
-bool Game::CollisionAlienAlien(Alien a1, Alien a2) {
+// ALIEN
+bool CollisionAlienAlien(Alien a1, Alien a2) {
     return CheckCollisionCircles(a1.GetPosition(), static_cast<float>(a1.GetRadius()), a2.GetPosition(), static_cast<float>(a2.GetRadius()));
 }
 
-bool Game::CollisionAlienPlayer(Alien a) {
-    return CheckCollisionCircleRec(a.GetPosition(), a.GetRadius(), GetPlayer().GetHitBox());
-}
-
-bool Game::CollisionAlienAsteroid(Alien a,Asteroid ast) {
+bool CollisionAlienAsteroid(Alien a, Asteroid ast) {
     return CheckCollisionCircles(a.GetPosition(), a.GetRadius(), ast.GetPosition(), ast.GetRadius());
 }
+
+bool Game::CollisionAlienBullet(Alien a, Bullet b) {
+    return CheckCollisionCircleRec(a.GetPosition(), static_cast<float>(a.GetRadius()), b.GetHitBox());
+}
+
+// ASTEROID
+bool CollisionAsteroidAsteroid(Asteroid ast1, Asteroid ast2) {
+    return CheckCollisionCircles(ast1.GetPosition(), ast1.GetRadius(), ast2.GetPosition(), ast2.GetRadius());
+}
+
+bool CollisionAsteroidBullet(Asteroid ast, Bullet b) {
+    return CheckCollisionCircleRec(ast.GetPosition(), ast.GetRadius(), b.GetHitBox());
+}
+
+// BULLET
+bool CollisionBulletBullet(Bullet b1, Bullet b2) {
+    return CheckCollisionRecs(b1.GetHitBox(), b2.GetHitBox());
+}
+
 
 void Game::CheckAlienCollisions() {
     if (GetAliensInGame() == 0) return;
@@ -217,14 +105,6 @@ void Game::CheckAlienCollisions() {
     }
 }
 
-bool Game::CollisionBulletAlien(Bullet b, Alien a) {
-    return CheckCollisionCircleRec(a.GetPosition(), static_cast<float>(a.GetRadius()), b.GetHitBox());
-}
-
-bool Game::CollisionBulletPlayer(Bullet b) {
-    return CheckCollisionRecs(b.GetHitBox(), GetPlayer().GetHitBox());
-}
-
 // BULLETS
 void Game::CheckBulletCollisions() {
     if (GetBulletsInGame() == 0) return;
@@ -262,18 +142,6 @@ void Game::CheckBulletCollisions() {
         }
         b_index++;
     }
-}
-
-bool Game::CollisionAsteroidAsteroid(Asteroid ast1, Asteroid ast2) {
-    return CheckCollisionCircles(ast1.GetPosition(), ast1.GetRadius(), ast2.GetPosition(), ast2.GetRadius());
-}
-
-bool Game::CollisionAsteroidBullet(Asteroid ast, Bullet b) {
-    return CheckCollisionCircleRec(ast.GetPosition(), ast.GetRadius(), b.GetHitBox());
-}
-
-bool Game::CollisionAsteroidPlayer(Asteroid ast) {
-    return CheckCollisionCircleRec(ast.GetPosition(), ast.GetRadius(), GetPlayer().GetHitBox());
 }
 
 // ASTEROIDS
@@ -337,12 +205,6 @@ void Game::CheckAsteroidCollisions() {
         if (delete_asteroid) DeleteAsteroidInGame(ast_index);
         ast_index++;
     }
-}
-
-void Game::CheckEntityCollisions() {
-    CheckAlienCollisions();
-    CheckBulletCollisions();
-    CheckAsteroidCollisions();
 }
 
 

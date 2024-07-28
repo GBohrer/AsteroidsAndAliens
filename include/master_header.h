@@ -22,7 +22,9 @@
 #include "headers/player.h"
 #include "headers/bullet.h"
 #include "headers/asteroid.h"
+#include "headers/levelmap.h"
 #include "headers/game.h"
+
 
 
 #endif

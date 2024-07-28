@@ -33,20 +33,27 @@ void Alien::SetAlienToPlayer(Player p, int Player_distance){
     float Alien_spawn_angle = GetRandomValue(0, 360) / 57.2957795;
     SetPosition((float) p.GetPosition().x + Player_distance * cos(Alien_spawn_angle),
                 (float) p.GetPosition().y + Player_distance * sin(Alien_spawn_angle));
+
+    UpdateDirection(p);
+    SetVelocity(GetDirection().x, GetDirection().y);
+    
 }
 
 void Alien::Move(float delta) {
 
-    SetVelocity(GetVelocity().current.x + GetAcceleration().current.x * delta,
-                GetVelocity().current.y + GetAcceleration().current.y * delta);
+    auto currentVelocity = GetVelocity().current;
+    currentVelocity.x += GetAcceleration().current.x * delta;
+    currentVelocity.y += GetAcceleration().current.y * delta;
 
-    SetPosition(GetPosition().x + GetVelocity().current.x * delta + GetDirection().x * GetSpeed(),
-                GetPosition().y + GetVelocity().current.y * delta + GetDirection().y * GetSpeed() );
+    SetVelocity(currentVelocity.x, currentVelocity.y);
+
+    SetPosition(GetPosition().x + currentVelocity.x * delta * GetSpeed(),
+                GetPosition().y + currentVelocity.y * delta * GetSpeed());
 }
 
 void Alien::UpdateDirection(Player p) {
     Vector2 dir = Vector2Normalize(Vector2Subtract(p.GetPosition(), GetPosition()));
-    SetDirection(dir.x, dir.y);
+    SetVelocity(dir.x, dir.y);
 }
 
 void Alien::DrawHitBox(){
@@ -55,8 +62,8 @@ void Alien::DrawHitBox(){
 
 void Alien::DrawDirectionVector() {
     float mag = 100.0f;
-    Vector2 dir = {GetPosition().x + GetDirection().x * mag,
-                   GetPosition().y + GetDirection().y * mag};
+    Vector2 dir = {GetPosition().x + GetVelocity().current.x * mag,
+                   GetPosition().y + GetVelocity().current.y * mag};
 
     DrawLineEx(GetPosition(), dir, 2, GREEN);
 }

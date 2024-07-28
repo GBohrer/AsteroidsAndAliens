@@ -45,7 +45,8 @@ class Player : public Entity {
         void UpdateSpaceshipCurrentFuel(float value);
 
         void DrawHitBox();
-        void DrawAim();
+        void DrawAimDirection();
+        void DrawAimTarget();
         void DrawHealthBar();
         void DrawSpacechipFuelBar();
 
