@@ -22,7 +22,10 @@
 #include "headers/player.h"
 #include "headers/bullet.h"
 #include "headers/asteroid.h"
+
+#include "headers/mission .h"
 #include "headers/levelmap.h"
+#include "headers/collisions.h"
 #include "headers/game.h"
 
 

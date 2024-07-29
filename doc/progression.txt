@@ -103,8 +103,18 @@ DAY 18 - 10/07/2024
 
 ==========================================================================================================================
 
-DAY 19 - 28/07/2024
+DAY 19 - 27/07/2024
     Removido score
     Class Level: especializacao de atributos da class Game para facilitar estrutura de Mission
     Modularizacao do IsOutOfBounds (qualquer entidade vai sofrer as mudancas do Void)
     Desvinculando collisions da class Game
+
+DAY 20 - 28/07/2024
+    Correcoes da migracao dos metodos de Game para Level: game.Update() e game.Render()
+    LevelMap possui enum LevelDifficulty, assim podera receber LevelModifiers especificos
+    Class Mission: armazena objetivos e restricoes da missao (como o tempo de execucao)
+    Imprimindo um relogio na tela dinamicamente!
+    Fix do relogio da missao que nao resetava após sair de InGame (uptade do delta_t ocorrer sempre)
+
+DAY 21 - 
+    

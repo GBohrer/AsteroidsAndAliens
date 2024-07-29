@@ -3,19 +3,16 @@
 
 LevelMap::LevelMap() {};
 
-void LevelMap::Set() {
-    ResetTimestamps();
-    SetLevelModifiers();
+void LevelMap::Set(Player p) {
+    timeSinceLastShot = timeSinceLastAlienSpawn = 0.0f;
+    SetCurrenLevelBounds({{0,0}, {5000,5000}});
+    SetLevelModifiers(LevelDifficulty::MEDIUM);
+    SetMission();
+    while (GetAsteroidsInGame() < totalAsteroids) { SpawnAsteroids(p); }
 }
 
 void LevelMap::Reset() {
-    ResetTimestamps();
     ClearEntities();
-}
-
-void LevelMap::ResetTimestamps() {
-    timeSinceLastShot = timeSinceLastAlienSpawn = PlayerOutOfBoundsTimer = 0.0f;
-    animation_t_now = animation_t_prev = delta_t = 0.0f;
 }
 
 void LevelMap::ClearEntities() {
@@ -24,27 +21,83 @@ void LevelMap::ClearEntities() {
     asteroidsInGame.clear();
 }
 
-void LevelMap::SetLevelModifiers() {
-    SetCurrenLevelBounds({{0,0}, {4000,4000}});
+void LevelMap::SetLevelModifiers(LevelDifficulty ld) {
     
-    totalAliens = 5;
-    totalAsteroids = 50;
-    AlienSpawnTimer = 4.0f;
-    BulletSpawnTimer = 1.0f;
-    VoidVelocityDecay = 10.0f;
-    VoidDecayTimer = 1.0f;
-    VoidVelocityMin = 10.0f;
-    AsteroidDirectionAngle = GetRandomValue(1,360) / 57.2957795f;
+    switch(ld) {
+        case LevelDifficulty::VERY_EASY:
+            totalAliens = 2;
+            totalAsteroids = 20;
+            AlienSpawnTimer = 5.0f;
+            VoidVelocityDecay = 5.0f;
+            VoidDecayTimer = 1.0f;
+            VoidVelocityMin = 30.0f;
+        break;
 
-    while (GetAsteroidsInGame() < totalAsteroids) { SpawnAsteroids(); }
+        case LevelDifficulty::EASY:
+            totalAliens = 5;
+            totalAsteroids = 50;
+            AlienSpawnTimer = 4.0f;
+            VoidVelocityDecay = 10.0f;
+            VoidDecayTimer = 1.0f;
+            VoidVelocityMin = 25.0f;
+        break;
+
+        case LevelDifficulty::MEDIUM:
+            totalAliens = 8;
+            totalAsteroids = 50;
+            AlienSpawnTimer = 3.0f;
+            VoidVelocityDecay = 15.0f;
+            VoidDecayTimer = 1.0f;
+            VoidVelocityMin = 15.0f;
+        break;
+
+        case LevelDifficulty::HARD:
+            totalAliens = 10;
+            totalAsteroids = 70;
+            AlienSpawnTimer = 3.0f;
+            VoidVelocityDecay = 15.0f;
+            VoidDecayTimer = 0.5f;
+            VoidVelocityMin = 10.0f;
+        break;
+
+        case LevelDifficulty::VERY_HARD:
+            totalAliens = 10;
+            totalAsteroids = 100;
+            AlienSpawnTimer = 2.0f;
+            VoidVelocityDecay = 25.0f;
+            VoidDecayTimer = 0.5f;
+            VoidVelocityMin = 2.0f;
+        break;
+
+        default:
+        break;
+
+    }
+    AsteroidDirectionAngle = GetRandomValue(1,360) / 57.2957795f;
+    BulletSpawnTimer = 1.0f;
 }
 
 std::vector<Vector2>& LevelMap::GetCurrentLevelBounds() {
-    return currentLevelBounds;
+    return LevelBounds;
 }
 
-void LevelMap::SetCurrenLevelBounds(std::vector<Vector2> level_bounds) {
-    this->currentLevelBounds = level_bounds;
+void LevelMap::SetCurrenLevelBounds(std::vector<Vector2> bounds) {
+    this->LevelBounds = bounds;
+}
+
+Mission& LevelMap::GetLevelCurrentMission() {
+    return currentMission;
+}
+
+void LevelMap::SetLevelCurrentMission(Mission m) {
+    this->currentMission = m;
+}
+
+void LevelMap::SetMission() {
+    Mission m = Mission();
+    m.SetTotalTime(100.0f);
+    m.SetCurrentTime(m.GetTotalTime());
+    SetLevelCurrentMission(m);
 }
 
 // ALIENS
@@ -89,7 +142,7 @@ int LevelMap::GetAsteroidsInGame() {
     else { return (int)asteroidsInGame.size(); }
 }
 
-void LevelMap::SpawnAsteroids() {
+void LevelMap::SpawnAsteroids(Player p) {
 
     if (GetAsteroidsInGame() < totalAsteroids) {
 
@@ -103,9 +156,8 @@ void LevelMap::SpawnAsteroids() {
         float life = radius*10;
 
         Asteroid asteroid = Asteroid({posX, posY}, radius, life);
-        //asteroid.SetVelocity(cos(AsteroidDirectionAngle) * 10.0f, sin(AsteroidDirectionAngle) * 10.0f);
-        asteroidsInGame.push_back(asteroid);
-        //if (!CollisionAsteroidPlayer(asteroid)) { asteroidsInGame.push_back(asteroid); }
+        asteroid.SetVelocity(cos(AsteroidDirectionAngle) * 10.0f, sin(AsteroidDirectionAngle) * 10.0f);
+        if (!CheckCollisionPlayerAsteroid(p, asteroid)) asteroidsInGame.push_back(asteroid);
     }
 }
 
@@ -169,17 +221,11 @@ EntityVelocity LevelMap::UpdateVelocityByVoidDecay(EntityVelocity v, float time)
     return new_v;
 }
 
-
-
-void LevelMap::UpdateAnimationTime() {
-    animation_t_now = (float)GetTime();
-    delta_t = animation_t_now - animation_t_prev;
-    animation_t_prev = animation_t_now;
-
-    timeSinceLastShot += delta_t;
-    timeSinceLastAlienSpawn += delta_t;
+void LevelMap::UpdateCurrentMissionTime(float delta_t) {
+    currentMission.SetCurrentTime(currentMission.GetCurrentTime() - delta_t);
 }
 
-float LevelMap::GetDeltaT() {
-    return delta_t;
+void LevelMap::UpdateEntityTimers(float delta_t) {
+    timeSinceLastShot += delta_t;
+    timeSinceLastAlienSpawn += delta_t;
 }

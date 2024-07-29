@@ -24,6 +24,7 @@ typedef struct TextBox {
 } TextBox;
 
 const char * ConvertText (std::string string);
-void PrintTextInGame(bool isFloat, float value, Vector2 textPos, int fontSize, Color color);
+void PrintValueInGame(bool isFloat, float value, Vector2 textPos, int fontSize, Color color);
+void PrintTimerInGame(float totalTime, float currentTime, Vector2 textPos, int fontSize);
 
 #endif

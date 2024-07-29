@@ -1,21 +1,30 @@
 #pragma once
 #include "../master_header.h"
 
+enum LevelDifficulty {
+    VERY_EASY,
+    EASY,
+    MEDIUM,
+    HARD,
+    VERY_HARD
+};
 
 class LevelMap {
 
     public:
         LevelMap();
 
-        void Set();
+        void Set(Player p);
         void Reset();
-        void ResetTimestamps();
         void ClearEntities();
-        void SetLevelModifiers();
+        void SetLevelModifiers(LevelDifficulty ld);
 
         std::vector<Vector2>& GetCurrentLevelBounds();
-        void SetCurrenLevelBounds(std::vector<Vector2> level_bounds);
+        void SetCurrenLevelBounds(std::vector<Vector2> bounds);
 
+        Mission& GetLevelCurrentMission();
+        void SetLevelCurrentMission(Mission m);
+        void SetMission();
 
     //Aliens
         std::vector<Alien>& GetCurrentAliens();
@@ -27,7 +36,7 @@ class LevelMap {
     //Asteroids
         std::vector<Asteroid>& GetCurrentAsteroids();
         int GetAsteroidsInGame();
-        void SpawnAsteroids();
+        void SpawnAsteroids(Player p);
         void UpdateAsteroidInGame(Asteroid ast, int position);
         void DeleteAsteroidInGame(int position);
 
@@ -41,8 +50,12 @@ class LevelMap {
         bool EntityIsOutOfBounds(Vector2 pos);
         EntityVelocity UpdateVelocityByVoidDecay(EntityVelocity v, float time);
 
-        void UpdateAnimationTime();
-        float GetDeltaT();
+        void UpdateCurrentMissionTime(float delta_t);
+        void UpdateEntityTimers(float delta_t);
+
+    protected:
+        float timeSinceLastShot;
+        float timeSinceLastAlienSpawn;
 
     private:
 
@@ -57,20 +70,13 @@ class LevelMap {
         float AlienSpawnTimer;
         float BulletSpawnTimer;
         float AsteroidDirectionAngle;
-
-        std::vector<Vector2> currentLevelBounds;
-        bool isPlayerOutOfBounds;
-        float PlayerOutOfBoundsTimer;
-        
         float VoidVelocityDecay;
         float VoidVelocityMin;
         float VoidDecayTimer;
 
-    // Timestamps
-        float animation_t_prev;
-        float animation_t_now;
-        float delta_t;
-        float timeSinceLastShot;
-        float timeSinceLastAlienSpawn;
+    // Level Componds
+        std::vector<Vector2> LevelBounds;
+        LevelDifficulty ld;
+        Mission currentMission;
 
 };
