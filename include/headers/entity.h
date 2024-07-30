@@ -10,11 +10,14 @@ typedef struct EntityLife {
 
 typedef struct EntityVelocity {
     Vector2 current;
+    float current_max;
+    float current_min;
     float max;
     float min;
 
     EntityVelocity() {}
-    EntityVelocity(Vector2 c, float x, float n) : current(c), max(x), min(n) {}
+    EntityVelocity(Vector2 c, float x, float n) : current(c), current_max(x), current_min(n) {}
+    EntityVelocity(Vector2 c, float cm, float cn, float x, float n) : current(c), current_max(cm), current_min(cn), max(x), min(n) {}
 
 } EntityVelocity;
 
@@ -36,8 +39,10 @@ public:
 
     EntityVelocity GetVelocity();
     void SetVelocity(EntityVelocity v);
+    void SetVelocity(Vector2 velocity, float current_max, float current_min, float max, float min);
     void SetVelocity(Vector2 velocity, float max, float min);
     void SetVelocity(float x, float y);
+    void UpdateCurrentVelocity();
    
     EntityAcceleration GetAcceleration();
     void SetAcceleration (EntityAcceleration acc);
@@ -54,10 +59,11 @@ public:
     Vector2 GetDirection();
     void SetDirection(Vector2 direction);
 
-    bool GetisOutOfBounds();
-    void SetOutOfBounds(bool b);
+    bool GetIsOutOfBounds();
+    void SetIsOutOfBounds(bool b);
     float GetIsOutBoundsTime();
     void SetIsOutOfBoundsTime(float value);
+    bool CheckIsOutOfBounds(std::vector<Vector2> bounds);
 
 
 private:

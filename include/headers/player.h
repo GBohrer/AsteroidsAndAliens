@@ -50,8 +50,10 @@ class Player : public Entity {
         void DrawHealthBar();
         void DrawSpacechipFuelBar();
 
-        void Move(float delta);
-        void UpdateAim(float delta);
+        void Move(float delta_t);
+        void UpdateAim(float delta_t);
+        void UpdateSpaceship();
+        void Update(float delta_t);
 
     private:
         Rectangle hitbox;

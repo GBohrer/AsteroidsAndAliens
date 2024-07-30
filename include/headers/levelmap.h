@@ -47,8 +47,8 @@ class LevelMap {
         void UpdateBulletInGame(Bullet bullet, int position);
         void DeleteBulletInGame(int position);
 
-        bool EntityIsOutOfBounds(Vector2 pos);
-        EntityVelocity UpdateVelocityByVoidDecay(EntityVelocity v, float time);
+        void UpdateEntityVelocity(Entity* entity, float delta_t);
+        void UpdateEntites(float delta_t, Player* player);
 
         void UpdateCurrentMissionTime(float delta_t);
         void UpdateEntityTimers(float delta_t);
@@ -70,8 +70,8 @@ class LevelMap {
         float AlienSpawnTimer;
         float BulletSpawnTimer;
         float AsteroidDirectionAngle;
-        float VoidVelocityDecay;
-        float VoidVelocityMin;
+        float VoidMultiplier;
+        float VoidVelocity;
         float VoidDecayTimer;
 
     // Level Componds

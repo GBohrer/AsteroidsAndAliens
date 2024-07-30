@@ -5,10 +5,11 @@ Player::Player() {}
 
 Player::Player(Vector2 pos) {
     SetPosition(pos.x, pos.y);
-    SetVelocity({0.0f, 0.0f}, 200.0f, -200.0f);
+    SetVelocity({0.0f, 0.0f}, 200.0f, -200.0f, 200.0f, -200.0f);
     SetAcceleration({0.0f, 0.0f}, 2.0f, -2.0f);
     SetSpeed(10.0f);
     SetLife(100.0f, 100.0f, 0.0f);
+    SetIsOutOfBounds(false);
     SetAimTarget(pos);
     SetHitBox();
     SetSpaceship();
@@ -53,11 +54,11 @@ void Player::SetSpaceship() {
 }
 
 //METHODS
-void Player::Move(float delta) {
+void Player::Move(float delta_t) {
 
     Vector2 force = GetVelocity().current;
-    float min = GetVelocity().min;
-    float max = GetVelocity().max;
+    float min = GetVelocity().current_min;
+    float max = GetVelocity().current_max;
     float speed = GetSpeed();
     Spaceship s = GetSpaceshipStats();
 
@@ -72,23 +73,44 @@ void Player::Move(float delta) {
     if (force.y > max) { force.y = max; }
     else if (force.y < min) { force.y = min; }
 
-    SetVelocity(force.x + GetAcceleration().current.x * delta,
-                force.y + GetAcceleration().current.y * delta);
+    SetVelocity(force.x + GetAcceleration().current.x * delta_t,
+                force.y + GetAcceleration().current.y * delta_t);
 
-    SetPosition(GetPosition().x + GetVelocity().current.x * delta,
-                GetPosition().y + GetVelocity().current.y * delta);
+    SetPosition(GetPosition().x + GetVelocity().current.x * delta_t,
+                GetPosition().y + GetVelocity().current.y * delta_t);
 
     SetHitBox();
 }
 
-void Player::UpdateAim(float delta) {
+void Player::UpdateAim(float delta_t) {
 
     Vector2 mouseDelta = GetMouseDelta();
     Vector2 dir = GetVelocity().current;
-    Vector2 newAimTarget = {GetAimTarget().x + mouseDelta.x + dir.x * delta,
-                            GetAimTarget().y + mouseDelta.y + dir.y * delta};
+    Vector2 newAimTarget = {GetAimTarget().x + mouseDelta.x + dir.x * delta_t,
+                            GetAimTarget().y + mouseDelta.y + dir.y * delta_t};
     
     SetAimTarget(newAimTarget);
+}
+
+void Player::UpdateSpaceship() {
+
+    // Fuel
+    EntityVelocity v = GetVelocity();
+    if (v.current.x != 0.0f || v.current.y != 0.0f) {
+        Spaceship s = GetSpaceshipStats();
+        float new_current_fuel = s.currentFuel - ((0.0001f * (abs(v.current.x) + abs(v.current.y))) / s.fuelInfo.burningEfficiency);
+        //PrintValueInGame(true, s.currentFuel - new_current_fuel, {(int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 220.0f}, 20, WHITE);
+        UpdateSpaceshipCurrentFuel(new_current_fuel);
+    }
+}
+
+void Player::Update(float delta_t) {
+
+    UpdateSpaceship();
+    Move(delta_t);
+    UpdateAim(delta_t);
+
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) SetVelocity(0.0f, 0.0f);
 }
 
 void Player::DrawHitBox(){

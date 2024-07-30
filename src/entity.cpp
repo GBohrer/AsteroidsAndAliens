@@ -21,10 +21,19 @@ void Entity::SetVelocity(EntityVelocity v) {
     this->velocity = v;
 }
 
-void Entity::SetVelocity(Vector2 velocity, float max, float min) {
+void Entity::SetVelocity(Vector2 velocity, float current_max, float current_min, float max, float min) {
     this->velocity.current = velocity;
+    this->velocity.current_max = current_max;
+    this->velocity.current_min = current_min;
     this->velocity.max = max;
     this->velocity.min = min;
+}
+    
+
+void Entity::SetVelocity(Vector2 velocity, float max, float min) {
+    this->velocity.current = velocity;
+    this->velocity.current_max = max;
+    this->velocity.current_min = min;
 }
 
 void Entity::SetVelocity(float x, float y) {
@@ -83,11 +92,11 @@ void Entity::SetDirection(Vector2 direction){
     this->direction = direction;
 }
 
-bool Entity::GetisOutOfBounds() {
+bool Entity::GetIsOutOfBounds() {
     return isOutOfBounds;
 }
 
-void Entity::SetOutOfBounds(bool b) {
+void Entity::SetIsOutOfBounds(bool b) {
     this->isOutOfBounds = b;
 }
 
@@ -97,4 +106,17 @@ float Entity::GetIsOutBoundsTime() {
 
 void Entity::SetIsOutOfBoundsTime(float value) {
     this->isOutOfBoundsTime = value;
+}
+
+bool Entity::CheckIsOutOfBounds(std::vector<Vector2> bounds) {
+
+    Vector2 min = bounds.front();
+    Vector2 max = bounds.back();
+    Vector2 pos = GetPosition();
+
+    if (pos.x < min.x || pos.y < min.y || pos.x > max.x || pos.y > max.y) {
+        return true;
+    } else {
+        return false;
+    }
 }

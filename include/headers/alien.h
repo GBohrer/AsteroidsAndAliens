@@ -7,7 +7,7 @@ class Alien : public Entity {
 
     public:
         Alien();
-        Alien(int radius, float speed, float life);
+        Alien(Vector2 pos, int radius, float speed, float life);
 
         int GetRadius();
         void SetRadius(int radius);
@@ -18,7 +18,6 @@ class Alien : public Entity {
         void DrawDirectionVector();
         void DrawHealthBar();
 
-        void SetAlienToPlayer(Player p, int Player_distance);
         void Move(float delta);
         void UpdateDirection(Player p);
 

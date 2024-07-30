@@ -2,9 +2,10 @@
 
 Alien::Alien(){}
 
-Alien::Alien(int radius, float speed, float life){
+Alien::Alien(Vector2 pos, int radius, float speed, float life){
+    SetPosition(pos.x, pos.y);
     SetRadius(radius);
-    SetVelocity(0.0f, 0.0f);
+    SetVelocity({0.0f, 0.0f}, 200.0f, -200.0f, 200.0f, -200.0f);
     SetAcceleration(0.0f, 0.0f);
     SetSpeed(speed);
     SetLife(life,life, 0.0f);
@@ -28,16 +29,6 @@ void Alien::SetDirection(float x, float y) {
 }
 
 // METHODS
-void Alien::SetAlienToPlayer(Player p, int Player_distance){
-
-    float Alien_spawn_angle = GetRandomValue(0, 360) / 57.2957795;
-    SetPosition((float) p.GetPosition().x + Player_distance * cos(Alien_spawn_angle),
-                (float) p.GetPosition().y + Player_distance * sin(Alien_spawn_angle));
-
-    UpdateDirection(p);
-    SetVelocity(GetDirection().x, GetDirection().y);
-    
-}
 
 void Alien::Move(float delta) {
 
