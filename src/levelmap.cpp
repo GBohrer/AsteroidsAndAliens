@@ -3,10 +3,10 @@
 
 LevelMap::LevelMap() {};
 
-void LevelMap::Set(Player p) {
+void LevelMap::Start(Player p) {
     timeSinceLastShot = timeSinceLastAlienSpawn = 0.0f;
     SetCurrenLevelBounds({{0,0}, {5000,5000}});
-    SetLevelModifiers(LevelDifficulty::MEDIUM);
+    SetLevelModifiers(LevelDifficulty::VERY_EASY);
     SetMission();
     while (GetAsteroidsInGame() < totalAsteroids) { SpawnAsteroids(p); }
 }
@@ -23,6 +23,8 @@ void LevelMap::ClearEntities() {
 
 void LevelMap::SetLevelModifiers(LevelDifficulty ld) {
     
+    this->levelDiff = ld;
+
     switch(ld) {
         case LevelDifficulty::VERY_EASY:
             totalAliens = 2;
@@ -93,11 +95,26 @@ void LevelMap::SetLevelCurrentMission(Mission m) {
     this->currentMission = m;
 }
 
+LevelDifficulty LevelMap::GetLevelDifficulty() {
+    return ld;
+}
+
 void LevelMap::SetMission() {
     Mission m = Mission();
-    m.SetTotalTime(100.0f);
+    m.SetTotalTime(300.0f);
     m.SetCurrentTime(m.GetTotalTime());
+    m.SetTotalAliensKill(10);
     SetLevelCurrentMission(m);
+}
+
+void LevelMap::SetNextMission() {
+    Mission m = Mission();
+    m.SetTotalTime(currentMission.GetTotalTime() - 10.0f);
+    m.SetCurrentTime(m.GetTotalTime());
+    m.SetTotalAliensKill(currentMission.GetTotalAliensKill() + 5);
+    SetLevelCurrentMission(m);
+
+    if (this->BulletSpawnTimer > 0.2) this->BulletSpawnTimer -= 0.05;
 }
 
 // ALIENS
@@ -248,7 +265,10 @@ void LevelMap::UpdateEntites(float delta_t, Player* player) {
     int a_index = 0;
     for (Alien& a : GetCurrentAliens()) {
 
-        if (a.GetLife().current <= 0) DeleteAlienInGame(a_index);
+        if (a.GetLife().current <= 0) {
+            DeleteAlienInGame(a_index);
+            currentMission.SetCurrentAliensKill(currentMission.GetCurrentAliensKill() + 1);
+        }
         UpdateEntityVelocity(&a, delta_t);
 
         a_index++;
@@ -277,6 +297,11 @@ void LevelMap::UpdateEntites(float delta_t, Player* player) {
 
 void LevelMap::UpdateCurrentMissionTime(float delta_t) {
     currentMission.SetCurrentTime(currentMission.GetCurrentTime() - delta_t);
+}
+
+void LevelMap::UpdateMission(float delta_t) {
+    UpdateCurrentMissionTime(delta_t);
+
 }
 
 void LevelMap::UpdateEntityTimers(float delta_t) {

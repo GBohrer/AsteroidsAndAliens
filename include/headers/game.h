@@ -9,7 +9,8 @@ enum State {
     InGame,
     GameOver,
     Paused,
-    IsLoading
+    IsLoading,
+    LevelComplete
 };
 
 typedef struct GameStateInfo {
@@ -28,6 +29,7 @@ class Game {
 
         void Start();
         void Reset();
+        void SetNextMission();
 
         LevelMap& GetGameLevelMap();
 
@@ -61,6 +63,8 @@ class Game {
 
     protected:
         Vector2 LastMousePosition;
+        bool nextLevel;
+        int totalMissionsCompleted;
 
     // Timestamps
         float animation_t_prev;

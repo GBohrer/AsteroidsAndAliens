@@ -34,7 +34,7 @@ class Player : public Entity {
     public:
         Player(); 
         Player(Vector2 pos);
-        void SetSpaceship();
+        void SetSpaceship(float burningEfficiency, float thrustControlEfficiency);
 
         Rectangle GetHitBox();
         void SetHitBox();
