@@ -4,51 +4,20 @@
 Game::Game() {
     SetInitialGameStates();
     currentGameState = GetGameStates().at(State::InMenu);
-    this->level = LevelMap();
-    this->totalMissionsCompleted = 0;
 }
 
 void Game::Start() {
     SetCurrentGameState(GetGameStates().at(State::InGame));
-    this->level.Start(GetPlayer());
+    this->level = LevelMap();
+    this->level.Set(GetPlayer());
     this->player = Player(Vector2Scale(GetGameLevelMap().GetCurrentLevelBounds().back(), 0.5f));
     SetCamera();
     SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
-    this->nextLevel = false;
 }
 
 void Game::Reset() {
     currentGameState = GetGameStates().at(State::InMenu);
     level.Reset();
-}
-
-void Game::SetNextMission() {
-    totalMissionsCompleted++;
-    this->level.Reset();
-    this->level.SetNextMission();
-
-    if (totalMissionsCompleted < 3) {
-        this->level.SetLevelModifiers(LevelDifficulty::VERY_EASY);
-    } else if (totalMissionsCompleted < 6) {
-        this->level.SetLevelModifiers(LevelDifficulty::EASY);
-    } else if (totalMissionsCompleted < 9) {
-         this->level.SetLevelModifiers(LevelDifficulty::MEDIUM);
-    } else if ( totalMissionsCompleted < 12) {
-        this->level.SetLevelModifiers(LevelDifficulty::HARD);
-    } else {
-         this->level.SetLevelModifiers(LevelDifficulty::VERY_HARD);
-    }
-
-    Spaceship s = this->player.GetSpaceshipStats();
-    s.fuelInfo.burningEfficiency += 0.2f;
-    s.fuelInfo.thrustControlEfficiency += 0.2f;
-    this->player.SetSpaceshipStats(s);
-
-    SetCurrentGameState(GetGameStates().at(State::InGame));
-    this->player = Player(Vector2Scale(GetGameLevelMap().GetCurrentLevelBounds().back(), 0.5f));
-    SetCamera();
-    SetMousePosition((int)GetScreenWidth()/2.0f, (int)GetScreenHeight()/2.0f);
-    this->nextLevel = false;
 }
 
 LevelMap& Game::GetGameLevelMap() {
@@ -69,21 +38,18 @@ void Game::SetInitialGameStates() {
     TextBox resume(TextBoxId::Resume,"Resume", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 100, 230, 70 });
     TextBox menu(TextBoxId::Menu,"Menu", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 300, 230, 70 });
     TextBox loading(TextBoxId::Loading,"Loading...", { (int)GetScreenWidth()/2.0f - 140, (int)GetScreenHeight()/2.0f + 100, 230, 70 });
-    TextBox next(TextBoxId::Completed,"Next Mission", { (int)GetScreenWidth()/2.0f - 115, (int)GetScreenHeight()/2.0f + 100, 230, 70 });
-    
+
     GameStateInfo state1(State::InMenu, {start,exit});
     GameStateInfo state2(State::InGame, {});
     GameStateInfo state3(State::Paused, {resume,exit});
     GameStateInfo state4(State::GameOver, {restart,menu,exit});
     GameStateInfo state5(State::IsLoading, {loading});
-    GameStateInfo state6(State::LevelComplete, {next});
 
     this->gameStates.insert({{State::InMenu,state1}, 
                              {State::InGame,state2}, 
                              {State::Paused, state3}, 
                              {State::GameOver,state4},
-                             {State::IsLoading,state5},
-                             {State::LevelComplete,state6}});
+                             {State::IsLoading,state5}});
 }
 
 GameStateInfo Game::GetCurrentGameState () {
@@ -183,7 +149,6 @@ void Game::Update() {
     }
 
     if (isGameOver()) SetCurrentGameState(GetGameStates().at(State::GameOver));
-    if (nextLevel) SetCurrentGameState(GetGameStates().at(State::LevelComplete));
     
     UpdateCamera(GetScreenWidth(), GetScreenHeight());
 
@@ -192,12 +157,8 @@ void Game::Update() {
     level.SpawnAliens(GetPlayer());
 
     level.UpdateEntites(GetDeltaT(), &GetPlayer());
-    level.UpdateMission(GetDeltaT());
+    level.UpdateCurrentMissionTime(GetDeltaT());
     level.UpdateEntityTimers(GetDeltaT());
-
-    if (level.GetLevelCurrentMission().GetCurrentAliensKill() >= level.GetLevelCurrentMission().GetTotalAliensKill()) {
-        nextLevel = true;
-    }
 }
 
 void Game::UpdateTime() {
@@ -239,44 +200,19 @@ void Game::Render() {
 
     //PLAYER STATS
     GetPlayer().DrawSpacechipFuelBar();
-    //DrawText("COORDS", (int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 160.0f, 30, WHITE );
-    //PrintValueInGame(false, GetPlayer().GetPosition().x, {(int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 120.0f}, 30, WHITE);
-    //PrintValueInGame(false, GetPlayer().GetPosition().y, {(int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 90.0f}, 30, WHITE);
-    //DrawText("ACC", (int)GetScreenWidth()/2.0f - 200, (int)GetScreenHeight() - 160.0f, 30, WHITE );
-    //PrintValueInGame(true, GetPlayer().GetAcceleration().current.x, {(int)GetScreenWidth()/2.0f - 200, (int)GetScreenHeight() - 120.0f}, 30, WHITE);
-    //PrintValueInGame(true, GetPlayer().GetAcceleration().current.y, {(int)GetScreenWidth()/2.0f - 200, (int)GetScreenHeight() - 90.0f}, 30, WHITE);
-    //DrawText("VELOCITY", (int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 160.0f, 30, WHITE );
-    //PrintValueInGame(false, GetPlayer().GetVelocity().current.x, {(int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 120.0f}, 30, WHITE);
-    //PrintValueInGame(false, GetPlayer().GetVelocity().current.y, {(int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 90.0f}, 30, WHITE);
+    DrawText("COORDS", (int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 160.0f, 30, WHITE );
+    PrintValueInGame(false, GetPlayer().GetPosition().x, {(int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 120.0f}, 30, WHITE);
+    PrintValueInGame(false, GetPlayer().GetPosition().y, {(int)GetScreenWidth()/2.0f, (int)GetScreenHeight() - 90.0f}, 30, WHITE);
+    DrawText("ACC", (int)GetScreenWidth()/2.0f - 200, (int)GetScreenHeight() - 160.0f, 30, WHITE );
+    PrintValueInGame(true, GetPlayer().GetAcceleration().current.x, {(int)GetScreenWidth()/2.0f - 200, (int)GetScreenHeight() - 120.0f}, 30, WHITE);
+    PrintValueInGame(true, GetPlayer().GetAcceleration().current.y, {(int)GetScreenWidth()/2.0f - 200, (int)GetScreenHeight() - 90.0f}, 30, WHITE);
+    DrawText("VELOCITY", (int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 160.0f, 30, WHITE );
+    PrintValueInGame(false, GetPlayer().GetVelocity().current.x, {(int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 120.0f}, 30, WHITE);
+    PrintValueInGame(false, GetPlayer().GetVelocity().current.y, {(int)GetScreenWidth()/2.0f + 200, (int)GetScreenHeight() - 90.0f}, 30, WHITE);
     
     //MISSION STATS
     PrintTimerInGame(GetGameLevelMap().GetLevelCurrentMission().GetTotalTime(), GetGameLevelMap().GetLevelCurrentMission().GetCurrentTime(), {(int)GetScreenWidth()/2.0f, 120.0f}, 50);
-    DrawText("KILLS: ", (int)GetScreenWidth()/2.0f - 150, (int)GetScreenHeight() - 160.0f, 30, WHITE );
-    PrintValueInGame(false, GetGameLevelMap().GetLevelCurrentMission().GetCurrentAliensKill(), {(int)GetScreenWidth()/2.0f + -150.0f, (int)GetScreenHeight() - 130.0f}, 30, WHITE);
-    DrawText("DIFFICULTY: ", (int)GetScreenWidth()/2.0f + 150, (int)GetScreenHeight() - 160.0f, 30, WHITE );
-    //PrintDifficultyInGame(GetGameLevelMap().GetLevelDifficulty(), {(int)GetScreenWidth()/2.0f + 150, (int)GetScreenHeight()}, 30);
-
-    std::string str_pos;
-    switch (GetGameLevelMap().GetLevelDifficulty()) {
-        case LevelDifficulty::VERY_EASY:
-            str_pos = "Very Easy";
-            break;
-        case LevelDifficulty::EASY:
-            str_pos = "Easy";
-            break;
-        case LevelDifficulty::MEDIUM: 
-            str_pos = "Medium";
-            break;
-        case LevelDifficulty::HARD:
-            str_pos = "Hard";
-            break;
-        case LevelDifficulty::VERY_HARD:
-            str_pos = "Very Hard";
-            break;
-    }
-
-    DrawText(ConvertText(str_pos), (int)GetScreenWidth()/2.0f + 150, (int)GetScreenHeight() - 130, 30, WHITE);
-
+    
     if (GetPlayer().GetIsOutOfBounds()) {
         DrawText("WARNING!!!", GetScreenWidth()/2.0f - 200, GetScreenHeight() - 360, 80, RED);
         DrawText("The spaceship is entering the void",GetScreenWidth()/2.0f - 260, GetScreenHeight() - 280, 30, RED);
