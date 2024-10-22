@@ -11,15 +11,9 @@ class Mission {
         float GetTotalTime();
         void SetCurrentTime(float value);
         float GetCurrentTime();
-        int GetTotalAliensKill();
-        void SetTotalAliensKill(int value);
-        int GetCurrentAliensKill();
-        void SetCurrentAliensKill(int value);
 
     private:
         float totalTimeSec;
         float currentTimeSec;
-        int totalAliensKill;
-        int currentAliensKill;
 
 };

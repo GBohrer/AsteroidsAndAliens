@@ -43,7 +43,6 @@ int main()
             break;
 
             case State::Paused:
-                if (IsKeyPressed(KEY_ESCAPE)) IsGameRunning = false;
 
                 for (int i = 0; i < (int)game.GetCurrentGameState().text_boxes.size(); i++) {
                     TextBox tb = game.GetCurrentGameState().text_boxes[i];
@@ -112,24 +111,6 @@ int main()
             case State::IsLoading:
             break;
 
-            case State::LevelComplete:
-                for (int i = 0; i < (int)game.GetCurrentGameState().text_boxes.size(); i++) {
-                    TextBox tb = game.GetCurrentGameState().text_boxes[i];
-
-                    if (CheckCollisionPointRec(GetMousePosition(), tb.box)) {
-                        tb.isMouseOn = true;
-                        game.UpdateCurrentGameStateTextBox(tb, i);
-                        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                            if (tb.text == "Next Mission")  { game.SetNextMission(); }
-                            else if (tb.text == "Exit")  { IsGameRunning = false; }
-                        }
-                    } else {
-                        tb.isMouseOn = false;
-                        game.UpdateCurrentGameStateTextBox(tb, i);
-                    }
-                }
-            break;
-
             default:
             break;
         }
@@ -195,22 +176,6 @@ int main()
             break;
 
             case State::IsLoading:
-            break;
-
-            case State::LevelComplete:
-                DrawText("MISSION COMPLETED!5", (int)GetScreenWidth()/2.0f - 250, (int)GetScreenHeight()/2.0f - 200, 90, WHITE);
-
-                for (int i = 0; i < (int)game.GetCurrentGameState().text_boxes.size(); i++) {
-                    TextBox tb = game.GetCurrentGameState().text_boxes[i];
-
-                    if (tb.isMouseOn) {
-                        DrawRectangleLinesEx(tb.box, 4, YELLOW);
-                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, YELLOW);
-                    } else {
-                        DrawRectangleLinesEx(tb.box, 4, LIGHTGRAY);
-                        DrawText(ConvertText(tb.text), tb.box.x + tb.box.width/4, tb.box.y + tb.box.height/4, tb.box.height/2, LIGHTGRAY);
-                    }
-                }
             break;
 
             default:

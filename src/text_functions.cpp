@@ -50,27 +50,3 @@ void PrintTimerInGame(float totalTime, float currentTime, Vector2 textPos, int f
         DrawText(ConvertText(text), textPos.x, textPos.y, fontSize, RED);
     }
 }
-
-void PrintDifficultyInGame(LevelDifficulty ld, Vector2 textPos, int fontSize) {
-
-    std::string str_pos;
-    switch (ld) {
-        case LevelDifficulty::VERY_EASY:
-            str_pos = "Very Easy";
-            break;
-        case LevelDifficulty::EASY:
-            str_pos = "Easy";
-            break;
-        case LevelDifficulty::MEDIUM: 
-            str_pos = "Medium";
-            break;
-        case LevelDifficulty::HARD:
-            str_pos = "Hard";
-            break;
-        case LevelDifficulty::VERY_HARD:
-            str_pos = "Very Hard";
-            break;
-    }
-
-    DrawText(ConvertText(str_pos), textPos.x, textPos.y, fontSize, WHITE);
-}

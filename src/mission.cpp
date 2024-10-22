@@ -18,18 +18,3 @@ void Mission::SetCurrentTime(float value) {
 float Mission::GetCurrentTime() {
     return currentTimeSec;
 }
-
-int Mission::GetTotalAliensKill() {
-    return totalAliensKill;
-}
-
-void Mission::SetTotalAliensKill(int value) {
-    this->totalAliensKill = value;
-}
-int Mission::GetCurrentAliensKill() {
-    return currentAliensKill;
-}
-
-void Mission::SetCurrentAliensKill(int value) {
-    this->currentAliensKill = value;
-}

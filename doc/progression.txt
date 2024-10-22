@@ -101,6 +101,8 @@ DAY 17 - 08/07/2024
 DAY 18 - 10/07/2024
     Pequenas mudancas em Collisions (provavelmente quebrei ainda mais)
 
+==========================================================================================================================
+
 DAY 19 - 27/07/2024
     Removido score
     Class Level: especializacao de atributos da class Game para facilitar estrutura de Mission
@@ -114,8 +116,5 @@ DAY 20 - 28/07/2024
     Imprimindo um relogio na tela dinamicamente!
     Fix do relogio da missao que nao resetava após sair de InGame (uptade do delta_t ocorrer sempre)
 
-DAY 21 - 30/07/2024
-    Mudanças na estrutura de EntityVelocity e modularizacao da logica de IsOutOfBounds (uso de polimorfismo para (tentar) atualizar toda Entity)
-
-DAY 22 - 05/08/2024
-    Mission com totalAliensKill para criar loop de novas missoes + incremento de dificuldade
+DAY 21 - 
+    

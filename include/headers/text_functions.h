@@ -3,15 +3,13 @@
 
 #include "../master_header.h"
 
-
 enum TextBoxId {
     Start,
     Restart,
     Exit,
     Resume,
     Menu,
-    Loading,
-    Completed
+    Loading
 };
 
 typedef struct TextBox {
@@ -28,6 +26,5 @@ typedef struct TextBox {
 const char * ConvertText (std::string string);
 void PrintValueInGame(bool isFloat, float value, Vector2 textPos, int fontSize, Color color);
 void PrintTimerInGame(float totalTime, float currentTime, Vector2 textPos, int fontSize);
-//void PrintDifficultyInGame(LevelDifficulty ld, Vector2 textPos, int fontSize);
 
 #endif
