@@ -7,9 +7,9 @@
 07/07/2024 - ✅ Corrigir bug da bullet atingindo player no disparo (direcao especifica)
 08/07/2024 - ✅ Implementar combustivel da nave
 
+27/07/2024 - ✅ Modularizar a verificacao do isOutOfBounds para realizar com qualquer Entity
 28/07/2024 - ✅ Criar estrutura de Level e Mission (dividir a classe Game)
 
-Modularizar a verificacao do isOutOfBounds para realizar com qualquer Entity
 Estudar o MeasureText() e modularizar melhor os textos para UI
 Corrigir Bug do respawn de asteroids após GameOver (tem a ver com SetVelocity logo dps do constructor)
 Implementar hotbar com novas bullets para escolher (?)

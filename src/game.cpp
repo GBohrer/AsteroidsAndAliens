@@ -143,22 +143,28 @@ bool Game::isGameOver() {
 
 void Game::Update() {
 
+    level.UpdateCurrentMissionTime(GetDeltaT());
+    level.UpdateEntityTimers(GetDeltaT());
+
     if (IsKeyPressed(KEY_ESCAPE)) {
         SetCurrentGameState(GetGameStates().at(State::Paused));
         SetLastMousePosition(GetMousePosition());
+        return;
     }
-
-    if (isGameOver()) SetCurrentGameState(GetGameStates().at(State::GameOver));
     
-    UpdateCamera(GetScreenWidth(), GetScreenHeight());
+    UpdatePlayer();
 
     if (IsKeyDown(KEY_SPACE)) level.SpawnBullets(GetPlayer());
+
     level.SpawnAsteroids(GetPlayer());
     level.SpawnAliens(GetPlayer());
 
-    level.UpdateEntites(GetDeltaT(), &GetPlayer());
-    level.UpdateCurrentMissionTime(GetDeltaT());
-    level.UpdateEntityTimers(GetDeltaT());
+    UpdateCamera(GetScreenWidth(), GetScreenHeight());
+
+    CheckEntityCollisions(GetDeltaT(), &level, &player);
+
+    if (isGameOver()) SetCurrentGameState(GetGameStates().at(State::GameOver));
+
 }
 
 void Game::UpdateTime() {
@@ -213,7 +219,7 @@ void Game::Render() {
     //MISSION STATS
     PrintTimerInGame(GetGameLevelMap().GetLevelCurrentMission().GetTotalTime(), GetGameLevelMap().GetLevelCurrentMission().GetCurrentTime(), {(int)GetScreenWidth()/2.0f, 120.0f}, 50);
     
-    if (GetPlayer().GetIsOutOfBounds()) {
+    if (GetPlayer().GetisOutOfBounds()) {
         DrawText("WARNING!!!", GetScreenWidth()/2.0f - 200, GetScreenHeight() - 360, 80, RED);
         DrawText("The spaceship is entering the void",GetScreenWidth()/2.0f - 260, GetScreenHeight() - 280, 30, RED);
     }

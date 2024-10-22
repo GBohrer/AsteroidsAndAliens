@@ -7,12 +7,11 @@ Bullet::Bullet(Vector2 pos, Vector2 dir, float speed, float rate, float damage) 
     SetPosition(pos.x, pos.y);
     SetHitBox();
     SetDirection(dir);
-    SetVelocity({0.0f, 0.0f}, 200.0f, -200.0f, 200.0f, -200.0f);
+    SetVelocity(0.0f, 0.0f);
     SetAcceleration(0.0f, 0.0f);
     SetSpeed(speed);
     SetFireRate(rate);
     SetDamage(damage);
-    SetIsOutOfBounds(false);
 }
 
 // GETTERS & SETTERS

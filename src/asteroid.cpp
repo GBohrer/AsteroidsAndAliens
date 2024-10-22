@@ -6,7 +6,7 @@ Asteroid::Asteroid(Vector2 pos, int radius, float life) {
     SetPosition(pos.x, pos.y);
     SetRadius(radius);
     SetLife(life, life, 0.0f);
-    SetVelocity({0.0f, 0.0f}, 200.0f, -200.0f, 200.0f, -200.0f);
+    SetVelocity(0.0f, 0.0f);
     SetAcceleration(0.0f, 0.0f);
 }
 
@@ -24,8 +24,8 @@ void Asteroid::DrawHitBox(){
 
 void Asteroid::Move(float delta) {
 
-    SetVelocity(GetVelocity().current.x + GetAcceleration().current.x * delta * GetSpeed(),
-                GetVelocity().current.y + GetAcceleration().current.y * delta * GetSpeed());
+    SetVelocity(GetVelocity().current.x + GetAcceleration().current.x * delta,
+                GetVelocity().current.y + GetAcceleration().current.y * delta);
 
     SetPosition(GetPosition().x + GetVelocity().current.x * delta,
                 GetPosition().y + GetVelocity().current.y * delta);

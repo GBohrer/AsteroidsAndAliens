@@ -28,45 +28,45 @@ void LevelMap::SetLevelModifiers(LevelDifficulty ld) {
             totalAliens = 2;
             totalAsteroids = 20;
             AlienSpawnTimer = 5.0f;
-            VoidMultiplier = 0.5f;
-            VoidDecayTimer = 0.5f;
-            VoidVelocity = 30.0f;
+            VoidVelocityDecay = 5.0f;
+            VoidDecayTimer = 1.0f;
+            VoidVelocityMin = 30.0f;
         break;
 
         case LevelDifficulty::EASY:
             totalAliens = 5;
             totalAsteroids = 50;
             AlienSpawnTimer = 4.0f;
-            VoidMultiplier = 0.5f;
+            VoidVelocityDecay = 10.0f;
             VoidDecayTimer = 1.0f;
-            VoidVelocity = 25.0f;
+            VoidVelocityMin = 25.0f;
         break;
 
         case LevelDifficulty::MEDIUM:
             totalAliens = 8;
             totalAsteroids = 50;
             AlienSpawnTimer = 3.0f;
-            VoidMultiplier = 1.0f;
+            VoidVelocityDecay = 15.0f;
             VoidDecayTimer = 1.0f;
-            VoidVelocity = 15.0f;
+            VoidVelocityMin = 15.0f;
         break;
 
         case LevelDifficulty::HARD:
             totalAliens = 10;
             totalAsteroids = 70;
             AlienSpawnTimer = 3.0f;
-            VoidMultiplier = 2.0f;
-            VoidDecayTimer = 1.5f;
-            VoidVelocity = 10.0f;
+            VoidVelocityDecay = 15.0f;
+            VoidDecayTimer = 0.5f;
+            VoidVelocityMin = 10.0f;
         break;
 
         case LevelDifficulty::VERY_HARD:
             totalAliens = 10;
             totalAsteroids = 100;
             AlienSpawnTimer = 2.0f;
-            VoidMultiplier = 3.0f;
-            VoidDecayTimer = 1.5f;
-            VoidVelocity = 2.0f;
+            VoidVelocityDecay = 25.0f;
+            VoidDecayTimer = 0.5f;
+            VoidVelocityMin = 2.0f;
         break;
 
         default:
@@ -116,12 +116,8 @@ void LevelMap::SpawnAliens(Player p) {
         float speed = -0.076 * radius + 204.14;
         float life = radius*2;
 
-        float Alien_spawn_angle = GetRandomValue(0, 360) / 57.2957795;
-        Vector2 pos = {(float) p.GetPosition().x + 700 * cos(Alien_spawn_angle),
-                       (float) p.GetPosition().y + 700 * sin(Alien_spawn_angle)};
-
-        Alien a_aux = Alien(pos, radius, speed, life);
-        a_aux.UpdateDirection(p);
+        Alien a_aux = Alien(radius, speed, life);
+        a_aux.SetAlienToPlayer(p, 700);
         this->aliensInGame.push_back(a_aux);
 
         timeSinceLastAlienSpawn = 0.0f;
@@ -152,12 +148,14 @@ void LevelMap::SpawnAsteroids(Player p) {
 
         Vector2 min = GetCurrentLevelBounds().front();
         Vector2 max = GetCurrentLevelBounds().back();
-        Vector2 pos = {(float)GetRandomValue((int)min.x, (int)max.x), (float)GetRandomValue((int)min.y, (int)max.y)};
+
+        float posX = GetRandomValue((int)min.x, (int)max.x);
+        float posY = GetRandomValue((int)min.y, (int)max.y);
 
         int radius = GetRandomValue(15,40);
         float life = radius*10;
 
-        Asteroid asteroid = Asteroid(pos, radius, life);
+        Asteroid asteroid = Asteroid({posX, posY}, radius, life);
         asteroid.SetVelocity(cos(AsteroidDirectionAngle) * 10.0f, sin(AsteroidDirectionAngle) * 10.0f);
         if (!CheckCollisionPlayerAsteroid(p, asteroid)) asteroidsInGame.push_back(asteroid);
     }
@@ -203,76 +201,24 @@ void LevelMap::DeleteBulletInGame(int position) {
     this->bulletsInGame.erase(bulletsInGame.begin() + position);
 }
 
-void LevelMap::UpdateEntityVelocity(Entity* entity, float delta_t) {
 
-    float time = entity->GetIsOutBoundsTime();
-    EntityVelocity v = entity->GetVelocity();
+bool LevelMap::EntityIsOutOfBounds(Vector2 pos) {
 
-    if (entity->CheckIsOutOfBounds(GetCurrentLevelBounds())) {
-        entity->SetIsOutOfBounds(true);
-        time += delta_t;
+    Vector2 min = GetCurrentLevelBounds().front();
+    Vector2 max = GetCurrentLevelBounds().back();
 
-        if (v.current_max > VoidVelocity && abs(v.min) > VoidVelocity) {
-            float velocity_decay = VoidMultiplier + time / 1000.0f;
-            entity->SetVelocity(v.current, v.current_max - velocity_decay, v.current_min + velocity_decay);
-            entity->SetSpeed(entity->GetSpeed() - velocity_decay / 100.0f);
-        }
-        entity->SetIsOutOfBoundsTime(time);
-
+    if (pos.x < min.x || pos.y < min.y || pos.x > max.x || pos.y > max.y) {
+        return true;
     } else {
-        if (v.current_max != v.max || v.current_min != v.min) {
-
-            entity->SetIsOutOfBounds(false);
-            time = std::max(time - delta_t, 0.0f);
-
-            if (v.current_max < v.max && abs(v.current_min) < abs(v.min)) {
-                float velocity_decay = VoidMultiplier + time / 1000.0f;
-                entity->SetVelocity(v.current, v.current_max + velocity_decay, v.current_min - velocity_decay);
-                entity->SetSpeed(entity->GetSpeed() + velocity_decay / 100.0f);
-            }
-            entity->SetIsOutOfBoundsTime(time);
-        }
+        return false;
     }
 }
 
-void LevelMap::UpdateEntites(float delta_t, Player* player) {
+EntityVelocity LevelMap::UpdateVelocityByVoidDecay(EntityVelocity v, float time) {
 
-    CheckEntityCollisions(delta_t, this, player);
+    EntityVelocity new_v(v.current, v.max - VoidVelocityDecay, v.min + VoidVelocityDecay);
 
-    // PLAYER
-    UpdateEntityVelocity(player, delta_t);
-    player->Update(delta_t);
-
-
-    // ALIENS
-    int a_index = 0;
-    for (Alien& a : GetCurrentAliens()) {
-
-        if (a.GetLife().current <= 0) DeleteAlienInGame(a_index);
-        UpdateEntityVelocity(&a, delta_t);
-
-        a_index++;
-    }
-
-    // ASTEROIDS
-    int ast_index = 0;
-    for (Asteroid& ast : GetCurrentAsteroids()) {
-
-        if (ast.GetLife().current <= 0) DeleteAsteroidInGame(ast_index);
-        UpdateEntityVelocity(&ast, delta_t);
-
-        ast_index++;
-    }
-
-    // BULLETS
-    int b_index = 0;
-    for (Bullet& b : GetCurrentBullets()) {
-
-        if (b.GetLife().current <= 0) DeleteBulletInGame(b_index);
-        UpdateEntityVelocity(&b, delta_t);
-
-        b_index++;
-    }
+    return new_v;
 }
 
 void LevelMap::UpdateCurrentMissionTime(float delta_t) {
