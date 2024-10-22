@@ -14,7 +14,7 @@ class LevelMap {
     public:
         LevelMap();
 
-        void Set(Player p);
+        void Start(Player p);
         void Reset();
         void ClearEntities();
         void SetLevelModifiers(LevelDifficulty ld);
@@ -24,7 +24,9 @@ class LevelMap {
 
         Mission& GetLevelCurrentMission();
         void SetLevelCurrentMission(Mission m);
+        LevelDifficulty GetLevelDifficulty();
         void SetMission();
+        void SetNextMission();
 
     //Aliens
         std::vector<Alien>& GetCurrentAliens();
@@ -52,6 +54,7 @@ class LevelMap {
 
         void UpdateCurrentMissionTime(float delta_t);
         void UpdateEntityTimers(float delta_t);
+        void UpdateMission(float delta_t);
 
     protected:
         float timeSinceLastShot;
@@ -65,6 +68,7 @@ class LevelMap {
         std::vector<Bullet> bulletsInGame;
 
     // Current LevelMap-Modifiers
+        LevelDifficulty levelDiff;
         int totalAliens;
         int totalAsteroids;
         float AlienSpawnTimer;

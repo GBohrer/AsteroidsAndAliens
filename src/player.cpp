@@ -12,7 +12,7 @@ Player::Player(Vector2 pos) {
     SetIsOutOfBounds(false);
     SetAimTarget(pos);
     SetHitBox();
-    SetSpaceship();
+    SetSpaceship(0.5f, 0.5f);
 }
 
 // GETTERS & SETTERS
@@ -47,8 +47,8 @@ void Player::UpdateSpaceshipCurrentFuel(float value) {
     this->shipStats.currentFuel = value;
 }
 
-void Player::SetSpaceship() {
-    Fuel fuel(FuelType::Liquid, 2.0f, 2.0f);
+void Player::SetSpaceship(float burningEfficiency, float thrustControlEfficiency ) {
+    Fuel fuel(FuelType::Solid, burningEfficiency, thrustControlEfficiency);
     Spaceship s(fuel, 500.0f, 500.0f, GetVelocity().max);
     SetSpaceshipStats(s);
 }
