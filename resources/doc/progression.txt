@@ -1,0 +1,61 @@
+DAY 1 - 08/10/2024
+    Recomeço do repositório Galactic-Adventures
+    GRANDE reestruturação da Class Game + melhor modularização do TextBox
+    Primeira ideia de divisão de código (criação de core.cpp e interface.cpp)
+
+DAY 2 - 09/10/2024
+    Melhorias nas structs e game.Update() funcionando
+
+DAY 3 - 15/10/2024
+    Mudanca do Title para SimpleText
+    "Flashing" para textos
+
+DAY 4 - 17/10/2024
+    Novas modularizacoes para os textos
+
+DAY 5 - 18/10/2024
+    Corrigi bug de SimpleText não estar piscando caso isBlinkable = true
+    Teste com Texture2D! -> Adicao de gameImages em GameInfo
+
+DAY 6 - 20/10/2024
+    Novas gameScreens
+    TextBox agora possui vetor de SimpleText, assim e possivel realizar troca de configuracoes (e outras coisas, claro)
+    Novo GameStateHandler: melhor modularizacao do controle da troca dos estados (agora sao funcoes e em control.cpp)
+    Explorando meios de implementar SaveFile
+
+DAY 7 - 21/10/2024
+    Uso de std::filesystem para manipular os arquivos de SaveFile
+
+DAY 8 - 22/10/2024
+    Refatoracao de toda interface.hpp (WIP)
+
+DAY 9 - 23/10/2024
+    Continuacao. Agora compila
+
+DAY 10 - 03/11/2024
+    Fim do GameScreen (virou atributo direto de GameState)
+    Uso de std::shared_ptr para gerenciar memoria de UIObjects e criar corretamente em GameStateInit()
+    AGORA VAI???? (foi)
+    UIObject agora tem isClickable (otimizacao)
+    Segment Fault monstruoso de só poder inserir 5 UIObjcts na gamescreen... (FF)
+
+DAY 11 - 04/11/2024
+    Resolvido: criei um unico vector para instanciar as screens, dando clear() ao fim
+    EDIT: Nâo, não resolvi. Ocorre meio aleatoriamente, dependendo do que e onde insiro o UIObject no vector...
+    ACHO que resolvi: game.SetCurrentGameState() ocorria e o loop tentava acessar UIObjects do state passado! Botei return nos cases em que ocorre a troca de gameState.
+
+    GRANDE MUDANCA! Galactic Adventures sera estilo arcade. Refiz telas iniciais e Savefile diferente.
+
+    Class Entity e Player recuperada. Loop basico do game e entity funcionando.
+
+DAY 12 - 05/11/2024
+    Exclui functions.cpp e distribui suas funcoes para outros modulos
+
+DAY 13 - 06/11/2024
+    Exclui entity.cpp e player.cpp.
+    Estudando implementações de ECS(Entity Component System)
+    Reestruturei o diretorio include para headers
+    ECS estruturado por https://austinmorlan.com/posts/entity_component_system/
+
+DAY 14 - 08/11/2024
+    Inicio MovementSystem <- debugar linha 143 de control.cpp

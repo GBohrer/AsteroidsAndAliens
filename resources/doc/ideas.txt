@@ -1,0 +1,33 @@
+
+IDEIAS GAMEPLAY
+    - Spaceship tem Fuel e Energy:
+        Fuel: Combustível da nave
+            Consumido por:
+                Movimentar Spaceship (quanto maior velocidade, maior consumo);
+                Uso do coletor;
+            Se acabar:
+                Spaceship não consegue mais se mover;
+                Tank de Energy comecara a descer;
+            Como conseguir:
+                Coletando Asteroid (ganho depende do tipo);
+
+        Energy: Energia da nave
+            Consumido por:
+                Disparo de bullets (e outras armas);
+                Farol de Spaceship
+            Se acabar:
+                Recursos que usam Energy não funcionam;
+            Como conseguir:
+                Enquanto houver Fuel, Energy recarrega automaticamente;
+                Matando Aliens;
+
+    - Biomas:
+        Existiram alguns biomas com recursos distintos pelo espaço.
+        1 - Asteroid Fields: cinturao de asteroids;
+        2 - Deep Space: nada. Escuro;
+        3 - ??? : plantas espaciais espalhadas por clusters
+
+    - Progressoes:
+        - Sera possivel coletar as plantas espaciais e dar para aliens. Assim eles se tornaram aliados e seguirao a Spaceship
+        - Naves caídas podem aparecer no mapa, oferecendo algum poder ou conhecimento (regiao de mapa)
+        

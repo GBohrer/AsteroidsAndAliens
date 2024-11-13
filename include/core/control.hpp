@@ -1,0 +1,36 @@
+#pragma once
+#include "../master.hpp"
+
+// GAME
+
+std::unordered_map<State, GameState> GameStateInit();
+GameInfo GameInfoInit();
+GameTimer GameTimerInit();
+std::unique_ptr<ECSManager> GameECSManagerInit();
+Camera2D GameCameraInit();
+
+
+// GAMESTATES
+
+void Handle_START_MENU(Game& game);
+void Handle_MAIN_MENU(Game& game);
+void Handle_SCORES_MENU(Game& game);
+void Handle_OPTIONS_MENU(Game& game);
+void Handle_ABOUT_MENU(Game& game);
+void Handle_GAME(Game& game);
+void Handle_PAUSE(Game& game);
+void Handle_GAMEOVER(Game& game);
+void Handle_SAVE_MENU(Game& game);
+void Handle_LEAVING(Game& game);
+
+extern std::map<State, std::function<void(Game&)>> stateHandlers;
+
+
+// MISSION
+
+
+
+// OUTRO
+
+std::unordered_map<std::string, Texture2D> LoadGameImages();
+void UnloadGameImages(std::unordered_map<std::string, Texture2D>& gameImages);
