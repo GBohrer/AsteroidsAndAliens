@@ -114,7 +114,7 @@ std::unordered_map<State, GameState> GameStateInit () {
 GameInfo GameInfoInit() {
     GameInfo info;
     info.gameStates = GameStateInit();
-    info.gameImages = LoadGameImages();
+    //info.gameImages = LoadGameImages();
     return info;
 }
 
