@@ -11,7 +11,9 @@ const ComponentType MAX_COMPONENTS = 3;
 
 using Signature = std::bitset<MAX_COMPONENTS>;
 
+class ECSManager;
 class System {
     public:
-	std::set<Entity> mEntities;
+	    std::set<Entity> mEntities;
+        virtual void Update(std::shared_ptr<ECSManager> ecs, float dt) = 0;
 };

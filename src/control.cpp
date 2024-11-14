@@ -286,6 +286,8 @@ void Handle_GAME(Game& game) {
             } else { tb->SetIsCursorOn(false); }
         }
     }
+
+    game.UpdateSystems(); 
 }
 
 void Handle_PAUSE(Game& game) {
@@ -381,11 +383,6 @@ void Handle_LEAVING(Game& game) {
         }
     }
 }
-
-// MISSION
-
-
-
 
 std::unordered_map<std::string, Texture2D> LoadGameImages() {
     std::unordered_map<std::string, Texture2D> gi;

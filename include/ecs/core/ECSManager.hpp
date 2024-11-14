@@ -77,6 +77,10 @@ class ECSManager {
 	    	mSystemManager->SetSignature<T>(signature);
 	    }
 
+		std::vector<std::shared_ptr<System>> GetSystems() {
+			return mSystemManager->GetSystems();
+		}
+
     private:
 	    std::unique_ptr<ComponentManager> mComponentManager;
 	    std::unique_ptr<EntityManager> mEntityManager;

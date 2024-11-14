@@ -60,14 +60,12 @@ class Game {
         GameState& GetCurrentGameState();
         void SetCurrentGameState(State state);
 
-        void MissionInit();
-        void ClearCurrentMission();
-
         std::vector<std::shared_ptr<UIObject>>& GetUIObjects();
 
         double GetRunTime();
         double GetDeltaT();
 
+        void UpdateSystems();
         void UpdateFileName(PromptBox* pb);
 
     protected:
@@ -81,5 +79,5 @@ class Game {
         GameState currentGameState;
         GameTimer t;
         SaveFile SaveFile;
-        std::unique_ptr<ECSManager> ECSManager;
+        std::shared_ptr<ECSManager> ECSManager;
 };

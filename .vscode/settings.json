@@ -62,7 +62,9 @@
 		"map": "cpp",
 		"codecvt": "cpp",
 		"ratio": "cpp",
-		"filesystem": "cpp"
+		"filesystem": "cpp",
+		"bitset": "cpp",
+		"set": "cpp"
 	},
 	"C_Cpp.errorSquiggles": "disabled"
 }

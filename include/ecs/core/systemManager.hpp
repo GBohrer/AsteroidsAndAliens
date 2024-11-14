@@ -54,6 +54,15 @@ class SystemManager {
 	    	}
 	    }
 
+		std::vector<std::shared_ptr<System>> GetSystems() {
+        	std::vector<std::shared_ptr<System>> systems;
+        	systems.reserve(mSystems.size());
+
+        	for (auto const& pair : mSystems)
+        	    systems.push_back(pair.second);
+        	return systems;
+		}
+
     private:
 	    // Map from system type string pointer to a signature
 	    std::unordered_map<const char*, Signature> mSignatures{};

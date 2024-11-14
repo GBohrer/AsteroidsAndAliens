@@ -75,6 +75,13 @@ double Game::GetDeltaT() {
     return this->t.delta_t;
 }
 
+void Game::UpdateSystems() {
+
+    for (auto& system : ECSManager->GetSystems() ) {
+        system->Update(ECSManager, GetDeltaT());
+    }
+
+}
 
 void Game::UpdateFileName(PromptBox* pb) {
 //
