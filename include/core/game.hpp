@@ -53,6 +53,7 @@ class Game {
         }
 
         bool Running();
+        void Start();
         void Update();
         void Draw();
         void Close();

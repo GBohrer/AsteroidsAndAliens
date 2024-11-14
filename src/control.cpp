@@ -180,6 +180,7 @@ void Handle_MAIN_MENU(Game& game) {
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                     switch(tb->GetID()) {
                         case BoxID::PLAY:
+                            game.Start();
                             game.SetCurrentGameState(State::GAME);
                             return;
                         case BoxID::LEADERBOARD:

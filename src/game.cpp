@@ -1,6 +1,8 @@
 #include "../include/master.hpp"
 
 
+// CORE METHODS:
+
 Game::Game() {
     this->isGameRunning = true;
     this->gameInfo = GameInfoInit();
@@ -10,18 +12,37 @@ Game::Game() {
     this->ECSManager = GameECSManagerInit();
 }
 
-void Game::Close() {
-    UnloadGameImages(gameInfo.gameImages);
-    this->isGameRunning = false;
-}
+void Game::Start() {
 
-GameState& Game::GetCurrentGameState() {
-    return this->currentGameState;
-}
+    std::vector<Entity> asteroids (1);
 
-void Game::SetCurrentGameState(State state) {
-    GameState gs = gameInfo.gameStates.at(state);
-    this->currentGameState = gs;
+    for (auto& asteroid : asteroids) {
+        asteroid = ECSManager->CreateEntity();
+
+        ECSManager->AddComponent(
+            asteroid,
+            Transform {
+                .translation = Vector3({100.0f, 100.0f, 1.0f}),
+                .rotation = Quaternion({1.0f, 1.0f, 1.0f, 1.0f}),
+                .scale = Vector3({5.0f, 5.0f, 5.0f})
+            });
+
+        ECSManager->AddComponent(
+            asteroid,
+            Velocity {
+                .current = Vector2({0.0f, 0.0f}),
+                .max = 200.0f,
+                .min = -200.0f
+            });
+
+        ECSManager->AddComponent(
+            asteroid,
+            Acceleration {
+                .current = Vector2({0.5f, 0.5f}),
+                .max = 10.0f,
+                .min = 0.0f
+            });
+    }
 }
 
 bool Game::Running() {
@@ -31,7 +52,6 @@ bool Game::Running() {
 std::vector<std::shared_ptr<UIObject>>& Game::GetUIObjects() {
     return this->currentGameState.gameScreen;
 }
-
 
 void Game::Update() {
 
@@ -56,8 +76,26 @@ void Game::Draw() {
         obj->Draw(t.run_time);
     }
 
+    for (const auto& entitiy : ECSManager->mEntityManager->)
+
     EndDrawing();
 }
+
+void Game::Close() {
+    UnloadGameImages(gameInfo.gameImages);
+    this->isGameRunning = false;
+}
+
+GameState& Game::GetCurrentGameState() {
+    return this->currentGameState;
+}
+
+void Game::SetCurrentGameState(State state) {
+    GameState gs = gameInfo.gameStates.at(state);
+    this->currentGameState = gs;
+}
+
+// ==========================================================================
 
 void Game::UpdateGameTimer() {
     t.animation_t_now = static_cast<double>(GetTime());
