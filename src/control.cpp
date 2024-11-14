@@ -180,7 +180,6 @@ void Handle_MAIN_MENU(Game& game) {
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                     switch(tb->GetID()) {
                         case BoxID::PLAY:
-                            game.MissionInit();
                             game.SetCurrentGameState(State::GAME);
                             return;
                         case BoxID::LEADERBOARD:
@@ -313,8 +312,6 @@ void Handle_PAUSE(Game& game) {
 }
 
 void Handle_GAMEOVER(Game& game) {
-
-    game.ClearCurrentMission();
 
     for (const auto& obj : game.GetUIObjects()) {
         if (obj && obj->isClickable) {

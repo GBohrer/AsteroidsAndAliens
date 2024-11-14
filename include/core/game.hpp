@@ -43,13 +43,6 @@ typedef struct GameInfo {
 
 } GameInfo;
 
-// ==================================== MISSION
-typedef struct Mission {
-    int currentScore;
-    float runTime;
-
-} Mission;
-
 
 class Game {
 
@@ -75,7 +68,6 @@ class Game {
         double GetRunTime();
         double GetDeltaT();
 
-
         void UpdateFileName(PromptBox* pb);
 
     protected:
@@ -88,7 +80,6 @@ class Game {
         bool isGameRunning;
         GameState currentGameState;
         GameTimer t;
-        Mission m;
         SaveFile SaveFile;
         std::unique_ptr<ECSManager> ECSManager;
 };

@@ -28,20 +28,6 @@ bool Game::Running() {
     return this->isGameRunning;
 }
 
-void Game::MissionInit() {
-
-    Mission mission;
-    mission.runTime = 0;
-    mission.currentScore = 0;
-
-    this->m = mission;
-}
-
-void Game::ClearCurrentMission() {
-
-    m.runTime = 0.0f;
-}
-
 std::vector<std::shared_ptr<UIObject>>& Game::GetUIObjects() {
     return this->currentGameState.gameScreen;
 }
