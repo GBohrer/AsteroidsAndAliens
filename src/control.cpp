@@ -23,7 +23,6 @@ std::unordered_map<State, GameState> GameStateInit () {
         std::make_shared<TextBox>(BoxID::OPTIONS, std::vector<std::string>{"Options"}, SCREEN_POS_CENTER_3, false, true),
         std::make_shared<TextBox>(BoxID::ABOUT, std::vector<std::string>{"About"}, SCREEN_POS_CENTER_4, false, true),
         std::make_shared<TextBox>(BoxID::EXIT, std::vector<std::string>{"Exit"}, SCREEN_POS_CENTER_5, false, true),
-        std::make_shared<SimpleText>(GAME_VERSION, TEXTBOX_FONTSIZE, SCREEN_POS_LEFT_BOTTOM, false, false)
     };
     gameStates.emplace(State::MAIN_MENU, GameState(State::MAIN_MENU, screenObjs));
     screenObjs.clear();
@@ -34,7 +33,6 @@ std::unordered_map<State, GameState> GameStateInit () {
         std::make_shared<SimpleText>("ABC   12000", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_1, false, false),
         std::make_shared<TextBox>(BoxID::SEE, std::vector<std::string>{"See"}, SCREEN_POS_CENTER_LEFT_1, false, true),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Back"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
-        std::make_shared<SimpleText>(GAME_VERSION, TEXTBOX_FONTSIZE, SCREEN_POS_LEFT_BOTTOM, false, false)
     };
     gameStates.emplace(State::SCORES_MENU, GameState(State::SCORES_MENU, screenObjs));
     screenObjs.clear();
@@ -45,7 +43,6 @@ std::unordered_map<State, GameState> GameStateInit () {
         std::make_shared<SimpleText>("Screen Mode:", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_LEFT_1, false, false),
         std::make_shared<TextBox>(BoxID::SCREEN_MODE, std::vector<std::string>{"Windowed", "FullScreen"}, SCREEN_POS_CENTER_1, false, true),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Back"}, SCREEN_POS_CENTER_BOTTOM, false, true),
-        std::make_shared<SimpleText>(GAME_VERSION, TEXTBOX_FONTSIZE, SCREEN_POS_LEFT_BOTTOM, false, false)
     };
     gameStates.emplace(State::OPTIONS_MENU, GameState(State::OPTIONS_MENU, screenObjs));
     screenObjs.clear();
@@ -58,7 +55,6 @@ std::unordered_map<State, GameState> GameStateInit () {
         std::make_shared<SimpleText>("Endure. Survive. Explore.", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_3, false, false),
         std::make_shared<SimpleText>("Created by GAB", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_5, false, false),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Back"}, SCREEN_POS_CENTER_BOTTOM, false, true),
-        std::make_shared<SimpleText>(GAME_VERSION, TEXTBOX_FONTSIZE, SCREEN_POS_LEFT_BOTTOM, false, false)
     };
     gameStates.emplace(State::ABOUT_MENU, GameState(State::ABOUT_MENU, screenObjs));
     screenObjs.clear();
@@ -133,18 +129,28 @@ std::unique_ptr<ECSManager> GameECSManagerInit() {
     ecs->RegisterComponent<Transform>();
     ecs->RegisterComponent<Velocity>();
     ecs->RegisterComponent<Acceleration>();
-
+    ecs->RegisterComponent<Vitality>();
+    ecs->RegisterComponent<Input>();
+    ecs->RegisterComponent<EState>();
 
     // System:
     auto movementSys = ecs->RegisterSystem<MovementSystem>();
     {
         Signature sig;
+        sig.set(ecs->GetComponentType<EState>());
         sig.set(ecs->GetComponentType<Transform>());
         sig.set(ecs->GetComponentType<Velocity>());
         sig.set(ecs->GetComponentType<Acceleration>());
         ecs->SetSystemSignature<MovementSystem>(sig);
     }
     movementSys->Init();
+
+    auto inputSys = ecs->RegisterSystem<PlayerInputSystem>();
+    {
+        Signature sig;
+        sig.set(ecs->GetComponentType<Input>());
+    }
+    inputSys->Init();
 
     return ecs;
 

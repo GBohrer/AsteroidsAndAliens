@@ -26,8 +26,12 @@
 
 #include "ecs/components/velocity.hpp"
 #include "ecs/components/acceleration.hpp"
+#include "ecs/components/vitality.hpp"
+#include "ecs/components/input.hpp"
+#include "ecs/components/state.hpp"
 
 #include "ecs/systems/MovementSystem.hpp"
+#include "ecs/systems/PlayerInputSystem.hpp"
 
 #include "core/interface.hpp"
 #include "core/savefile.hpp"

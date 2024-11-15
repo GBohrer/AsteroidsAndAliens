@@ -128,7 +128,7 @@ void PrintValueInGame(std::string name, T value, Vector2 textPos, int fontSize, 
         valueInGame = ss.str();
     } else if constexpr (std::is_integral<T>::value) {
         valueInGame = std::to_string(value);
-    } else {
+    } else if constexpr (std::is_same<T, std::string>::value) {
         valueInGame = value;
     }
 

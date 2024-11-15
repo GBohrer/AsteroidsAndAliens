@@ -15,7 +15,7 @@ Game::Game() {
 
 void Game::Start() {
 
-    std::vector<Entity> asteroids (1);
+    std::vector<Entity> asteroids (MAX_ENTITIES - 1);
 
     for (auto& asteroid : asteroids) {
         asteroid = ECSManager->CreateEntity();
@@ -87,8 +87,9 @@ void Game::Draw() {
     }
 
     if (debugMode) {
-        DrawFPS(15,DEBUG_FONTSIZE);
-        PrintValueInGame("RunTime", t.run_time, {15,DEBUG_FONTSIZE + 5}, DEBUG_FONTSIZE, WHITE);
+        DrawFPS(15,15);
+        PrintValueInGame("Version", GAME_VERSION, {15, DEBUG_FONTSIZE*2 + 15}, DEBUG_FONTSIZE, WHITE);
+        PrintValueInGame("RunTime", t.run_time, {15, DEBUG_FONTSIZE*3 + 15}, DEBUG_FONTSIZE, WHITE);
     }
 
     EndDrawing();
