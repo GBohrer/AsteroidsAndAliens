@@ -10,6 +10,7 @@
 #define TEXTBOX_FONTSIZE            40
 #define TEXTBOX_THICKNESS           5
 #define TITLE_FONTSIZE              100
+#define DEBUG_FONTSIZE              20
 
 #define COLOR_BACKGROUND            (Color){10, 10, 40, 255}
 #define COLOR_SIMPLETEXT            (Color){LIGHTGRAY}
@@ -114,3 +115,25 @@ class PromptBox : public Box {
         SimpleText text;
 
 };
+
+
+// FUNCTIONS
+template<typename T>
+void PrintValueInGame(std::string name, T value, Vector2 textPos, int fontSize, Color color) {
+    std::string valueInGame;
+
+    if constexpr (std::is_floating_point<T>::value) {
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(3) << value;
+        valueInGame = ss.str();
+    } else if constexpr (std::is_integral<T>::value) {
+        valueInGame = std::to_string(value);
+    } else {
+        valueInGame = value;
+    }
+
+    valueInGame = name + ": " + valueInGame;
+    DrawText(valueInGame.c_str(), textPos.x, textPos.y, fontSize, color);
+}
+
+void PrintTimerInGame(float totalTime, float currentTime, Vector2 textPos, int fontSize);

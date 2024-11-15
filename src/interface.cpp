@@ -1,4 +1,6 @@
 #include "../include/master.hpp"
+#include <type_traits>
+
 
 // UIObject
 
@@ -121,4 +123,34 @@ void PromptBox::SetText(std::string text) {
 void PromptBox::Draw(float time) {
     DrawRectangleLinesEx({pos.x, pos.y, (float)width, (float)height}, TEXTBOX_THICKNESS, COLOR_SIMPLETEXT);
     text.Draw(time);
+}
+
+
+// FUNCTIONS
+
+void PrintTimerInGame(float totalTime, float currentTime, Vector2 textPos, int fontSize) {
+    int min = static_cast<int>(currentTime) / 60;
+    int sec = static_cast<int>(currentTime) % 60;
+    int c_sec = static_cast<int>((currentTime - static_cast<int>(currentTime)) * 100);
+
+    std::ostringstream formattedTime;
+
+    if (min > 0) {
+        formattedTime   << std::setw(2) << std::setfill('0') << min << ":"
+                        << std::setw(2) << std::setfill('0') << sec;
+    } else {
+        formattedTime   << std::setw(2) << std::setfill('0') << sec << ":"
+                        << std::setw(2) << std::setfill('0') << c_sec;
+    }
+    std::string text = formattedTime.str();
+
+    if (currentTime >= 0.6 * totalTime ) {
+        DrawText(text.c_str(), textPos.x, textPos.y, fontSize, WHITE);
+    } else if (currentTime >= 0.3 * totalTime) {
+        DrawText(text.c_str(), textPos.x, textPos.y, fontSize, YELLOW);
+    } else if (currentTime >= 0.15 * totalTime) {
+        DrawText(text.c_str(), textPos.x, textPos.y, fontSize, ORANGE);
+    } else {
+        DrawText(text.c_str(), textPos.x, textPos.y, fontSize, RED);
+    }
 }

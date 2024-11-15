@@ -75,10 +75,11 @@ class Game {
 
     private:
         Game();
-        GameInfo gameInfo;
+        GameInfo info;
         bool isGameRunning;
+        bool debugMode;
         GameState currentGameState;
         GameTimer t;
-        SaveFile SaveFile;
+        //SaveFile SaveFile;
         std::shared_ptr<ECSManager> ECSManager;
 };

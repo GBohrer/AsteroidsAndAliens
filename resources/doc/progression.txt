@@ -178,4 +178,9 @@ DAY 34 - 08/11/2024
 
 DAY 35 - 13/11/2024
     FINALMENTE novo Galactic-Adventures no github. Código antigo está na branch 'alpha' agora
-    Exclui Mission (ver isso depois)
+    Exclusao de Mission (ver isso depois)
+    Aprendendo a utilizar o ECSManager. Criei uma entidade e um sistema...
+
+DAY 36 - 15/11/2024
+    Recuperando entidades para Draw()!
+    Debugmode (F3) + interface functions

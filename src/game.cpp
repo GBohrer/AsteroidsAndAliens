@@ -5,8 +5,9 @@
 
 Game::Game() {
     this->isGameRunning = true;
-    this->gameInfo = GameInfoInit();
-    this->currentGameState = gameInfo.gameStates.at(State::START_MENU);
+    this->debugMode = false;
+    this->info = GameInfoInit();
+    this->currentGameState = info.gameStates.at(State::START_MENU);
     this->t = GameTimerInit();
     //this->SaveFile = LoadSaveFile();
     this->ECSManager = GameECSManagerInit();
@@ -56,6 +57,7 @@ std::vector<std::shared_ptr<UIObject>>& Game::GetUIObjects() {
 void Game::Update() {
 
     if(IsKeyPressed(KEY_X)) isGameRunning = false;
+    if(IsKeyPressed(KEY_F3)) debugMode = !debugMode;
 
     UpdateGameTimer();
 
@@ -76,13 +78,24 @@ void Game::Draw() {
         obj->Draw(t.run_time);
     }
 
-    for (const auto& entitiy : ECSManager->mEntityManager->)
+    for (const auto& system : ECSManager->GetSystems()) {
+        for (const auto& entity : system->mEntities) {
+
+            auto const& transform = ECSManager->GetComponent<Transform>(entity);
+            DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
+        }
+    }
+
+    if (debugMode) {
+        DrawFPS(15,DEBUG_FONTSIZE);
+        PrintValueInGame("RunTime", t.run_time, {15,DEBUG_FONTSIZE + 5}, DEBUG_FONTSIZE, WHITE);
+    }
 
     EndDrawing();
 }
 
 void Game::Close() {
-    UnloadGameImages(gameInfo.gameImages);
+    UnloadGameImages(info.gameImages);
     this->isGameRunning = false;
 }
 
@@ -91,7 +104,7 @@ GameState& Game::GetCurrentGameState() {
 }
 
 void Game::SetCurrentGameState(State state) {
-    GameState gs = gameInfo.gameStates.at(state);
+    GameState gs = info.gameStates.at(state);
     this->currentGameState = gs;
 }
 

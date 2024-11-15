@@ -3,6 +3,7 @@
 
 
 #define DEFAULT_SAVEFILE_PATH       "data/savefiles"
+
 const int MAX_FILENAME_CHARS        = 3;
 
 
