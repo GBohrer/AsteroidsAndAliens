@@ -12,45 +12,8 @@ Game::Game() {
 
 void Game::Start() {
 
-    std::vector<Entity> asteroids (MAX_ENTITIES - 1);
-    int teste = 20;
-
-    for (auto& asteroid : asteroids) {
-        asteroid = ECSManager->CreateEntity();
-
-
-        ECSManager->AddComponent(
-            asteroid,
-            Transform {
-                .translation = Vector3({100.0f + teste , 100.0f, 1.0f}),
-                .rotation = Quaternion({1.0f, 1.0f, 1.0f, 1.0f}),
-                .scale = Vector3({5.0f, 5.0f, 5.0f})
-            });
-
-        ECSManager->AddComponent(
-            asteroid,
-            Velocity {
-                .current = Vector2({0.0f, 0.0f}),
-                .max = 200.0f,
-                .min = -200.0f
-            });
-
-        ECSManager->AddComponent(
-            asteroid,
-            Acceleration {
-                .current = Vector2({2.5f, 2.5f}),
-                .max = 10.0f,
-                .min = 0.0f
-            });
-
-        ECSManager->AddComponent(
-            asteroid,
-            EState {
-                EttState::MOVING
-            });
-
-        teste += 10;
-    }
+    CreatePlayer(ECSManager);
+    CreateAsteroids(ECSManager);
 }
 
 void Game::Reset() {
@@ -82,7 +45,7 @@ void Game::Update() {
 
 }
 
-void Game::Draw() {
+void Game::Render() {
 
     BeginDrawing();
 
@@ -103,11 +66,7 @@ void Game::Draw() {
         }
     }
 
-    if (info.debugMode) {
-        DrawFPS(15,15);
-        PrintValueInGame("Version", GAME_VERSION, {15, DEBUG_FONTSIZE*2 + 15}, DEBUG_FONTSIZE, WHITE);
-        PrintValueInGame("RunTime", timer.GetRunTime(), {15, DEBUG_FONTSIZE*3 + 15}, DEBUG_FONTSIZE, WHITE);
-    }
+    if (info.debugMode) RenderDebugScreen();
 
     EndDrawing();
 }
@@ -124,6 +83,10 @@ GameState& Game::GetCurrentGameState() {
 void Game::SetCurrentGameState(State state) {
     GameState gs = info.gameStates.at(state);
     this->info.currentGameState = gs;
+}
+
+GameTimer Game::GetTimer() {
+    return this->timer;
 }
 
 // ==========================================================================
@@ -164,3 +127,11 @@ void Game::UpdateFileName(PromptBox* pb) {
 //    }
 //    pb->SetText(fileNameStr);
 }
+
+void Game::RenderDebugScreen() {
+    DrawFPS(15,15);
+    PrintValueInGame("Version", GAME_VERSION, {15, DEBUG_FONTSIZE*2 + 15}, DEBUG_FONTSIZE, WHITE);
+    PrintValueInGame("RunTime", GetTimer().GetRunTime(), {15, DEBUG_FONTSIZE*3 + 15}, DEBUG_FONTSIZE, WHITE);
+    PrintValueInGame("Entities", ECSManager->GetSystems().front()->mEntities.size(), {15, DEBUG_FONTSIZE*4 + 15}, DEBUG_FONTSIZE, WHITE);
+}
+

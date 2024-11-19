@@ -12,7 +12,7 @@ int main(void)
     while (game.Running())
     {
         game.Update();
-        game.Draw();
+        game.Render();
     }
 
     CloseWindow();

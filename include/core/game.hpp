@@ -78,16 +78,19 @@ class Game {
         void Start();
         void Reset();
         void Update();
-        void Draw();
+        void Render();
         void Close();
 
         GameState& GetCurrentGameState();
         void SetCurrentGameState(State state);
 
+        GameTimer GetTimer();
+
         std::vector<std::shared_ptr<UIObject>>& GetUIObjects();
 
         void UpdateSystems();
         void UpdateFileName(PromptBox* pb);
+        void RenderDebugScreen();
 
     private:
         Game();

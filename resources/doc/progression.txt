@@ -187,3 +187,5 @@ DAY 36 - 15/11/2024
 
 DAY 37 - 18/11/2024
     Destruindo entidades!
+    Refatorazao de GameTimer + Timer Component
+    Modularizacao de funcoes (spawn de entidades)

@@ -3,15 +3,6 @@
 
 // GAME
 
-std::unordered_map<State, GameState> GameStateInit();
-GameInfo GameInfoInit();
-GameTimer GameTimerInit();
-std::unique_ptr<ECSManager> GameECSManagerInit();
-Camera2D GameCameraInit();
-
-
-// GAMESTATES
-
 void Handle_START_MENU(Game& game);
 void Handle_MAIN_MENU(Game& game);
 void Handle_SCORES_MENU(Game& game);
@@ -26,11 +17,10 @@ void Handle_LEAVING(Game& game);
 extern std::map<State, std::function<void(Game&)>> stateHandlers;
 
 
-// MISSION
-
-
-
-// OUTRO
+// INTERFACE
 
 std::unordered_map<std::string, Texture2D> LoadGameImages();
 void UnloadGameImages(std::unordered_map<std::string, Texture2D>& gameImages);
+
+
+// AUDIO
