@@ -3,7 +3,6 @@
 
 const static std::string GAME_VERSION = "v.0.0.1";
 
-// ============================== TIMER STRUCTS
 typedef struct GameTimer {
     double run_time;
 
@@ -13,7 +12,6 @@ typedef struct GameTimer {
     
 }GameTimer;
 
-// ============================== GAMESTATE
 enum State {
     START_MENU,
     MAIN_MENU,
@@ -40,6 +38,10 @@ typedef struct GameState {
 typedef struct GameInfo {
     std::unordered_map<State, GameState> gameStates;
     std::unordered_map<std::string, Texture2D> gameImages;
+    bool isGameRunning;
+    bool debugMode;
+    GameState currentGameState;
+    GameTimer t;
 
 } GameInfo;
 
@@ -54,6 +56,7 @@ class Game {
 
         bool Running();
         void Start();
+        void Reset();
         void Update();
         void Draw();
         void Close();
@@ -76,10 +79,6 @@ class Game {
     private:
         Game();
         GameInfo info;
-        bool isGameRunning;
-        bool debugMode;
-        GameState currentGameState;
-        GameTimer t;
         //SaveFile SaveFile;
         std::shared_ptr<ECSManager> ECSManager;
 };

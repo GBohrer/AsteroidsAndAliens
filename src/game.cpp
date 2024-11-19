@@ -4,11 +4,7 @@
 // CORE METHODS:
 
 Game::Game() {
-    this->isGameRunning = true;
-    this->debugMode = false;
     this->info = GameInfoInit();
-    this->currentGameState = info.gameStates.at(State::START_MENU);
-    this->t = GameTimerInit();
     //this->SaveFile = LoadSaveFile();
     this->ECSManager = GameECSManagerInit();
 }
@@ -16,14 +12,16 @@ Game::Game() {
 void Game::Start() {
 
     std::vector<Entity> asteroids (MAX_ENTITIES - 1);
+    int teste = 20;
 
     for (auto& asteroid : asteroids) {
         asteroid = ECSManager->CreateEntity();
 
+
         ECSManager->AddComponent(
             asteroid,
             Transform {
-                .translation = Vector3({100.0f, 100.0f, 1.0f}),
+                .translation = Vector3({100.0f + teste , 100.0f, 1.0f}),
                 .rotation = Quaternion({1.0f, 1.0f, 1.0f, 1.0f}),
                 .scale = Vector3({5.0f, 5.0f, 5.0f})
             });
@@ -39,30 +37,44 @@ void Game::Start() {
         ECSManager->AddComponent(
             asteroid,
             Acceleration {
-                .current = Vector2({0.5f, 0.5f}),
+                .current = Vector2({2.5f, 2.5f}),
                 .max = 10.0f,
                 .min = 0.0f
             });
+
+        ECSManager->AddComponent(
+            asteroid,
+            EState {
+                EttState::MOVING
+            });
+
+        teste += 10;
     }
 }
 
+void Game::Reset() {
+
+    ECSManager->DestroyAllEntities();
+
+}
+
 bool Game::Running() {
-    return this->isGameRunning;
+    return this->info.isGameRunning;
 }
 
 std::vector<std::shared_ptr<UIObject>>& Game::GetUIObjects() {
-    return this->currentGameState.gameScreen;
+    return this->info.currentGameState.gameScreen;
 }
 
 void Game::Update() {
 
-    if(IsKeyPressed(KEY_X)) isGameRunning = false;
-    if(IsKeyPressed(KEY_F3)) debugMode = !debugMode;
+    if(IsKeyPressed(KEY_X)) info.isGameRunning = false;
+    if(IsKeyPressed(KEY_F3)) info.debugMode = !info.debugMode;
 
     UpdateGameTimer();
 
-    if (stateHandlers.find(currentGameState.state) != stateHandlers.end()) {
-        stateHandlers[currentGameState.state](*this);
+    if (stateHandlers.find(info.currentGameState.state) != stateHandlers.end()) {
+        stateHandlers[info.currentGameState.state](*this);
     } else {
         // Se o estado não tiver função associada, você pode tratar o erro aqui
     }
@@ -74,22 +86,25 @@ void Game::Draw() {
 
     ClearBackground(COLOR_BACKGROUND);
     
-    for (const auto& obj : currentGameState.gameScreen) {
-        obj->Draw(t.run_time);
+    for (const auto& obj : info.currentGameState.gameScreen) {
+        obj->Draw(info.t.run_time);
     }
 
-    for (const auto& system : ECSManager->GetSystems()) {
-        for (const auto& entity : system->mEntities) {
+    if(GetCurrentGameState().state == State::GAME) {
 
-            auto const& transform = ECSManager->GetComponent<Transform>(entity);
-            DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
+        for (const auto& system : ECSManager->GetSystems()) {
+            for (const auto& entity : system->mEntities) {
+
+                auto const& transform = ECSManager->GetComponent<Transform>(entity);
+                DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
+            }
         }
     }
 
-    if (debugMode) {
+    if (info.debugMode) {
         DrawFPS(15,15);
         PrintValueInGame("Version", GAME_VERSION, {15, DEBUG_FONTSIZE*2 + 15}, DEBUG_FONTSIZE, WHITE);
-        PrintValueInGame("RunTime", t.run_time, {15, DEBUG_FONTSIZE*3 + 15}, DEBUG_FONTSIZE, WHITE);
+        PrintValueInGame("RunTime", info.t.run_time, {15, DEBUG_FONTSIZE*3 + 15}, DEBUG_FONTSIZE, WHITE);
     }
 
     EndDrawing();
@@ -97,34 +112,36 @@ void Game::Draw() {
 
 void Game::Close() {
     UnloadGameImages(info.gameImages);
-    this->isGameRunning = false;
+    this->info.isGameRunning = false;
 }
 
 GameState& Game::GetCurrentGameState() {
-    return this->currentGameState;
+    return this->info.currentGameState;
 }
 
 void Game::SetCurrentGameState(State state) {
     GameState gs = info.gameStates.at(state);
-    this->currentGameState = gs;
+    this->info.currentGameState = gs;
 }
 
 // ==========================================================================
 
 void Game::UpdateGameTimer() {
-    t.animation_t_now = static_cast<double>(GetTime());
-    t.delta_t = t.animation_t_now - t.animation_t_prev;
-    t.animation_t_prev = t.animation_t_now;
+    GameTimer &timer = info.t;
 
-    t.run_time += t.delta_t;
+    timer.animation_t_now = static_cast<double>(GetTime());
+    timer.delta_t = timer.animation_t_now - timer.animation_t_prev;
+    timer.animation_t_prev = timer.animation_t_now;
+
+    timer.run_time += timer.delta_t;
 }
 
 double Game::GetRunTime() {
-    return this->t.run_time;
+    return this->info.t.run_time;
 }
 
 double Game::GetDeltaT() {
-    return this->t.delta_t;
+    return this->info.t.delta_t;
 }
 
 void Game::UpdateSystems() {

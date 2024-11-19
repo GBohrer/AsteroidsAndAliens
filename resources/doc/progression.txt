@@ -184,3 +184,6 @@ DAY 35 - 13/11/2024
 DAY 36 - 15/11/2024
     Recuperando entidades para Draw()!
     Debugmode (F3) + interface functions
+
+DAY 37 - 18/11/2024
+    Destruindo entidades!

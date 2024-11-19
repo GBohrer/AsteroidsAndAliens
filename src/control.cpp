@@ -69,7 +69,7 @@ std::unordered_map<State, GameState> GameStateInit () {
 
     // PAUSE
     screenObjs = {
-        std::make_shared<SimpleText>("PAUSED", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_2, false, false),
+        std::make_shared<SimpleText>("PAUSED", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER, false, false),
         std::make_shared<TextBox>(BoxID::RESUME, std::vector<std::string>{"Continue"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
         std::make_shared<TextBox>(BoxID::ABORT, std::vector<std::string>{"Abort"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
     };
@@ -109,8 +109,16 @@ std::unordered_map<State, GameState> GameStateInit () {
 
 GameInfo GameInfoInit() {
     GameInfo info;
+    info.isGameRunning = true;
+    info.debugMode = false;
+
     info.gameStates = GameStateInit();
+    info.currentGameState = info.gameStates.at(State::START_MENU);
+
     //info.gameImages = LoadGameImages();
+
+    info.t = GameTimerInit();
+
     return info;
 }
 
@@ -294,7 +302,9 @@ void Handle_GAME(Game& game) {
         }
     }
 
-    game.UpdateSystems(); 
+    game.UpdateSystems();
+
+    if(IsKeyPressed(KEY_ESCAPE)) game.SetCurrentGameState(State::PAUSE);
 }
 
 void Handle_PAUSE(Game& game) {
@@ -328,12 +338,14 @@ void Handle_GAMEOVER(Game& game) {
             if (CheckCollisionPointRec(GetMousePosition(), tb->GetBox())) {
                 tb->SetIsCursorOn(true);
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                   switch(tb->GetID()) {
+                    switch(tb->GetID()) {
                         case BoxID::RESUME:
                             game.SetCurrentGameState(State::SAVE_MENU);
+                            game.Reset();
                             return;
                         case BoxID::EXIT:
                             game.SetCurrentGameState(State::LEAVING);
+                            game.Reset();
                             return;
                         default:
                             break;
@@ -345,6 +357,8 @@ void Handle_GAMEOVER(Game& game) {
 }
 
 void Handle_SAVE_MENU(Game& game) {
+
+    ClearBackground(COLOR_BACKGROUND);
     for (const auto& obj : game.GetUIObjects()) {
         if (obj && obj->isClickable) {
             TextBox* tb = dynamic_cast<TextBox*>(obj.get());
@@ -369,6 +383,8 @@ void Handle_SAVE_MENU(Game& game) {
 }
 
 void Handle_LEAVING(Game& game) {
+
+    ClearBackground(COLOR_BACKGROUND);
     for (const auto& obj : game.GetUIObjects()) {
         if (obj && obj->isClickable) {
             TextBox* tb = dynamic_cast<TextBox*>(obj.get());

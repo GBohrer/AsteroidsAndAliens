@@ -26,6 +26,13 @@ class ECSManager {
 	    	mSystemManager->EntityDestroyed(entity);
 	    }
 
+		void DestroyAllEntities() {
+
+			for (Entity ett = 0; ett < MAX_ENTITIES; ett++) {
+				if (mEntityManager->GetSignature(ett).any())
+					DestroyEntity(ett);
+			}
+		}
 
 	    // Component methods
 	    template<typename T>
