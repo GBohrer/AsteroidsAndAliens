@@ -116,16 +116,7 @@ GameInfo GameInfoInit() {
     info.currentGameState = info.gameStates.at(State::START_MENU);
 
     //info.gameImages = LoadGameImages();
-
-    info.t = GameTimerInit();
-
     return info;
-}
-
-GameTimer GameTimerInit() {
-    GameTimer t;
-    t.run_time = t.animation_t_now = t.animation_t_prev = t.delta_t = 0.0f;
-    return t;
 }
 
 std::unique_ptr<ECSManager> GameECSManagerInit() {
@@ -157,6 +148,7 @@ std::unique_ptr<ECSManager> GameECSManagerInit() {
     {
         Signature sig;
         sig.set(ecs->GetComponentType<Input>());
+        sig.set(ecs->GetComponentType<EState>());
     }
     inputSys->Init();
 
@@ -328,6 +320,8 @@ void Handle_PAUSE(Game& game) {
             } else { tb->SetIsCursorOn(false); }
         }
     }
+
+    if(IsKeyPressed(KEY_ESCAPE)) game.SetCurrentGameState(State::GAME);
 }
 
 void Handle_GAMEOVER(Game& game) {

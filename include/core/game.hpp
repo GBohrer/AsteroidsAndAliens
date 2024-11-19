@@ -4,11 +4,32 @@
 const static std::string GAME_VERSION = "v.0.0.1";
 
 typedef struct GameTimer {
-    double run_time;
 
-    double animation_t_now;
-    double animation_t_prev;
+    std::chrono::high_resolution_clock::time_point start_time;    // Tempo de início total do jogo
+    std::chrono::high_resolution_clock::time_point prev_time;     // Tempo da atualização anterior
+    std::chrono::duration<double> run_time;                       // Tempo total de execução
     double delta_t;
+
+    void Start() {
+        start_time = std::chrono::high_resolution_clock::now();
+        prev_time = start_time;
+    }
+
+    void Update() {
+        auto current_time =  std::chrono::high_resolution_clock::now();
+
+        run_time = current_time - start_time;
+        delta_t =  std::chrono::duration_cast< std::chrono::duration<double>>(current_time - prev_time).count();
+        prev_time = current_time;
+    }
+
+    double GetRunTime() const {
+        return  std::chrono::duration_cast< std::chrono::duration<double>>(run_time).count();
+    }
+
+    double GetDeltaT() const {
+        return delta_t;
+    }
     
 }GameTimer;
 
@@ -41,7 +62,6 @@ typedef struct GameInfo {
     bool isGameRunning;
     bool debugMode;
     GameState currentGameState;
-    GameTimer t;
 
 } GameInfo;
 
@@ -66,19 +86,14 @@ class Game {
 
         std::vector<std::shared_ptr<UIObject>>& GetUIObjects();
 
-        double GetRunTime();
-        double GetDeltaT();
-
         void UpdateSystems();
         void UpdateFileName(PromptBox* pb);
-
-    protected:
-        void UpdateGameTimer();
-        
 
     private:
         Game();
         GameInfo info;
-        //SaveFile SaveFile;
+        GameTimer timer;
         std::shared_ptr<ECSManager> ECSManager;
+
+        //SaveFile SaveFile;
 };

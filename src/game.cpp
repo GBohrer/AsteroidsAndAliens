@@ -5,6 +5,7 @@
 
 Game::Game() {
     this->info = GameInfoInit();
+    this->timer.Start();
     //this->SaveFile = LoadSaveFile();
     this->ECSManager = GameECSManagerInit();
 }
@@ -71,13 +72,14 @@ void Game::Update() {
     if(IsKeyPressed(KEY_X)) info.isGameRunning = false;
     if(IsKeyPressed(KEY_F3)) info.debugMode = !info.debugMode;
 
-    UpdateGameTimer();
-
     if (stateHandlers.find(info.currentGameState.state) != stateHandlers.end()) {
         stateHandlers[info.currentGameState.state](*this);
     } else {
         // Se o estado não tiver função associada, você pode tratar o erro aqui
     }
+
+    this->timer.Update();
+
 }
 
 void Game::Draw() {
@@ -87,7 +89,7 @@ void Game::Draw() {
     ClearBackground(COLOR_BACKGROUND);
     
     for (const auto& obj : info.currentGameState.gameScreen) {
-        obj->Draw(info.t.run_time);
+        obj->Draw(timer.GetRunTime());
     }
 
     if(GetCurrentGameState().state == State::GAME) {
@@ -104,7 +106,7 @@ void Game::Draw() {
     if (info.debugMode) {
         DrawFPS(15,15);
         PrintValueInGame("Version", GAME_VERSION, {15, DEBUG_FONTSIZE*2 + 15}, DEBUG_FONTSIZE, WHITE);
-        PrintValueInGame("RunTime", info.t.run_time, {15, DEBUG_FONTSIZE*3 + 15}, DEBUG_FONTSIZE, WHITE);
+        PrintValueInGame("RunTime", timer.GetRunTime(), {15, DEBUG_FONTSIZE*3 + 15}, DEBUG_FONTSIZE, WHITE);
     }
 
     EndDrawing();
@@ -126,28 +128,10 @@ void Game::SetCurrentGameState(State state) {
 
 // ==========================================================================
 
-void Game::UpdateGameTimer() {
-    GameTimer &timer = info.t;
-
-    timer.animation_t_now = static_cast<double>(GetTime());
-    timer.delta_t = timer.animation_t_now - timer.animation_t_prev;
-    timer.animation_t_prev = timer.animation_t_now;
-
-    timer.run_time += timer.delta_t;
-}
-
-double Game::GetRunTime() {
-    return this->info.t.run_time;
-}
-
-double Game::GetDeltaT() {
-    return this->info.t.delta_t;
-}
-
 void Game::UpdateSystems() {
 
     for (auto& system : ECSManager->GetSystems() ) {
-        system->Update(ECSManager, GetDeltaT());
+        system->Update(ECSManager, timer.GetDeltaT());
     }
 
 }

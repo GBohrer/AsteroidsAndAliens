@@ -19,6 +19,7 @@
 #include <map>
 #include <functional>
 #include <cassert>
+#include <chrono>
 
 // HEADERS
 #include "ecs/core/types.hpp"
