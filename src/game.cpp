@@ -12,23 +12,25 @@ Game::Game() {
 
 void Game::Start() {
 
+    this->info.isMissionRunning = true;
     this->mInfo.Init();
     SpawnAliens(ECSManager, mInfo);
     SpawnAsteroids(ECSManager, mInfo);
 }
 
-void Game::Pause() {
+void Game::PauseMission() {
     mInfo.timer.Pause();
 }
 
-void Game::Resume() {
+void Game::ResumeMission() {
     mInfo.timer.Resume();
 }
 
-void Game::Reset() {
+void Game::ResetMission() {
 
     ECSManager->DestroyAllEntities();
     mInfo.Reset();
+    info.isMissionRunning = false;
 
 }
 

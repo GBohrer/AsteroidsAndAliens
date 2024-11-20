@@ -191,4 +191,8 @@ DAY 37 - 18/11/2024
     Modularizacao de funcoes (spawn de entidades)
 
 DAY 38 - 20/11/2024
-    Pequenas modificacoes e aprimoramentos no codigo
+    Pequenas modificacoes e aprimoramentos no codigo:
+        MissionInfo "guardando" as entidades
+        uso do GTimer
+        Uso de funcao anonima (lambda) para a checagem do click em TextBox!
+        

@@ -1,5 +1,23 @@
 #include "../include/master.hpp"
 
+// INTERFACE
+
+void Handle_UI(Game& game, std::function<void(TextBox*)> callback) {
+    for (const auto& obj : game.GetUIObjects()) {
+        if (obj && obj->isClickable) {
+            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
+            if (tb && CheckCollisionPointRec(GetMousePosition(), tb->GetBox())) {
+                tb->SetIsCursorOn(true);
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                    callback(tb);
+                    return;
+                }
+            } else {
+                tb->SetIsCursorOn(false);
+            }
+        }
+    }
+}
 
 // GAMESTATE HANDLERS
 
@@ -22,238 +40,161 @@ void Handle_START_MENU(Game& game) {
 }
 
 void Handle_MAIN_MENU(Game& game) {
-    for (const auto& obj : game.GetUIObjects()) {
-        if (obj && obj->isClickable) {
-            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-            if (CheckCollisionPointRec(GetMousePosition(), tb->GetBox())) {
-                tb->SetIsCursorOn(true);
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                    switch(tb->GetID()) {
-                        case BoxID::PLAY:
-                            game.Start();
-                            game.SetCurrentGameState(State::GAME);
-                            return;
-                        case BoxID::LEADERBOARD:
-                            game.SetCurrentGameState(State::SCORES_MENU);
-                            return;
-                        case BoxID::OPTIONS:
-                            game.SetCurrentGameState(State::OPTIONS_MENU);
-                            return;
-                        case BoxID::ABOUT:
-                            game.SetCurrentGameState(State::ABOUT_MENU);
-                            return;
-                        case BoxID::EXIT:
-                            game.SetCurrentGameState(State::LEAVING);
-                            return;
-                        default:
-                            break;
-                    }
-                }
-            } else { tb->SetIsCursorOn(false); }
+    Handle_UI(game, [&game](TextBox* tb) {
+        switch(tb->GetID()) {
+            case BoxID::PLAY:
+                game.Start();
+                game.SetCurrentGameState(State::GAME);
+                return;
+            case BoxID::LEADERBOARD:
+                game.SetCurrentGameState(State::SCORES_MENU);
+                return;
+            case BoxID::OPTIONS:
+                game.SetCurrentGameState(State::OPTIONS_MENU);
+                return;
+            case BoxID::ABOUT:
+                game.SetCurrentGameState(State::ABOUT_MENU);
+                return;
+            case BoxID::EXIT:
+                game.SetCurrentGameState(State::LEAVING);
+                return;
+            default:
+                break;
         }
-    }
+    });
 }
 
 void Handle_SCORES_MENU(Game& game) {
-        for (const auto& obj : game.GetUIObjects()) {
-        if (obj && obj->isClickable) {
-            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-            if (CheckCollisionPointRec(GetMousePosition(), tb->GetBox())) {
-                tb->SetIsCursorOn(true);
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                    switch(tb->GetID()) {
-                        case BoxID::BACK:
-                            game.SetCurrentGameState(State::MAIN_MENU);
-                            return;
-                        default:
-                            break;
-                    }
-                }
-            } else { tb->SetIsCursorOn(false); }
+    Handle_UI(game, [&game](TextBox* tb) {
+        switch(tb->GetID()) {
+            case BoxID::BACK:
+                game.SetCurrentGameState(State::MAIN_MENU);
+                return;
+            default:
+                break;
         }
-    }
+    });
 }
 
 void Handle_OPTIONS_MENU(Game& game) {
-    for (const auto& obj : game.GetUIObjects()) {
-        if (obj && obj->isClickable) {
-            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-            if (CheckCollisionPointRec(GetMousePosition(), tb->GetBox())) {
-                tb->SetIsCursorOn(true);
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                   switch(tb->GetID()) {
-                        case BoxID::SCREEN_MODE:
-                            tb->SetNextText();
-                            ToggleFullscreen();
-                            break;
-                        case BoxID::BACK:
-                            game.SetCurrentGameState(State::MAIN_MENU);
-                            return;
-                        default:
-                            break;
-                    }
-                }
-            } else { tb->SetIsCursorOn(false); }
+    Handle_UI(game, [&game](TextBox* tb) {
+        switch(tb->GetID()) {
+            case BoxID::SCREEN_MODE:
+                tb->SetNextText();
+                ToggleFullscreen();
+                break;
+            case BoxID::BACK:
+                game.SetCurrentGameState(State::MAIN_MENU);
+                return;
+            default:
+                break;
         }
-    }
+    });
 }
 
 void Handle_ABOUT_MENU(Game& game) {
-    for (const auto& obj : game.GetUIObjects()) {
-        if (obj && obj->isClickable) {
-            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-            if (CheckCollisionPointRec(GetMousePosition(), tb->GetBox())) {
-                tb->SetIsCursorOn(true);
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                   switch(tb->GetID()) {
-                        case BoxID::BACK:
-                            game.SetCurrentGameState(State::MAIN_MENU);
-                            return;
-                        default:
-                            break;
-                    }
-                }
-            } else { tb->SetIsCursorOn(false); }
+    Handle_UI(game, [&game](TextBox* tb) {
+        switch(tb->GetID()) {
+            case BoxID::BACK:
+                game.SetCurrentGameState(State::MAIN_MENU);
+                return;
+            default:
+                break;
         }
-    }
+    });
 }
 
 void Handle_GAME(Game& game) {
-
-    for (const auto& obj : game.GetUIObjects()) {
-        if (obj && obj->isClickable) {
-            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-            if (CheckCollisionPointRec(GetMousePosition(), tb->GetBox())) {
-                tb->SetIsCursorOn(true);
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                   switch(tb->GetID()) {
-                        case BoxID::ABORT:
-                            game.SetCurrentGameState(State::GAMEOVER);
-                            return;
-                        default:
-                            break;
-                    }
-                }
-            } else { tb->SetIsCursorOn(false); }
+    Handle_UI(game, [&game](TextBox* tb) {
+        switch(tb->GetID()) {
+            case BoxID::ABORT:
+                game.SetCurrentGameState(State::GAMEOVER);
+                return;
+            default:
+                break;
         }
-    }
+    });
 
     game.UpdateSystems();
 
     if(IsKeyPressed(KEY_ESCAPE)) {
         game.SetCurrentGameState(State::PAUSE);
-        game.Pause();
+        game.PauseMission();
     }
 }
 
 void Handle_PAUSE(Game& game) {
-    for (const auto& obj : game.GetUIObjects()) {
-        if (obj && obj->isClickable) {
-            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-            if (CheckCollisionPointRec(GetMousePosition(), tb->GetBox())) {
-                tb->SetIsCursorOn(true);
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                   switch(tb->GetID()) {
-                        case BoxID::RESUME:
-                            game.Resume();
-                            game.SetCurrentGameState(State::GAME);
-                            return;
-                        case BoxID::ABORT:
-                            game.SetCurrentGameState(State::GAMEOVER);
-                            return;
-                        default:
-                            break;
-                    }
-                }
-            } else { tb->SetIsCursorOn(false); }
+    Handle_UI(game, [&game](TextBox* tb) {
+        switch(tb->GetID()) {
+            case BoxID::RESUME:
+                game.ResumeMission();
+                game.SetCurrentGameState(State::GAME);
+                return;
+            case BoxID::ABORT:
+                game.SetCurrentGameState(State::GAMEOVER);
+                return;
+            default:
+                break;
         }
-    }
+    });
 
     if(IsKeyPressed(KEY_ESCAPE)) {
         game.SetCurrentGameState(State::GAME);
-        game.Resume();
+        game.ResumeMission();
     }
 }
 
 void Handle_GAMEOVER(Game& game) {
-
-    for (const auto& obj : game.GetUIObjects()) {
-        if (obj && obj->isClickable) {
-            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-            if (CheckCollisionPointRec(GetMousePosition(), tb->GetBox())) {
-                tb->SetIsCursorOn(true);
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                    switch(tb->GetID()) {
-                        case BoxID::RESUME:
-                            game.SetCurrentGameState(State::SAVE_MENU);
-                            game.Reset();
-                            return;
-                        case BoxID::EXIT:
-                            game.SetCurrentGameState(State::LEAVING);
-                            game.Reset();
-                            return;
-                        default:
-                            break;
-                    }
-                }
-            } else { tb->SetIsCursorOn(false); }
+    Handle_UI(game, [&game](TextBox* tb) {
+        switch(tb->GetID()) {
+            case BoxID::RESUME:
+                game.SetCurrentGameState(State::SAVE_MENU);
+                break;
+            case BoxID::EXIT:
+                game.SetCurrentGameState(State::LEAVING);
+                break;
+            default:
+                break;
         }
-    }
+        game.ResetMission();
+    });
 }
 
 void Handle_SAVE_MENU(Game& game) {
-
     ClearBackground(COLOR_BACKGROUND);
-    for (const auto& obj : game.GetUIObjects()) {
-        if (obj && obj->isClickable) {
-            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-            if (CheckCollisionPointRec(GetMousePosition(), tb->GetBox())) {
-                tb->SetIsCursorOn(true);
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                   switch(tb->GetID()) {
-                        case BoxID::YES:
-                            // SALVAR MISSION SCORE NO SAVEFILE
-                            game.SetCurrentGameState(State::SCORES_MENU);
-                            return;
-                        case BoxID::NO:
-                            game.SetCurrentGameState(State::MAIN_MENU);
-                            return;
-                        default:
-                            break;
-                    }
-                }
-            } else { tb->SetIsCursorOn(false); }
+    Handle_UI(game, [&game](TextBox* tb) {
+        switch(tb->GetID()) {
+            case BoxID::YES:
+                // SALVAR MISSION SCORE NO SAVEFILE
+                game.SetCurrentGameState(State::SCORES_MENU);
+                return;
+            case BoxID::NO:
+                game.SetCurrentGameState(State::MAIN_MENU);
+                return;
+            default:
+                break;
         }
-    }
+    });
 }
 
 void Handle_LEAVING(Game& game) {
-
     ClearBackground(COLOR_BACKGROUND);
-    for (const auto& obj : game.GetUIObjects()) {
-        if (obj && obj->isClickable) {
-            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-            if (CheckCollisionPointRec(GetMousePosition(), tb->GetBox())) {
-                tb->SetIsCursorOn(true);
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                    switch(tb->GetID()){
-                        case BoxID::EXIT:
-                            game.Close();
-                            return;
-                        case BoxID::BACK:
-                            game.SetCurrentGameState(State::MAIN_MENU);
-                            return;
-                        default:
-                            break;
-                    }
-                }
-            } else { tb->SetIsCursorOn(false); }
+    Handle_UI(game, [&game](TextBox* tb) {
+        switch(tb->GetID()){
+            case BoxID::EXIT:
+                game.Close();
+                return;
+            case BoxID::BACK:
+                game.SetCurrentGameState(State::MAIN_MENU);
+                return;
+            default:
+                break;
         }
-    }
+    });
 }
 
 
-// INTERFACE
+// OUTRO
 
 std::unordered_map<std::string, Texture2D> LoadGameImages() {
     std::unordered_map<std::string, Texture2D> gi;

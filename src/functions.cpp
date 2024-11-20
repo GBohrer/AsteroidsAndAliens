@@ -110,6 +110,7 @@ std::unordered_map<State, GameState> GameStateInit () {
 GameInfo GameInfoInit() {
     GameInfo info;
     info.isGameRunning = true;
+    info.isMissionRunning = false;
     info.debugMode = false;
 
     info.gameStates = GameStateInit();

@@ -60,6 +60,7 @@ typedef struct GameInfo {
     std::unordered_map<State, GameState> gameStates;
     std::unordered_map<std::string, Texture2D> gameImages;
     bool isGameRunning;
+    bool isMissionRunning;
     bool debugMode;
     GameState currentGameState;
 
@@ -101,12 +102,13 @@ class Game {
 
         bool Running();
         void Start();
-        void Pause();
-        void Resume();
-        void Reset();
         void Update();
         void Render();
         void Close();
+
+        void PauseMission();
+        void ResumeMission();
+        void ResetMission();
 
         GameState& GetCurrentGameState();
         void SetCurrentGameState(State state);

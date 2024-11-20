@@ -1,6 +1,12 @@
 #pragma once
 #include "../master.hpp"
 
+
+// INTERFACE
+
+void Handle_UI(Game& game, std::function<void(TextBox*)> callback);
+
+
 // GAME
 
 void Handle_START_MENU(Game& game);
@@ -16,8 +22,6 @@ void Handle_LEAVING(Game& game);
 
 extern std::map<State, std::function<void(Game&)>> stateHandlers;
 
-
-// INTERFACE
 
 std::unordered_map<std::string, Texture2D> LoadGameImages();
 void UnloadGameImages(std::unordered_map<std::string, Texture2D>& gameImages);
