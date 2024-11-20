@@ -25,6 +25,7 @@
 #include "ecs/core/types.hpp"
 #include "ecs/core/ECSManager.hpp"
 
+#include "ecs/components/timer.hpp"
 #include "ecs/components/velocity.hpp"
 #include "ecs/components/acceleration.hpp"
 #include "ecs/components/vitality.hpp"

@@ -65,6 +65,31 @@ typedef struct GameInfo {
 
 } GameInfo;
 
+typedef struct MissionInfo {
+    GTimer timer;
+    int maxAliens;
+    std::vector<Entity> aliens;
+    int maxAsteroids;
+    std::vector<Entity> asteroids;
+    int waveCount;
+
+    void Init() {
+        timer.Start();
+        maxAliens = 10;
+        aliens.resize(maxAliens);
+        maxAsteroids = 50;
+        asteroids.resize(maxAsteroids);
+        waveCount = 0;
+    }
+
+    void Reset() {
+        timer.Stop();
+        aliens.clear();
+        asteroids.clear();
+        waveCount = 0;
+    }
+
+} MissionInfo;
 
 class Game {
 
@@ -76,6 +101,8 @@ class Game {
 
         bool Running();
         void Start();
+        void Pause();
+        void Resume();
         void Reset();
         void Update();
         void Render();
@@ -95,6 +122,7 @@ class Game {
     private:
         Game();
         GameInfo info;
+        MissionInfo mInfo;
         GameTimer timer;
         std::shared_ptr<ECSManager> ECSManager;
 

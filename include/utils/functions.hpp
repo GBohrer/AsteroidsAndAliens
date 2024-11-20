@@ -13,5 +13,5 @@ std::unique_ptr<ECSManager> GameECSManagerInit();
 // MISSION
 
 void CreatePlayer(std::shared_ptr<ECSManager> ecs);
-void CreateAsteroids(std::shared_ptr<ECSManager> ecs);
-void CreateAliens(std::shared_ptr<ECSManager> ecs);
+void SpawnAliens(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo);
+void SpawnAsteroids(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo);

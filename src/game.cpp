@@ -12,13 +12,23 @@ Game::Game() {
 
 void Game::Start() {
 
-    CreatePlayer(ECSManager);
-    CreateAsteroids(ECSManager);
+    this->mInfo.Init();
+    SpawnAliens(ECSManager, mInfo);
+    SpawnAsteroids(ECSManager, mInfo);
+}
+
+void Game::Pause() {
+    mInfo.timer.Pause();
+}
+
+void Game::Resume() {
+    mInfo.timer.Resume();
 }
 
 void Game::Reset() {
 
     ECSManager->DestroyAllEntities();
+    mInfo.Reset();
 
 }
 
@@ -132,6 +142,8 @@ void Game::RenderDebugScreen() {
     DrawFPS(15,15);
     PrintValueInGame("Version", GAME_VERSION, {15, DEBUG_FONTSIZE*2 + 15}, DEBUG_FONTSIZE, WHITE);
     PrintValueInGame("RunTime", GetTimer().GetRunTime(), {15, DEBUG_FONTSIZE*3 + 15}, DEBUG_FONTSIZE, WHITE);
-    PrintValueInGame("Entities", ECSManager->GetSystems().front()->mEntities.size(), {15, DEBUG_FONTSIZE*4 + 15}, DEBUG_FONTSIZE, WHITE);
+    PrintValueInGame("MissionRunTime", mInfo.timer.ElapsedSeconds(), {15, DEBUG_FONTSIZE*4 + 15}, DEBUG_FONTSIZE, WHITE);
+    PrintValueInGame("Aliens", mInfo.aliens.size(), {15, DEBUG_FONTSIZE*5 + 15}, DEBUG_FONTSIZE, WHITE);
+    PrintValueInGame("Asteroids", mInfo.asteroids.size(), {15, DEBUG_FONTSIZE*6 + 15}, DEBUG_FONTSIZE, WHITE);
 }
 

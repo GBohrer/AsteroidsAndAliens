@@ -140,7 +140,10 @@ void Handle_GAME(Game& game) {
 
     game.UpdateSystems();
 
-    if(IsKeyPressed(KEY_ESCAPE)) game.SetCurrentGameState(State::PAUSE);
+    if(IsKeyPressed(KEY_ESCAPE)) {
+        game.SetCurrentGameState(State::PAUSE);
+        game.Pause();
+    }
 }
 
 void Handle_PAUSE(Game& game) {
@@ -152,6 +155,7 @@ void Handle_PAUSE(Game& game) {
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                    switch(tb->GetID()) {
                         case BoxID::RESUME:
+                            game.Resume();
                             game.SetCurrentGameState(State::GAME);
                             return;
                         case BoxID::ABORT:
@@ -165,7 +169,10 @@ void Handle_PAUSE(Game& game) {
         }
     }
 
-    if(IsKeyPressed(KEY_ESCAPE)) game.SetCurrentGameState(State::GAME);
+    if(IsKeyPressed(KEY_ESCAPE)) {
+        game.SetCurrentGameState(State::GAME);
+        game.Resume();
+    }
 }
 
 void Handle_GAMEOVER(Game& game) {

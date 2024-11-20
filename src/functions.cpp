@@ -193,20 +193,20 @@ void CreatePlayer(std::shared_ptr<ECSManager> ecs) {
         });
 }
 
-void CreateAsteroids(std::shared_ptr<ECSManager> ecs) {
- std::vector<Entity> asteroids (MAX_ENTITIES);
-    int teste = 20;
+void SpawnAsteroids(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
 
-    for (auto& asteroid : asteroids) {
+    for (auto& asteroid : mInfo.asteroids) {
         asteroid = ecs->CreateEntity();
 
-
+        Vector3 pos = {(float)GetRandomValue(0, 500),
+                       (float)GetRandomValue(0, 500),
+                       1.0f};
         ecs->AddComponent(
             asteroid,
             Transform {
-                .translation = Vector3({100.0f + teste , 100.0f, 1.0f}),
+                .translation = pos,
                 .rotation = Quaternion({1.0f, 1.0f, 1.0f, 1.0f}),
-                .scale = Vector3({5.0f, 5.0f, 5.0f})
+                .scale = Vector3({15.0f, 15.0f, 15.0f})
             });
 
         ecs->AddComponent(
@@ -228,14 +228,49 @@ void CreateAsteroids(std::shared_ptr<ECSManager> ecs) {
         ecs->AddComponent(
             asteroid,
             EState {
-                EttState::IDLE
+                EttState::MOVING
             });
-
-        teste += 10;
     }
-
 }
 
-void CreateAliens(std::shared_ptr<ECSManager> ecs) {
+void SpawnAliens(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
 
+    for (auto& alien : mInfo.aliens) {
+        alien = ecs->CreateEntity();
+
+        float spawn_angle = GetRandomValue(0, 360) / 57.2957795;
+        Vector3 pos = {SCREEN_WIDTH/2.0f + 100 * cos(spawn_angle),
+                       SCREEN_HEIGHT/2.0f + 100 * sin(spawn_angle),
+                       1.0f};
+                       
+        ecs->AddComponent(
+            alien,
+            Transform {
+                .translation = pos,
+                .rotation = Quaternion({1.0f, 1.0f, 1.0f, 1.0f}),
+                .scale = Vector3({5.0f, 5.0f, 5.0f})
+            });
+
+        ecs->AddComponent(
+            alien,
+            Velocity {
+                .current = Vector2({0.0f, 0.0f}),
+                .max = 200.0f,
+                .min = -200.0f
+            });
+
+        ecs->AddComponent(
+            alien,
+            Acceleration {
+                .current = Vector2({2.5f, 2.5f}),
+                .max = 10.0f,
+                .min = 0.0f
+            });
+
+        ecs->AddComponent(
+            alien,
+            EState {
+                EttState::IDLE
+            });
+    }
 }
