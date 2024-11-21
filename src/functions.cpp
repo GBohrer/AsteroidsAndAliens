@@ -116,19 +116,23 @@ std::unique_ptr<ECSManager> GameECSManagerInit() {
     auto ecs = std::make_unique<ECSManager>();
     ecs->Init();
 
-    // Component:
+    // Components:
     ecs->RegisterComponent<Transform>();
     ecs->RegisterComponent<Velocity>();
     ecs->RegisterComponent<Acceleration>();
     ecs->RegisterComponent<Vitality>();
     ecs->RegisterComponent<Input>();
     ecs->RegisterComponent<EState>();
+    ecs->RegisterComponent<GTimer>();
+    ecs->RegisterComponent<Fuel>();
+    ecs->RegisterComponent<Aim>();
 
-    // System:
+    // Systems:
+
+    // MovementSystem
     auto movementSys = ecs->RegisterSystem<MovementSystem>();
     {
         Signature sig;
-        sig.set(ecs->GetComponentType<EState>());
         sig.set(ecs->GetComponentType<Transform>());
         sig.set(ecs->GetComponentType<Velocity>());
         sig.set(ecs->GetComponentType<Acceleration>());
@@ -136,14 +140,25 @@ std::unique_ptr<ECSManager> GameECSManagerInit() {
     }
     movementSys->Init();
 
+    // PlayerInputSystem
     auto inputSys = ecs->RegisterSystem<PlayerInputSystem>();
     {
         Signature sig;
         sig.set(ecs->GetComponentType<Input>());
-        sig.set(ecs->GetComponentType<EState>());
         ecs->SetSystemSignature<PlayerInputSystem>(sig);
     }
     inputSys->Init();
+
+    // PlayerControlSystem
+    auto playerSys = ecs->RegisterSystem<PlayerControlSystem>();
+    {
+        Signature sig;
+        sig.set(ecs->GetComponentType<Velocity>());
+        sig.set(ecs->GetComponentType<Acceleration>());
+        sig.set(ecs->GetComponentType<Fuel>());  
+        ecs->SetSystemSignature<PlayerControlSystem>(sig);
+    }
+    playerSys->Init();
 
     return ecs;
 }
@@ -183,19 +198,23 @@ void SpawnPlayer(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
     ecs->AddComponent(
         player,
         Acceleration {
-            .current = Vector2({0.0f, 0.0f}),
+            .current = Vector2({2.0f, 2.0f}),
             .max = 20.0f,
             .min = 0.0f
         });
     ecs->AddComponent(
         player,
-        EState {
-            EttState::IDLE
-        });
-    ecs->AddComponent(
-        player,
         Input()
         );
+    ecs->AddComponent(
+        player,
+        fuel3
+        );
+    ecs->AddComponent(
+        player,
+        Aim {
+            .direction = Vector2({(float)GetMouseX(), (float)GetMouseY()})
+        });
 }
 
 void SpawnAsteroids(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
@@ -217,7 +236,7 @@ void SpawnAsteroids(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
         ecs->AddComponent(
             asteroid,
             Velocity {
-                .current = Vector2({0.0f, 0.0f}),
+                .current = Vector2({30.0f, 30.0f}),
                 .max = 200.0f,
                 .min = -200.0f
             });
@@ -229,12 +248,6 @@ void SpawnAsteroids(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
                 .max = 10.0f,
                 .min = 0.0f
             });
-
-        ecs->AddComponent(
-            asteroid,
-            EState {
-                EttState::MOVING
-            });
     }
 }
 
@@ -244,8 +257,8 @@ void SpawnAliens(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
         alien = ecs->CreateEntity();
 
         float spawn_angle = GetRandomValue(0, 360) / 57.2957795;
-        Vector3 pos = {SCREEN_WIDTH/2.0f + 100 * cos(spawn_angle),
-                       SCREEN_HEIGHT/2.0f + 100 * sin(spawn_angle),
+        Vector3 pos = {SCREEN_WIDTH/2.0f + mInfo.spawnDistance * cos(spawn_angle),
+                       SCREEN_HEIGHT/2.0f + mInfo.spawnDistance * sin(spawn_angle),
                        1.0f};
                        
         ecs->AddComponent(
@@ -270,12 +283,6 @@ void SpawnAliens(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
                 .current = Vector2({2.5f, 2.5f}),
                 .max = 10.0f,
                 .min = 0.0f
-            });
-
-        ecs->AddComponent(
-            alien,
-            EState {
-                EttState::MOVING
             });
     }
 }

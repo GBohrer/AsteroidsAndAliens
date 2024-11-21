@@ -10,8 +10,12 @@
 28/07/2024 - ✅ Criar estrutura de Level e Mission (dividir a classe Game)
 
 22/10/2024 - ✅ Estudar o MeasureText() e modularizar melhor os textos para UI
+20/11/2024 - ✅ Entender e fazer bom uso do ECS -> Falta a exclusao e insersao dinamica de novas entidades em execucao...
 
-Entender e fazer bom uso do ECS!
-Implementar hotbar com novas bullets para escolher
+Implementar o componente Aim para aliens e o player
+Entender como fazer asteroids serem triangulos
+Implementar hotbar com novas bullets para trocar durante a Mission!
+Criar a lógica e estruturas para o sistema de Tiles e Map!
+Explorar e entender como seria o AudioSystem!
 Criar Save/Load file do game
 Implementar o algoritmo de Sweep and Prune (otimizacao de colisoes)

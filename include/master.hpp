@@ -31,9 +31,12 @@
 #include "ecs/components/vitality.hpp"
 #include "ecs/components/input.hpp"
 #include "ecs/components/state.hpp"
+#include "ecs/components/fuel.hpp"
+#include "ecs/components/aim.hpp"
 
 #include "ecs/systems/MovementSystem.hpp"
 #include "ecs/systems/PlayerInputSystem.hpp"
+#include "ecs/systems/PlayerControlSystem.hpp"
 
 #include "core/interface.hpp"
 #include "core/game.hpp"

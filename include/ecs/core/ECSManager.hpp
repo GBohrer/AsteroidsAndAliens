@@ -76,6 +76,15 @@ class ECSManager {
 	    	return mComponentManager->GetComponentType<T>();
 	    }
 
+	    template<typename T>
+		bool HasComponent(Entity entity) {
+			//assert(entity < MAX_ENTITIES && "Entity out of range.");
+
+			auto componentType = GetComponentType<T>();
+			auto signature = mEntityManager->GetSignature(entity);
+			return signature.test(componentType);
+		}
+
 
 	    // System methods
 	    template<typename T>

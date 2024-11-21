@@ -197,3 +197,5 @@ DAY 38 - 20/11/2024
         Uso de funcao anonima (lambda) para a checagem do click em TextBox!
     Tirei a gameScreen de Pause
     Camera2D primeiras implementacoes
+    Melhorias nos sistemas + componente Fuel
+    Movimentacao do Player funcionando!

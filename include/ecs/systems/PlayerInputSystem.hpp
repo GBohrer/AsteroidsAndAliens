@@ -10,10 +10,6 @@ class PlayerInputSystem : public System {
 
         for (auto const& player : mEntities) {
 
-            auto& p_state = ecs->GetComponent<EState>(player);
-            if (p_state.ettState == EttState::DEAD)
-                continue;
-
             auto& input = ecs->GetComponent<Input>(player);
 
             input.up = IsKeyDown(KEY_W);

@@ -73,6 +73,7 @@ typedef struct GameInfo {
 typedef struct MissionInfo {
     GTimer timer;
     Entity player;
+    int spawnDistance;
     int maxAliens;
     std::vector<Entity> aliens;
     int maxAsteroids;
@@ -82,6 +83,7 @@ typedef struct MissionInfo {
 
     void Init() {
         timer.Start();
+        spawnDistance = 200;
         maxAliens = 10;
         aliens.resize(maxAliens);
         maxAsteroids = 50;
