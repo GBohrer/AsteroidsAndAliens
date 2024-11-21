@@ -67,15 +67,6 @@ std::unordered_map<State, GameState> GameStateInit () {
     gameStates.emplace(State::GAME, GameState(State::GAME, screenObjs));
     screenObjs.clear();
 
-    // PAUSE
-    screenObjs = {
-        std::make_shared<SimpleText>("PAUSED", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER, false, false),
-        std::make_shared<TextBox>(BoxID::RESUME, std::vector<std::string>{"Continue"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
-        std::make_shared<TextBox>(BoxID::ABORT, std::vector<std::string>{"Abort"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
-    };
-    gameStates.emplace(State::PAUSE, GameState(State::PAUSE, screenObjs));
-    screenObjs.clear();
-
     // GAMEOVER
     screenObjs = {
         std::make_shared<SimpleText>("GAME OVER", TITLE_FONTSIZE, SCREEN_POS_CENTER_1, false, false),
@@ -155,15 +146,24 @@ std::unique_ptr<ECSManager> GameECSManagerInit() {
     inputSys->Init();
 
     return ecs;
+}
 
+Camera2D GameCameraInit() {
+    Camera2D camera;
+    camera.offset = {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
+    camera.target = camera.offset;
+    camera.rotation = 0.0f;
+    camera.zoom = 1.5f;
+
+    return camera;
 }
 
 
 // MISSION
 
-void CreatePlayer(std::shared_ptr<ECSManager> ecs) {
+void SpawnPlayer(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
 
-    Entity player;
+    auto& player = mInfo.player;
     player = ecs->CreateEntity();
 
     ecs->AddComponent(
@@ -192,6 +192,10 @@ void CreatePlayer(std::shared_ptr<ECSManager> ecs) {
         EState {
             EttState::IDLE
         });
+    ecs->AddComponent(
+        player,
+        Input()
+        );
 }
 
 void SpawnAsteroids(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
@@ -271,7 +275,7 @@ void SpawnAliens(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
         ecs->AddComponent(
             alien,
             EState {
-                EttState::IDLE
+                EttState::MOVING
             });
     }
 }

@@ -10,20 +10,14 @@ Game::Game() {
     this->ECSManager = GameECSManagerInit();
 }
 
-void Game::Start() {
+void Game::StartMission() {
 
     this->info.isMissionRunning = true;
     this->mInfo.Init();
+    SpawnPlayer(ECSManager, mInfo);
     SpawnAliens(ECSManager, mInfo);
     SpawnAsteroids(ECSManager, mInfo);
-}
-
-void Game::PauseMission() {
-    mInfo.timer.Pause();
-}
-
-void Game::ResumeMission() {
-    mInfo.timer.Resume();
+    this->camera = GameCameraInit();
 }
 
 void Game::ResetMission() {
@@ -31,7 +25,6 @@ void Game::ResetMission() {
     ECSManager->DestroyAllEntities();
     mInfo.Reset();
     info.isMissionRunning = false;
-
 }
 
 bool Game::Running() {
@@ -53,8 +46,11 @@ void Game::Update() {
         // Se o estado não tiver função associada, você pode tratar o erro aqui
     }
 
-    this->timer.Update();
+    if (info.isMissionRunning) {
+        UpdateCamera();
+    }
 
+    this->timer.Update();
 }
 
 void Game::Render() {
@@ -67,16 +63,25 @@ void Game::Render() {
         obj->Draw(timer.GetRunTime());
     }
 
-    if(GetCurrentGameState().state == State::GAME) {
+    BeginMode2D(this->camera);
 
-        for (const auto& system : ECSManager->GetSystems()) {
-            for (const auto& entity : system->mEntities) {
+    if(info.isMissionRunning) {
 
-                auto const& transform = ECSManager->GetComponent<Transform>(entity);
+        for (Entity ett = 0; ett < MAX_ENTITIES; ett++) {
+            if(ECSManager->CheckSignature(ett)) {
+                auto const& transform = ECSManager->GetComponent<Transform>(ett);
                 DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
             }
         }
+
+        //for (Entity& ett : mInfo.asteroids) {
+        //    if(ECSManager->CheckSignature(ett)) {
+        //        auto const& transform = ECSManager->GetComponent<Transform>(ett);
+        //        DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
+        //    }
+        //}
     }
+    EndMode2D();
 
     if (info.debugMode) RenderDebugScreen();
 
@@ -102,6 +107,19 @@ GameTimer Game::GetTimer() {
 }
 
 // ==========================================================================
+
+void Game::UpdateCamera() {
+
+    float camera_zoom = this->camera.zoom;
+    camera_zoom += GetMouseWheelMove() * GAME_CAMERA_ZOOM_MODIFIER;
+
+    if (camera_zoom > GAME_CAMERA_MAX_ZOOM) camera_zoom = GAME_CAMERA_MAX_ZOOM;
+    else if (camera_zoom < GAME_CAMERA_MIN_ZOOM) camera_zoom = GAME_CAMERA_MIN_ZOOM;
+    this->camera.zoom = camera_zoom;
+
+    const auto& tr = ECSManager->GetComponent<Transform>(mInfo.player);
+    this->camera.target = {tr.translation.x, tr.translation.y};
+}
 
 void Game::UpdateSystems() {
 
@@ -144,8 +162,9 @@ void Game::RenderDebugScreen() {
     DrawFPS(15,15);
     PrintValueInGame("Version", GAME_VERSION, {15, DEBUG_FONTSIZE*2 + 15}, DEBUG_FONTSIZE, WHITE);
     PrintValueInGame("RunTime", GetTimer().GetRunTime(), {15, DEBUG_FONTSIZE*3 + 15}, DEBUG_FONTSIZE, WHITE);
-    PrintValueInGame("MissionRunTime", mInfo.timer.ElapsedSeconds(), {15, DEBUG_FONTSIZE*4 + 15}, DEBUG_FONTSIZE, WHITE);
-    PrintValueInGame("Aliens", mInfo.aliens.size(), {15, DEBUG_FONTSIZE*5 + 15}, DEBUG_FONTSIZE, WHITE);
-    PrintValueInGame("Asteroids", mInfo.asteroids.size(), {15, DEBUG_FONTSIZE*6 + 15}, DEBUG_FONTSIZE, WHITE);
+    PrintValueInGame("Camera Zoom", camera.zoom, {15, DEBUG_FONTSIZE*4 + 15}, DEBUG_FONTSIZE, WHITE);
+    PrintValueInGame("MissionRunTime", mInfo.timer.ElapsedSeconds(), {15, DEBUG_FONTSIZE*5 + 15}, DEBUG_FONTSIZE, WHITE);
+    PrintValueInGame("Aliens", mInfo.aliens.size(), {15, DEBUG_FONTSIZE*6 + 15}, DEBUG_FONTSIZE, WHITE);
+    PrintValueInGame("Asteroids", mInfo.asteroids.size(), {15, DEBUG_FONTSIZE*7 + 15}, DEBUG_FONTSIZE, WHITE);
 }
 

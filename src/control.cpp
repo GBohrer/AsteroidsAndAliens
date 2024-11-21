@@ -28,7 +28,6 @@ std::map<State, std::function<void(Game&)>> stateHandlers = {
     {State::OPTIONS_MENU, Handle_OPTIONS_MENU},
     {State::ABOUT_MENU, Handle_ABOUT_MENU},
     {State::GAME, Handle_GAME},
-    {State::PAUSE, Handle_PAUSE},
     {State::GAMEOVER, Handle_GAMEOVER},
     {State::SAVE_MENU, Handle_SAVE_MENU},
     {State::LEAVING, Handle_LEAVING}
@@ -43,7 +42,7 @@ void Handle_MAIN_MENU(Game& game) {
     Handle_UI(game, [&game](TextBox* tb) {
         switch(tb->GetID()) {
             case BoxID::PLAY:
-                game.Start();
+                game.StartMission();
                 game.SetCurrentGameState(State::GAME);
                 return;
             case BoxID::LEADERBOARD:
@@ -116,32 +115,6 @@ void Handle_GAME(Game& game) {
     });
 
     game.UpdateSystems();
-
-    if(IsKeyPressed(KEY_ESCAPE)) {
-        game.SetCurrentGameState(State::PAUSE);
-        game.PauseMission();
-    }
-}
-
-void Handle_PAUSE(Game& game) {
-    Handle_UI(game, [&game](TextBox* tb) {
-        switch(tb->GetID()) {
-            case BoxID::RESUME:
-                game.ResumeMission();
-                game.SetCurrentGameState(State::GAME);
-                return;
-            case BoxID::ABORT:
-                game.SetCurrentGameState(State::GAMEOVER);
-                return;
-            default:
-                break;
-        }
-    });
-
-    if(IsKeyPressed(KEY_ESCAPE)) {
-        game.SetCurrentGameState(State::GAME);
-        game.ResumeMission();
-    }
 }
 
 void Handle_GAMEOVER(Game& game) {

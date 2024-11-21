@@ -26,10 +26,14 @@ class ECSManager {
 	    	mSystemManager->EntityDestroyed(entity);
 	    }
 
+		bool CheckSignature(Entity entity) {
+			return mEntityManager->GetSignature(entity).any() ? true : false;
+		}
+
 		void DestroyAllEntities() {
 
 			for (Entity ett = 0; ett < MAX_ENTITIES; ett++) {
-				if (mEntityManager->GetSignature(ett).any())
+				if (CheckSignature(ett))
 					DestroyEntity(ett);
 			}
 		}

@@ -6,12 +6,12 @@
 
 std::unordered_map<State, GameState> GameStateInit();
 GameInfo GameInfoInit();
-GameTimer GameTimerInit();
 std::unique_ptr<ECSManager> GameECSManagerInit();
+Camera2D GameCameraInit();
 
 
 // MISSION
 
-void CreatePlayer(std::shared_ptr<ECSManager> ecs);
+void SpawnPlayer(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo);
 void SpawnAliens(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo);
 void SpawnAsteroids(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo);

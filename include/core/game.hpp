@@ -3,6 +3,11 @@
 
 const static std::string GAME_VERSION = "v.0.0.1";
 
+const static float GAME_CAMERA_MAX_ZOOM = 3.0f;
+const static float GAME_CAMERA_MIN_ZOOM = 0.15f;
+const static float GAME_CAMERA_ZOOM_MODIFIER = 0.05f;
+
+
 typedef struct GameTimer {
 
     std::chrono::high_resolution_clock::time_point start_time;    // Tempo de início total do jogo
@@ -40,7 +45,6 @@ enum State {
     OPTIONS_MENU,
     ABOUT_MENU,
     GAME,
-    PAUSE,
     GAMEOVER,
     SAVE_MENU,
     LEAVING
@@ -68,11 +72,13 @@ typedef struct GameInfo {
 
 typedef struct MissionInfo {
     GTimer timer;
+    Entity player;
     int maxAliens;
     std::vector<Entity> aliens;
     int maxAsteroids;
     std::vector<Entity> asteroids;
     int waveCount;
+    int score;
 
     void Init() {
         timer.Start();
@@ -81,13 +87,13 @@ typedef struct MissionInfo {
         maxAsteroids = 50;
         asteroids.resize(maxAsteroids);
         waveCount = 0;
+        score = 0;
     }
 
     void Reset() {
         timer.Stop();
         aliens.clear();
         asteroids.clear();
-        waveCount = 0;
     }
 
 } MissionInfo;
@@ -101,13 +107,11 @@ class Game {
         }
 
         bool Running();
-        void Start();
         void Update();
         void Render();
         void Close();
 
-        void PauseMission();
-        void ResumeMission();
+        void StartMission();
         void ResetMission();
 
         GameState& GetCurrentGameState();
@@ -117,6 +121,7 @@ class Game {
 
         std::vector<std::shared_ptr<UIObject>>& GetUIObjects();
 
+        void UpdateCamera();
         void UpdateSystems();
         void UpdateFileName(PromptBox* pb);
         void RenderDebugScreen();
@@ -126,6 +131,7 @@ class Game {
         GameInfo info;
         MissionInfo mInfo;
         GameTimer timer;
+        Camera2D camera;
         std::shared_ptr<ECSManager> ECSManager;
 
         //SaveFile SaveFile;

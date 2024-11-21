@@ -193,6 +193,7 @@ DAY 37 - 18/11/2024
 DAY 38 - 20/11/2024
     Pequenas modificacoes e aprimoramentos no codigo:
         MissionInfo "guardando" as entidades
-        uso do GTimer
+        Uso do GTimer
         Uso de funcao anonima (lambda) para a checagem do click em TextBox!
-        
+    Tirei a gameScreen de Pause
+    Camera2D primeiras implementacoes
