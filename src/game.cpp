@@ -15,8 +15,8 @@ void Game::StartMission() {
     this->info.isMissionRunning = true;
     this->mInfo.Init();
     SpawnPlayer(ECSManager, mInfo);
-    SpawnAliens(ECSManager, mInfo);
-    SpawnAsteroids(ECSManager, mInfo);
+    //SpawnAliens(ECSManager, mInfo);
+    //SpawnAsteroids(ECSManager, mInfo);
     this->camera = GameCameraInit();
 }
 
@@ -59,6 +59,7 @@ void Game::Render() {
 
     ClearBackground(COLOR_BACKGROUND);
     
+    // Render UIObjects
     for (const auto& obj : info.currentGameState.gameScreen) {
         obj->Draw(timer.GetRunTime());
     }
@@ -67,19 +68,13 @@ void Game::Render() {
 
     if(info.isMissionRunning) {
 
+        // Render Entities in world
         for (Entity ett = 0; ett < MAX_ENTITIES; ett++) {
             if(ECSManager->CheckSignature(ett)) {
                 auto const& transform = ECSManager->GetComponent<Transform>(ett);
                 DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
             }
         }
-
-        //for (Entity& ett : mInfo.asteroids) {
-        //    if(ECSManager->CheckSignature(ett)) {
-        //        auto const& transform = ECSManager->GetComponent<Transform>(ett);
-        //        DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
-        //    }
-        //}
     }
     EndMode2D();
 

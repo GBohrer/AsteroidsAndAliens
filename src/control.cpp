@@ -28,6 +28,7 @@ std::map<State, std::function<void(Game&)>> stateHandlers = {
     {State::OPTIONS_MENU, Handle_OPTIONS_MENU},
     {State::ABOUT_MENU, Handle_ABOUT_MENU},
     {State::GAME, Handle_GAME},
+    {State::GAME, Handle_MAP_GAME},
     {State::GAMEOVER, Handle_GAMEOVER},
     {State::SAVE_MENU, Handle_SAVE_MENU},
     {State::LEAVING, Handle_LEAVING}
@@ -106,8 +107,25 @@ void Handle_ABOUT_MENU(Game& game) {
 void Handle_GAME(Game& game) {
     Handle_UI(game, [&game](TextBox* tb) {
         switch(tb->GetID()) {
+            case BoxID::MAP:
+                game.SetCurrentGameState(State::MAP_GAME);
+                return;
             case BoxID::ABORT:
                 game.SetCurrentGameState(State::GAMEOVER);
+                return;
+            default:
+                break;
+        }
+    });
+
+    game.UpdateSystems();
+}
+
+void Handle_MAP_GAME(Game& game) {
+    Handle_UI(game, [&game](TextBox* tb) {
+        switch(tb->GetID()) {
+            case BoxID::BACK:
+                game.SetCurrentGameState(State::GAME);
                 return;
             default:
                 break;

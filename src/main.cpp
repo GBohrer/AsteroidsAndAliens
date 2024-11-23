@@ -3,7 +3,7 @@
 int main(void)
 {
 
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Galactic Adventures");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Arcade Space Shooter");
      
     SetTargetFPS(60);
 

@@ -47,6 +47,7 @@ enum BoxID {
     SCREEN_MODE,
     PROMPT,
     SEE,
+    MAP,
     ABORT,
     RESUME,
     YES,
@@ -115,6 +116,14 @@ class PromptBox : public Box {
         SimpleText text;
 
 };
+
+class EntityBar : public Box {
+    public:
+        EntityBar();
+
+    private:
+
+}
 
 
 // FUNCTIONS

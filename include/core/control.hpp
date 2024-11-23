@@ -15,6 +15,7 @@ void Handle_SCORES_MENU(Game& game);
 void Handle_OPTIONS_MENU(Game& game);
 void Handle_ABOUT_MENU(Game& game);
 void Handle_GAME(Game& game);
+void Handle_MAP_GAME(Game& game);
 void Handle_GAMEOVER(Game& game);
 void Handle_SAVE_MENU(Game& game);
 void Handle_LEAVING(Game& game);

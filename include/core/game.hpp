@@ -45,6 +45,7 @@ enum State {
     OPTIONS_MENU,
     ABOUT_MENU,
     GAME,
+    MAP_GAME,
     GAMEOVER,
     SAVE_MENU,
     LEAVING
