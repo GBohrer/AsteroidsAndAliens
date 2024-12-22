@@ -117,15 +117,6 @@ class PromptBox : public Box {
 
 };
 
-class EntityBar : public Box {
-    public:
-        EntityBar();
-
-    private:
-
-}
-
-
 // FUNCTIONS
 template<typename T>
 void PrintValueInGame(std::string name, T value, Vector2 textPos, int fontSize, Color color) {

@@ -2,6 +2,8 @@
 #include "../master.hpp"
 
 const static std::string GAME_VERSION = "v.0.0.1";
+const static std::string GAME_NAME = "ASTEROIDS AND ALIENS";
+
 
 const static float GAME_CAMERA_MAX_ZOOM = 3.0f;
 const static float GAME_CAMERA_MIN_ZOOM = 0.15f;

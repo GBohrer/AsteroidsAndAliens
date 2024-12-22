@@ -9,7 +9,7 @@ std::unordered_map<State, GameState> GameStateInit () {
 
     // START_MENU
     screenObjs = {
-        std::make_shared<SimpleText>("ARCADE SPACE SHOOTER", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
+        std::make_shared<SimpleText>(GAME_NAME, TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
         std::make_shared<SimpleText>("Press Enter", 40, SCREEN_POS_CENTER, true, true)
     };
     gameStates.emplace(State::START_MENU, GameState(State::START_MENU, screenObjs));
@@ -17,7 +17,7 @@ std::unordered_map<State, GameState> GameStateInit () {
 
     // MAIN_MENU
     screenObjs = {
-        std::make_shared<SimpleText>("ARCADE SPACE SHOOTER", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
+        std::make_shared<SimpleText>(GAME_NAME, TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
         std::make_shared<TextBox>(BoxID::PLAY, std::vector<std::string>{"Play"}, SCREEN_POS_CENTER_1, false, true),
         std::make_shared<TextBox>(BoxID::LEADERBOARD, std::vector<std::string>{"Leaderboard"}, SCREEN_POS_CENTER_2, false, true),
         std::make_shared<TextBox>(BoxID::OPTIONS, std::vector<std::string>{"Options"}, SCREEN_POS_CENTER_3, false, true),
@@ -49,7 +49,7 @@ std::unordered_map<State, GameState> GameStateInit () {
 
     // ABOUT_MENU
     screenObjs = {
-        std::make_shared<SimpleText>("ARCADE SPACE SHOOTER", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
+        std::make_shared<SimpleText>(GAME_NAME, TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
         std::make_shared<SimpleText>("You are lost in deep space. You have only one spacechip.", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_1, false, false),
         std::make_shared<SimpleText>("Aliens lives in deep space and are not friendly.", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_2, false, false),
         std::make_shared<SimpleText>("Endure and Surive", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_3, false, false),

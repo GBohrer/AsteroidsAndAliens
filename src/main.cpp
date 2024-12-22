@@ -3,7 +3,7 @@
 int main(void)
 {
 
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Arcade Space Shooter");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Asteroids and Aliens");
      
     SetTargetFPS(60);
 
