@@ -15,8 +15,8 @@ void Game::StartMission() {
     this->info.isMissionRunning = true;
     this->mInfo.Init();
     SpawnPlayer(ECSManager, mInfo);
-    //SpawnAliens(ECSManager, mInfo);
-    //SpawnAsteroids(ECSManager, mInfo);
+    SpawnAliens(ECSManager, mInfo);
+    SpawnAsteroids(ECSManager, mInfo);
     this->camera = GameCameraInit();
 }
 
@@ -64,22 +64,23 @@ void Game::Render() {
         obj->Draw(timer.GetRunTime());
     }
 
-    BeginMode2D(this->camera);
-
     if(info.isMissionRunning) {
 
-        // Render Entities in world
-        for (Entity ett = 0; ett < MAX_ENTITIES; ett++) {
-            if(ECSManager->CheckSignature(ett)) {
-                auto const& transform = ECSManager->GetComponent<Transform>(ett);
-                DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
+        BeginMode2D(this->camera);
+            // Render Entities in world
+            for (Entity ett = 0; ett < MAX_ENTITIES; ett++) {
+                if(ECSManager->CheckSignature(ett)) {
+                    auto const& transform = ECSManager->GetComponent<Transform>(ett);
+                    DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
+                }
             }
-        }
+            
+        EndMode2D();
+
+        RenderPlayerStatus();
+        if (info.debugMode) RenderDebugScreen();
     }
-    EndMode2D();
-
-    if (info.debugMode) RenderDebugScreen();
-
+    
     EndDrawing();
 }
 
@@ -151,6 +152,13 @@ void Game::UpdateFileName(PromptBox* pb) {
 //        fileNameStr.append("_");
 //    }
 //    pb->SetText(fileNameStr);
+}
+
+void Game::RenderPlayerStatus() {
+    
+    auto const& PlayerPos = ECSManager->GetComponent<Transform>(mInfo.player);
+    PrintValueInGame("LAT",PlayerPos.translation.x, {SCREEN_POS_CENTER_BOTTOM.x, SCREEN_POS_CENTER_BOTTOM.y + DEBUG_FONTSIZE*2}, DEBUG_FONTSIZE, WHITE);
+    PrintValueInGame("LON",PlayerPos.translation.y, {SCREEN_POS_CENTER_BOTTOM.x, SCREEN_POS_CENTER_BOTTOM.y + DEBUG_FONTSIZE*3}, DEBUG_FONTSIZE, WHITE);
 }
 
 void Game::RenderDebugScreen() {

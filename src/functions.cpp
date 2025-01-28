@@ -30,8 +30,6 @@ std::unordered_map<State, GameState> GameStateInit () {
     // SCORES_MENU
     screenObjs = {
         std::make_shared<SimpleText>("LEADERBOARD", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<SimpleText>("ABC   12000", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_1, false, false),
-        std::make_shared<TextBox>(BoxID::SEE, std::vector<std::string>{"See"}, SCREEN_POS_CENTER_LEFT_1, false, true),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Back"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
     };
     gameStates.emplace(State::SCORES_MENU, GameState(State::SCORES_MENU, screenObjs));
@@ -61,7 +59,6 @@ std::unordered_map<State, GameState> GameStateInit () {
 
     // GAME
     screenObjs = {
-        std::make_shared<TextBox>(BoxID::ABORT, std::vector<std::string>{"Map"}, SCREEN_POS_RIGHT_BOTTOM, false, true),
         std::make_shared<TextBox>(BoxID::ABORT, std::vector<std::string>{"Abort Mission"}, SCREEN_POS_LEFT_BOTTOM, false, true),
     };
     gameStates.emplace(State::GAME, GameState(State::GAME, screenObjs));

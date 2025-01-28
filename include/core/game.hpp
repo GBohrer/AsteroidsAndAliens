@@ -130,6 +130,7 @@ class Game {
         void UpdateSystems();
         void UpdateFileName(PromptBox* pb);
         void RenderDebugScreen();
+        void RenderPlayerStatus();
 
     private:
         Game();
