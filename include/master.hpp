@@ -20,6 +20,7 @@
 #include <functional>
 #include <cassert>
 #include <chrono>
+#include <algorithm>
 
 // HEADERS
 #include "ecs/core/types.hpp"

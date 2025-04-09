@@ -64,10 +64,19 @@ void Game::Render() {
         obj->Draw(timer.GetRunTime());
     }
 
+    if (info.isMissionRunning) {
+        RenderPlayerStatus();
+        if (info.debugMode) RenderDebugScreen();
+    }
+
+    // Render Level
     if(info.isMissionRunning) {
 
+        // Scenary
+        //DrawGrid(10, 1.0f);
+
         BeginMode2D(this->camera);
-            // Render Entities in world
+            // Entities in world
             for (Entity ett = 0; ett < MAX_ENTITIES; ett++) {
                 if(ECSManager->CheckSignature(ett)) {
                     auto const& transform = ECSManager->GetComponent<Transform>(ett);
@@ -76,9 +85,6 @@ void Game::Render() {
             }
             
         EndMode2D();
-
-        RenderPlayerStatus();
-        if (info.debugMode) RenderDebugScreen();
     }
     
     EndDrawing();
