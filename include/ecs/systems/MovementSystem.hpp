@@ -15,12 +15,10 @@ class MovementSystem : public System {
 
                 velocity.current.x += acceleration.current.x * dt;
                 velocity.current.y += acceleration.current.y * dt;
-
-                if (velocity.current.x > velocity.max) { velocity.current.x = velocity.max; 
-                }else if (velocity.current.x < velocity.min) { velocity.current.x = velocity.min; }
-
-                if (velocity.current.y > velocity.max) { velocity.current.y = velocity.max; 
-                }else if (velocity.current.y < velocity.min) { velocity.current.y = velocity.min; }
+            
+                // Limita a velocidade (suavemente)
+                velocity.current.x = std::clamp(velocity.current.x, velocity.min, velocity.max);
+                velocity.current.y = std::clamp(velocity.current.y, velocity.min, velocity.max);
 
                 transform.translation.x += velocity.current.x * dt;
                 transform.translation.y += velocity.current.y * dt;

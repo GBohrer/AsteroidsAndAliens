@@ -9,7 +9,6 @@ class PlayerControlSystem : public System {
     void Update(std::shared_ptr<ECSManager> ecs, float dt) {
         for (auto const& player : mEntities) {
         
-            auto& velocity = ecs->GetComponent<Velocity>(player);
             auto& acceleration = ecs->GetComponent<Acceleration>(player);
             auto& fuel = ecs->GetComponent<Fuel>(player);
             auto& input = ecs->GetComponent<Input>(player);
@@ -27,16 +26,8 @@ class PlayerControlSystem : public System {
                 thrust.y *= 0.7071f;
             }
 
-            acceleration.current.x >= acceleration.max ? acceleration.max : acceleration.current.x + thrust.x * fuel.thrustControlEfficiency;
-            acceleration.current.y >= acceleration.max ? acceleration.max : acceleration.current.y + thrust.y * fuel.thrustControlEfficiency;
-
-            // Aplica aceleração gradual com controle de eficiência e dt
-            velocity.current.x += acceleration.current.x * dt;
-            velocity.current.y += acceleration.current.y * dt;
-
-            // Limita a velocidade (suavemente)
-            velocity.current.x = std::clamp(velocity.current.x, velocity.min, velocity.max);
-            velocity.current.y = std::clamp(velocity.current.y, velocity.min, velocity.max);
+            acceleration.current.x = acceleration.current.x >= acceleration.max ? acceleration.max : acceleration.current.x + thrust.x * fuel.thrustControlEfficiency;
+            acceleration.current.y = acceleration.current.y >= acceleration.max ? acceleration.max : acceleration.current.y + thrust.y * fuel.thrustControlEfficiency;
         }
     }
 };

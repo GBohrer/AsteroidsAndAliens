@@ -47,7 +47,7 @@ void Game::Update() {
     }
 
     if (info.isMissionRunning) {
-        UpdateCamera();
+        //UpdateCamera();
     }
 
     this->timer.Update();
@@ -72,15 +72,19 @@ void Game::Render() {
     // Render Level
     if(info.isMissionRunning) {
 
-        // Scenary
-        //DrawGrid(10, 1.0f);
-
         BeginMode2D(this->camera);
             // Entities in world
             for (Entity ett = 0; ett < MAX_ENTITIES; ett++) {
                 if(ECSManager->CheckSignature(ett)) {
                     auto const& transform = ECSManager->GetComponent<Transform>(ett);
-                    DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
+
+                    if (ett == mInfo.player) {
+                        DrawPoly({transform.translation.x, transform.translation.y}, 3, 10.0f, transform.rotation.w, WHITE);
+                    } else {
+                        DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
+                    }
+
+
                 }
             }
             
