@@ -1,8 +1,8 @@
 #pragma once
 #include "../master.hpp"
 
-#define SCREEN_WIDTH                1920
-#define SCREEN_HEIGHT               1080
+#define SCREEN_WIDTH                1280
+#define SCREEN_HEIGHT               720
 
 #define TEXTBOX_WIDTH               260
 #define TEXTBOX_HEIGHT              70
