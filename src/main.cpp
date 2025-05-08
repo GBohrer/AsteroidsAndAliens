@@ -5,7 +5,7 @@ int main(void)
 
     Image icon = LoadImage("../resources/aaa_logo.png");
     ImageFormat(&icon, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
-    SetWindowIcon(icon);
+    //SetWindowIcon(icon);
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Asteroids and Aliens");
 

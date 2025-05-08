@@ -78,8 +78,17 @@ void Game::Render() {
                 if(ECSManager->CheckSignature(ett)) {
                     auto const& transform = ECSManager->GetComponent<Transform>(ett);
 
-                    if (ett == mInfo.player) {
-                        DrawPoly({transform.translation.x, transform.translation.y}, 3, 10.0f, transform.rotation.w, WHITE);
+                    if (ett == mInfo.player) {                 
+                        DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x*0.80f, ORANGE);
+
+                        Vector2 forward = {
+                            std::cos(transform.rotation.x),
+                            std::sin(transform.rotation.y)
+                        };  
+                        Vector2Normalize(forward);
+
+                        DrawLine(transform.translation.x, transform.translation.y, forward.x, forward.y, GREEN);
+
                     } else {
                         DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
                     }
