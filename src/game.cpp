@@ -15,8 +15,8 @@ void Game::StartMission() {
     this->info.isMissionRunning = true;
     this->mInfo.Init();
     SpawnPlayer(ECSManager, mInfo);
-    SpawnAliens(ECSManager, mInfo);
-    SpawnAsteroids(ECSManager, mInfo);
+    //SpawnAliens(ECSManager, mInfo);
+    //SpawnAsteroids(ECSManager, mInfo);
     this->camera = GameCameraInit();
 }
 
@@ -180,13 +180,26 @@ void Game::RenderPlayerStatus() {
     PrintValueInGame("LON",PlayerPos.translation.y, {SCREEN_POS_CENTER_BOTTOM.x, SCREEN_POS_CENTER_BOTTOM.y + DEBUG_FONTSIZE*3}, DEBUG_FONTSIZE, WHITE);
 }
 
+template<typename T>
+void PrintDebugLine(const std::string& label, const T value, int line, int fontSize, Color color) {
+    const int x = 15;
+    const int y = 15 + line * fontSize;
+    PrintValueInGame(label, value, {x, y}, fontSize, color);
+}
+
 void Game::RenderDebugScreen() {
-    DrawFPS(15,15);
-    PrintValueInGame("Version", GAME_VERSION, {15, DEBUG_FONTSIZE*2 + 15}, DEBUG_FONTSIZE, WHITE);
-    PrintValueInGame("RunTime", GetTimer().GetRunTime(), {15, DEBUG_FONTSIZE*3 + 15}, DEBUG_FONTSIZE, WHITE);
-    PrintValueInGame("Camera Zoom", camera.zoom, {15, DEBUG_FONTSIZE*4 + 15}, DEBUG_FONTSIZE, WHITE);
-    PrintValueInGame("MissionRunTime", mInfo.timer.ElapsedSeconds(), {15, DEBUG_FONTSIZE*5 + 15}, DEBUG_FONTSIZE, WHITE);
-    PrintValueInGame("Aliens", mInfo.aliens.size(), {15, DEBUG_FONTSIZE*6 + 15}, DEBUG_FONTSIZE, WHITE);
-    PrintValueInGame("Asteroids", mInfo.asteroids.size(), {15, DEBUG_FONTSIZE*7 + 15}, DEBUG_FONTSIZE, WHITE);
+    DrawFPS(15, 15);
+
+    int line = 1;
+    PrintDebugLine("Version", GAME_VERSION, line++, DEBUG_FONTSIZE, WHITE);
+    //PrintDebugLine("RunTime", std::to_string(GetTimer().GetRunTime()), line++, DEBUG_FONTSIZE, WHITE);
+    //PrintDebugLine("Camera Zoom", std::to_string(camera.zoom), line++, DEBUG_FONTSIZE, WHITE);
+    PrintDebugLine("MissionRunTime", std::to_string(mInfo.timer.ElapsedSeconds()), line++, DEBUG_FONTSIZE, WHITE);
+    //PrintDebugLine("Aliens", std::to_string(mInfo.aliens.size()), line++, DEBUG_FONTSIZE, WHITE);
+    //PrintDebugLine("Asteroids", std::to_string(mInfo.asteroids.size()), line++, DEBUG_FONTSIZE, WHITE);
+    PrintDebugLine("Player Velocity X: ", ECSManager->GetComponent<Velocity>(mInfo.player).current.x, line++, DEBUG_FONTSIZE, WHITE);
+    PrintDebugLine("Player Velocity Y: ", ECSManager->GetComponent<Velocity>(mInfo.player).current.y, line++, DEBUG_FONTSIZE, WHITE);
+    PrintDebugLine("Player Acceleration X: ", ECSManager->GetComponent<Acceleration>(mInfo.player).current.x, line++, DEBUG_FONTSIZE, WHITE);
+    PrintDebugLine("Player Acceleration Y: ", ECSManager->GetComponent<Acceleration>(mInfo.player).current.y, line++, DEBUG_FONTSIZE, WHITE);
 }
 

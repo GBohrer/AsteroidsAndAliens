@@ -196,15 +196,15 @@ void SpawnPlayer(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
         player,
         Velocity {
             .current = Vector2({0.0f, 0.0f}),
-            .max = 200.0f,
-            .min = -200.0f
+            .max = 100.0f,
+            .min = -100.0f
         });
     ecs->AddComponent(
         player,
         Acceleration {
             .current = Vector2({0.0f, 0.0f}),
-            .max = 20.0f,
-            .min = 0.0f
+            .max = 300.0f,
+            .min = -300.0f
         });
     ecs->AddComponent(
         player,
@@ -212,7 +212,7 @@ void SpawnPlayer(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
         );
     ecs->AddComponent(
         player,
-        fuel2
+        fuel3
         );
     ecs->AddComponent(
         player,
@@ -241,16 +241,16 @@ void SpawnAsteroids(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
             asteroid,
             Velocity {
                 .current = Vector2({0.0f, 0.0f}),
-                .max = 200.0f,
-                .min = -200.0f
+                .max = 50.0f,
+                .min = -50.0f
             });
 
         ecs->AddComponent(
             asteroid,
             Acceleration {
                 .current = Vector2({0.0f, 0.0f}),
-                .max = 10.0f,
-                .min = 0.0f
+                .max = 50.0f,
+                .min = -50.0f
             });
     }
 }

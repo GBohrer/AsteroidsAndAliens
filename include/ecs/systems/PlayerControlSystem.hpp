@@ -11,31 +11,28 @@ public:
             auto& acceleration = ecs->GetComponent<Acceleration>(player);
             auto& fuel = ecs->GetComponent<Fuel>(player);
             auto& input = ecs->GetComponent<Input>(player);
-            auto& transform = ecs->GetComponent<Transform>(player);
 
-            const float rotationSpeed = 50.0f; // rad/s
-            float currentAngle = 2.0f * std::acos(transform.rotation.w);
-            if (transform.rotation.z < 0) currentAngle = -currentAngle;
+            Vector2 thrust = {0.0f, 0.0f};
 
-            if (input.left)  currentAngle -= rotationSpeed * dt;
-            if (input.right) currentAngle += rotationSpeed * dt;
+            if (input.up)    thrust.y -= 1.0f;
+            if (input.down)  thrust.y += 1.0f;
+            if (input.left)  thrust.x -= 1.0f;
+            if (input.right) thrust.x += 1.0f;
 
-            transform.rotation = QuaternionFromAxisAngle({0, 0, 1}, currentAngle);
-
-            Vector2 forward = {
-                std::cos(currentAngle),
-                std::sin(currentAngle)
-            };
-
-            if (input.up) {
-                acceleration.current.x += forward.x * fuel.thrustControlEfficiency;
-                acceleration.current.y += forward.y * fuel.thrustControlEfficiency;
+            // Normaliza para evitar aceleração extra na diagonal
+            if (thrust.x != 0 && thrust.y != 0) {
+                const float invSqrt2 = 0.7071f;
+                thrust.x *= invSqrt2;
+                thrust.y *= invSqrt2;
             }
+            acceleration.current.x += (thrust.x * fuel.thrustControlEfficiency * 50.0f);
+            acceleration.current.y += (thrust.y * fuel.thrustControlEfficiency * 50.0f);
 
-            if (input.down) {
-                acceleration.current.x -= acceleration.current.x * fuel.thrustControlEfficiency;
-                acceleration.current.y -= acceleration.current.y * fuel.thrustControlEfficiency;
-            }
+            if(acceleration.current.x > acceleration.max) acceleration.current.x = acceleration.max;
+            if(acceleration.current.y > acceleration.max) acceleration.current.y = acceleration.max;
+
+            if(acceleration.current.x < acceleration.min) acceleration.current.x = acceleration.min;
+            if(acceleration.current.y < acceleration.min) acceleration.current.y = acceleration.min;
         }
     }
 };

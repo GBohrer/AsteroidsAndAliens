@@ -13,13 +13,13 @@ struct Fuel {
 };
 
 const Fuel fuel1 = Fuel{.type = FuelType::Solid,
-                        .burningEfficiency = 0.5f,
-                        .thrustControlEfficiency = 0.5f};
+                        .burningEfficiency = 0.3f,
+                        .thrustControlEfficiency = 0.3f};
 
 const Fuel fuel2 = Fuel{.type = FuelType::Liquid,
-                        .burningEfficiency = 1.0f,
-                        .thrustControlEfficiency = 1.0f};
+                        .burningEfficiency = 0.6f,
+                        .thrustControlEfficiency = 0.6f};
 
 const Fuel fuel3 = Fuel{.type = FuelType::Plasma,
-                        .burningEfficiency = 2.5f,
-                        .thrustControlEfficiency = 2.5f};
+                        .burningEfficiency = 1.0f,
+                        .thrustControlEfficiency = 1.0f};
