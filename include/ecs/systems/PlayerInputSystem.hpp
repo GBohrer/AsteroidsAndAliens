@@ -17,9 +17,9 @@ class PlayerInputSystem : public System {
             input.left = IsKeyDown(KEY_A);
             input.right = IsKeyDown(KEY_D);
 
-            input.shoot = IsKeyPressed(KEY_SPACE); 
+            input.shoot = IsMouseButtonDown(KEY_SPACE);
             input.changeBullet = IsKeyPressed(KEY_LEFT_SHIFT);
-            input.setAim = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+            if (IsKeyPressed(MOUSE_BUTTON_LEFT)) input.setAim = !input.setAim;
         }
     }
 };

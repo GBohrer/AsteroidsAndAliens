@@ -217,7 +217,10 @@ void SpawnPlayer(std::shared_ptr<ECSManager> ecs, MissionInfo& mInfo) {
     ecs->AddComponent(
         player,
         Aim {
-            .direction = Vector2({(float)GetMouseX(), (float)GetMouseY()})
+            .maxAssistSize = 8.0f,
+            .direction = Vector2({(float)GetMouseX(), (float)GetMouseY()}),
+            .lastDirection = Vector2({(float)GetMouseX(), (float)GetMouseY()}),
+            .lockPoint = Vector2({(float)GetMouseX(), (float)GetMouseY()})
         });
 }
 

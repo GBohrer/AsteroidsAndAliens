@@ -47,7 +47,7 @@ void Game::Update() {
     }
 
     if (info.isMissionRunning) {
-        //UpdateCamera();
+        UpdateCamera();
     }
 
     this->timer.Update();
@@ -73,21 +73,24 @@ void Game::Render() {
     if(info.isMissionRunning) {
 
         BeginMode2D(this->camera);
+
+            DrawGrid(80, 1.0f);
+
             // Entities in world
             for (Entity ett = 0; ett < MAX_ENTITIES; ett++) {
                 if(ECSManager->CheckSignature(ett)) {
                     auto const& transform = ECSManager->GetComponent<Transform>(ett);
 
                     if (ett == mInfo.player) {                 
-                        DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x*0.80f, ORANGE);
+                        auto const& playerAim = ECSManager->GetComponent<Aim>(ett);
 
-                        Vector2 forward = {
-                            std::cos(transform.rotation.x),
-                            std::sin(transform.rotation.y)
-                        };  
-                        Vector2Normalize(forward);
+                        Vector2 playerPos = {transform.translation.x, transform.translation.y};
+                        float playerRadius = transform.scale.x;
 
-                        DrawLine(transform.translation.x, transform.translation.y, forward.x, forward.y, GREEN);
+                        DrawCircle(playerPos.x, playerPos.y, playerRadius * 0.8f, ORANGE);
+                        DrawLine(playerPos.x, playerPos.y,
+                                playerPos.x + playerAim.direction.x,
+                                playerPos.y + playerAim.direction.y, GREEN);
 
                     } else {
                         DrawCircle(transform.translation.x, transform.translation.y, transform.scale.x, WHITE);
